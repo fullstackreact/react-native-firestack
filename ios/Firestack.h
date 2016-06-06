@@ -6,7 +6,6 @@
 
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
-#import "Firebase/Firebase.h"
 
 @import Firebase;
 

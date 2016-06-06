@@ -1,0 +1,72 @@
+PODS:
+  - Firebase (3.2.1):
+    - Firebase/Core (= 3.2.1)
+  - Firebase/Analytics (3.2.1):
+    - FirebaseAnalytics (= 3.2.0)
+  - Firebase/Auth (3.2.1):
+    - Firebase/Analytics (= 3.2.1)
+    - FirebaseAuth (= 3.0.2)
+  - Firebase/Core (3.2.1):
+    - Firebase/Analytics (= 3.2.1)
+  - Firebase/Database (3.2.1):
+    - Firebase/Analytics (= 3.2.1)
+    - FirebaseDatabase (= 3.0.1)
+  - Firebase/Storage (3.2.1):
+    - Firebase/Analytics (= 3.2.1)
+    - FirebaseStorage (= 1.0.1)
+  - FirebaseAnalytics (3.2.0):
+    - FirebaseInstanceID (~> 1.0)
+    - GoogleInterchangeUtilities (~> 1.2)
+    - GoogleSymbolUtilities (~> 1.1)
+    - GoogleUtilities (~> 1.3)
+  - FirebaseAuth (3.0.2):
+    - FirebaseAnalytics (~> 3.2)
+    - GoogleNetworkingUtilities (~> 1.2)
+    - GoogleUtilities (~> 1.3)
+  - FirebaseDatabase (3.0.1):
+    - FirebaseAnalytics (~> 3.2)
+  - FirebaseInstanceID (1.0.6)
+  - FirebaseStorage (1.0.1):
+    - FirebaseAnalytics (~> 3.2)
+    - GoogleNetworkingUtilities (~> 1.2)
+  - GoogleInterchangeUtilities (1.2.1):
+    - GoogleSymbolUtilities (~> 1.0)
+  - GoogleNetworkingUtilities (1.2.1):
+    - GoogleSymbolUtilities (~> 1.0)
+  - GoogleSymbolUtilities (1.1.1)
+  - GoogleUtilities (1.3.1):
+    - GoogleSymbolUtilities (~> 1.0)
+  - react-native-firestack (0.0.1):
+    - Firebase
+    - Firebase/Analytics
+    - Firebase/Auth
+    - Firebase/Core
+    - Firebase/Database
+    - Firebase/Storage
+    - React/Core
+  - React/Core (0.11.0)
+
+DEPENDENCIES:
+  - react-native-firestack (from `../..`)
+
+EXTERNAL SOURCES:
+  react-native-firestack:
+    :path: "../.."
+
+SPEC CHECKSUMS:
+  Firebase: 6c80ac28d59d06bfd9152a7b6ea17625ca93183d
+  FirebaseAnalytics: 6f75b04e6bfb8e0b6e9ef298e04c24eea3b13863
+  FirebaseAuth: 94b851fc345ce98036dfedfdc2eddeaef8fa3b4c
+  FirebaseDatabase: 34301d11621a83546f39f670d256477ba6f7fcea
+  FirebaseInstanceID: d014d574053a2fe84478f12f7bae96979e7051bb
+  FirebaseStorage: e9c32a8d246c07eeefd78180c22736aa1b81e81b
+  GoogleInterchangeUtilities: def8415a862effc67d549d5b5b0b9c7a2f97d4de
+  GoogleNetworkingUtilities: 3e83269048cfb498dc7ec83ab36813360965c74f
+  GoogleSymbolUtilities: 33117db1b5f290c6fbf259585e4885b4c84b98d7
+  GoogleUtilities: 56c5ac05b7aa5dc417a1bb85221a9516e04d7032
+  React: ab1a2e21deb34965c38328d5ec40cc7d12c6050a
+  react-native-firestack: 0a390a47519c63d10604144e44edf3173bc5c553
+
+PODFILE CHECKSUM: bc246352a568ccee6ce58d476b43ae301a7d3d91
+
+COCOAPODS: 1.0.0

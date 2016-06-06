@@ -14,7 +14,7 @@ Pod::Spec.new do |s|
   s.source_files    = 'ios/*.{h,m}'
   s.preserve_paths  = "**/*.js"
 
-  s.dependency 'React/Core'
+  s.dependency 'React/Core', :path => 'node_modules/react-native'
 
   s.dependency 'Firebase'
   s.dependency 'Firebase/Core'
