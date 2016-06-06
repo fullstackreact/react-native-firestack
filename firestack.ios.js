@@ -19,7 +19,7 @@ const promisify = fn => (...args) => {
     args.push(handler);
     FirebaseHelper[fn].call(FirebaseHelper, ...args);
   });
-}
+};
 
 export default class Firestack {
   constructor(options) {

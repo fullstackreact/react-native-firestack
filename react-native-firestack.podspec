@@ -10,17 +10,32 @@ Pod::Spec.new do |s|
   s.license         = package['license']
   s.author          = package['author']
   s.platform        = :ios, "7.0"
-  s.source          = { :git => "https://github.com/fullstackreact/react-native-firestack.git", :tag => "#{s.version}" }
+  s.source          = { :git => package['repository']['url'], :tag => "#{s.version}" }
   s.source_files    = 'ios/*.{h,m}'
   s.preserve_paths  = "**/*.js"
+  s.exclude_files   = "Sample"
 
-  s.dependency 'React/Core', :path => 'node_modules/react-native'
-
-  s.dependency 'Firebase'
-  s.dependency 'Firebase/Core'
-  s.dependency 'Firebase/Analytics'
-  s.dependency 'Firebase/Auth'
-  s.dependency 'Firebase/Database'
-  s.dependency 'Firebase/Storage'
+  [ 'Firebase',
+    'Firebase/Core',
+    'Firebase/Analytics',
+    'Firebase/Auth',
+    'Firebase/Database',
+    'Firebase/Storage'
+  ].each do |lib|
+    s.subspec lib.split('/')[-1] do |ss|
+      ss.dependency lib
+      ss.xcconfig = {
+        'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_ROOT)/${lib}"',
+        # "FRAMEWORK_SEARCH_PATHS" => "$(PODS_ROOT)/#{lib}",
+      }
+    end
+  end
+  # s.dependency 'React/Core'
+  # s.dependency 'Firebase'
+  # s.dependency 'Firebase/Core'
+  # s.dependency 'Firebase/Analytics'
+  # s.dependency 'Firebase/Auth'
+  # s.dependency 'Firebase/Database'
+  # s.dependency 'Firebase/Storage'
 
 end

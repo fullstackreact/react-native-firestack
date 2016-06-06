@@ -4,14 +4,12 @@
  * @providesModule Firestack
  * @flow
  */
-'use strict';
+let warning = require('fbjs/lib/warning');
 
-var warning = require('fbjs/lib/warning');
-
-var Firestack = {
-  test: function() {
+let Firestack = {
+  test: function test() {
     warning('Not yet implemented for Android.');
-  }
+  },
 };
 
 module.exports = Firestack;

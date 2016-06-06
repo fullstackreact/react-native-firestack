@@ -7,9 +7,6 @@
 #import "Firestack.h"
 #import "RCTUtils.h"
 
-@import Firebase;
-@import FirebaseStorage;
-
 @implementation Firestack
 
 @synthesize bridge = _bridge;
