@@ -9,8 +9,6 @@ const db = require('firebase/database');
 const storage = require('firebase/storage');
 
 import {NativeModules} from 'react-native';
-
-console.log('ksdjfkjdf', NativeModules);
 const FirebaseHelper = NativeModules.Firestack;
 
 const promisify = fn => (...args) => {
@@ -50,6 +48,10 @@ export default class Firestack {
 
   signInWithProvider(provider, authToken, authSecret) {
     return promisify('signInWithProvider')(provider, authToken, authSecret);
+  }
+
+  signOut() {
+    return promisify('signOut')();
   }
 
   getCurrentUser() {

@@ -40,3 +40,4 @@ android/app/libs
 android/keystores/debug.keystore
 Sample/ios/Pods
 Example/ios/Pods
+Example/GoogleService-Info.plist

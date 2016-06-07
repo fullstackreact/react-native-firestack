@@ -24,6 +24,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		9A0A2F2B716A883151E7A203 /* libPods-ExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D0E8221D874C8A4CCF54387 /* libPods-ExampleTests.a */; };
 		D909B3F81D077D0A00EFDE57 /* libFirestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D909B3F71D077D0A00EFDE57 /* libFirestack.a */; };
+		D9D999D21D07855800617546 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D9D999D11D07855800617546 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -135,6 +136,7 @@
 		C48CE35AEEA49B059321B788 /* Pods-ExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleTests/Pods-ExampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		CAB61D6B35DDE453EC6082C5 /* Pods-ExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleTests/Pods-ExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D909B3F71D077D0A00EFDE57 /* libFirestack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFirestack.a; path = "Pods/../build/Debug-iphoneos/Firestack/libFirestack.a"; sourceTree = "<group>"; };
+		D9D999D11D07855800617546 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -298,6 +300,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				D9D999D11D07855800617546 /* GoogleService-Info.plist */,
 				13B07FAE1A68108700A75B9A /* Example */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* ExampleTests */,
@@ -547,6 +550,7 @@
 			files = (
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				D9D999D21D07855800617546 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
