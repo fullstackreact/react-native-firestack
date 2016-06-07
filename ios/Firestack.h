@@ -6,9 +6,10 @@
 
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
+#import "Firebase.h"
 
-@import Firebase;
-@import FirebaseStorage;
+//@import Firebase;
+//@import FirebaseStorage;
 
 @interface Firestack : NSObject <RCTBridgeModule> {
     FIRAuthStateDidChangeListenerHandle authListenerHandle;

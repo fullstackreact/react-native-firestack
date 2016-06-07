@@ -18,7 +18,7 @@ RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
   @try {
     if (!self.configured) {
       [FIRApp configure];
-      self.configured = YES;
+      self->_configured = YES;
     }
   }
   @catch (NSException *exception) {
