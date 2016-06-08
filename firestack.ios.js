@@ -8,7 +8,7 @@ const app = require('firebase/app');
 const db = require('firebase/database');
 const storage = require('firebase/storage');
 
-import {NativeModules} from 'react-native';
+import {NativeModules, NativeAppEventEmitter} from 'react-native';
 const FirebaseHelper = NativeModules.Firestack;
 
 const promisify = fn => (...args) => {
@@ -23,18 +23,28 @@ export default class Firestack {
   constructor(options) {
     this.options = options;
     this.appInstance = app.initializeApp(options);
+    this.configured = false;
+
+    this.eventHandlers = {};
   }
 
   configure() {
-    return promisify('configure')();
+    return promisify('configure')()
+    .then((...args) => {
+      this.configured = true;
+      return args;
+    });
   }
 
   // Auth
   listenForAuth(callback) {
-    return FirebaseHelper.listenForAuth(callback);
+    const sub = this.on('listenForAuth', callback);
+    FirebaseHelper.listenForAuth();
+    return sub;
   }
 
   unlistenForAuth() {
+    this.off('listenForAuth');
     return promisify('unlistenForAuth')();
   }
 
@@ -81,8 +91,24 @@ export default class Firestack {
     return storage();
   }
 
+  // other
   get ServerValue() {
     return db.ServerValue;
+  }
+
+  on(name, cb) {
+    if (!this.eventHandlers[name]) {
+      this.eventHandlers[name] = [];
+    }
+    const sub = NativeAppEventEmitter.addListener(name, cb);
+    this.eventHandlers[name].push(sub);
+    return sub;
+  }
+
+  off(name) {
+    if (this.eventHandlers[name]) {
+      this.eventHandlers.forEach(subscription => subscription.remove());
+    }
   }
 
 }

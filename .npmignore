@@ -7,5 +7,5 @@ tmp
 # Dependency directory
 node_modules
 
-Sample
+Example
 .travis.yml

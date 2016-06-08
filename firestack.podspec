@@ -28,20 +28,7 @@ Pod::Spec.new do |s|
     'Firebase/Database',
     'Firebase/Storage'
   ].each do |lib|
-    # s.subspec lib.split('/')[-1] do |ss|
       s.dependency lib
-      # ss.xcconfig = {
-      #   'FRAMEWORK_SEARCH_PATHS' => '"$(PODS_ROOT)/${lib}"',
-      #   # "FRAMEWORK_SEARCH_PATHS" => "$(PODS_ROOT)/#{lib}",
-      # }
-    # end
   end
-  # s.dependency 'React/Core'
-  # s.dependency 'Firebase'
-  # s.dependency 'Firebase/Core'
-  # s.dependency 'Firebase/Analytics'
-  # s.dependency 'Firebase/Auth'
-  # s.dependency 'Firebase/Database'
-  # s.dependency 'Firebase/Storage'
 
 end
