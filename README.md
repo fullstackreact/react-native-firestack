@@ -35,7 +35,21 @@ If you prefer not to use `rnpm`, we can manually link the package together with 
 1. In XCode, right click on `Libraries` and find the `Add Files to [project name]`.
 
 ![Add library to project](http://d.pr/i/2gEH.png)
-// ...
+
+2. Add the `node_modules/react-native-firestack/ios/Firestack.xcodeproj`
+
+![Firebase.xcodeproj in Libraries listing](http://d.pr/i/19ktP.png)
+
+3. In the project's "Build Settings" tab in your app's target, add `libFirestack.a` to the list of `Link Binary with Libraries`
+
+![Linking binaries](http://d.pr/i/1cHgs.png)
+
+4. Ensure that the `Build Settings` of the `Firestack.xcodeproj` project is ticked to _All_ and it's `Header Search Paths` include both of the following paths _and_ are set to _recursive_:
+
+  1. `$(SRCROOT)/../../react-native/React`
+  2. `$(SRCROOT)/../node_modules/react-native/React`
+
+![Recursive paths](http://d.pr/i/1hAr1.png)
 
 #### Cocoapods
 

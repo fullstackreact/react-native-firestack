@@ -10,18 +10,17 @@ Pod::Spec.new do |s|
   s.license         = package['license']
   s.author          = package['author']
   s.platform        = :ios, "7.0"
-  s.source          = { :git => package['repository']['url'], :tag => "#{s.version}" }
+  s.source          = { :git => package['repository']['url'], :tag => s.version }
   s.source_files    = 'ios/*.{h,m}'
   s.preserve_paths  = "**/*.js"
 
   s.xcconfig            = {
     'OTHER_LDFLAGS' => '$(inherited)'
   }
+  # s.dependency 'React'
   # s.libraries       = 'stdc++'
 
   [ 'Firebase/Core',
-    'Firebase',
-    'Firebase/Analytics',
     'Firebase/Auth',
     'Firebase/Database',
     'Firebase/Storage'

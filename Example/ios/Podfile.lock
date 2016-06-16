@@ -1,6 +1,4 @@
 PODS:
-  - Firebase (3.2.1):
-    - Firebase/Core (= 3.2.1)
   - Firebase/Analytics (3.2.1):
     - FirebaseAnalytics (= 3.2.0)
   - Firebase/Auth (3.2.1):
@@ -29,9 +27,7 @@ PODS:
   - FirebaseStorage (1.0.1):
     - FirebaseAnalytics (~> 3.2)
     - GoogleNetworkingUtilities (~> 1.2)
-  - Firestack (0.0.1):
-    - Firebase
-    - Firebase/Analytics
+  - Firestack (0.0.5):
     - Firebase/Auth
     - Firebase/Core
     - Firebase/Database
@@ -65,7 +61,7 @@ SPEC CHECKSUMS:
   FirebaseDatabase: 34301d11621a83546f39f670d256477ba6f7fcea
   FirebaseInstanceID: d014d574053a2fe84478f12f7bae96979e7051bb
   FirebaseStorage: e9c32a8d246c07eeefd78180c22736aa1b81e81b
-  Firestack: c853af055d14182628495bddbd54f0004dea9959
+  Firestack: 2d31d84a7e161e6f4dbf05edb7bfac531dd44726
   GoogleInterchangeUtilities: def8415a862effc67d549d5b5b0b9c7a2f97d4de
   GoogleNetworkingUtilities: 3e83269048cfb498dc7ec83ab36813360965c74f
   GoogleSymbolUtilities: 33117db1b5f290c6fbf259585e4885b4c84b98d7
