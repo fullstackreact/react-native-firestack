@@ -87,11 +87,136 @@ server.configure()
 
 Firestack is broken up into multiple parts, based upon the different API features that Firebase provides.
 
+All methods return a promise.
+
 ### Authentication
 
 Firestack handles authentication for us out of the box, both with email/password-based authentication and through oauth providers (with a separate library to handle oauth providers).
 
-Firebase gives us a reactive method for listening for authentication. That is we can set up a listener to listen for the different state
+#### listenForAuth()
+
+Firebase gives us a reactive method for listening for authentication. That is we can set up a listener to call a method when the user logs in and out. To set up the listener, call the `listenForAuth()` method:
+
+```javascript
+server.listenForAuth(function(evt) {
+  // evt is the authentication event
+  // it contains an `error` key for carrying the
+  // error message in case of an error
+  // and a `user` key upon successful authentication
+  if (!evt.authenticated) {
+    // There was an error or there is no user
+    console.error(evt.error)
+  } else {
+    // evt.user contains the user details
+    console.log('User details', evt.user);
+  }
+})
+.then(() => console.log('Listening for authentication changes'))
+```
+
+#### unlistenForAuth()
+
+We can remove this listener by calling the `unlistenForAuth()` method. This is important to release resources from our app when we don't need to hold on to the listener any longer.
+
+```javascript
+server.unlistenForAuth()
+```
+
+#### createUserWithEmail()
+
+We can create a user by calling the `createUserWithEmail()` function. The `createUserWithEmail()` accepts two parameters, an email and a password.
+
+```javascript
+server.createUserWithEmail('ari@fullstack.io', '123456')
+  .then((user) => {
+    console.log('user created', user)
+  })
+  .catch((err) => {
+    console.error('An error occurred', err);
+  })
+```
+
+#### signInWithEmail()
+
+To sign a user in with their email and password, use the `signInWithEmail()` function. It accepts two parameters, the user's email and password:
+
+```javascript
+server.signInWithEmail('ari@fullstack.io', '123456')
+  .then((user) => {
+    console.log('User successfully logged in', user)
+  })
+  .catch((err) => {
+    console.error('User signin error', err);
+  })
+```
+
+#### signInWithProvider()
+
+...
+
+#### signInWithProvider()
+
+...
+
+#### updateUserEmail()
+
+...
+
+#### updateUserProfile()
+
+...
+
+#### signOut()
+
+...
+
+#### getCurrentUser()
+
+...
+
+### Analytics
+
+#### logEventWithName()
+
+...
+
+### Storage
+
+#### setStorageUrl()
+
+...
+
+#### uploadFile()
+
+...
+
+#### storage attribute
+
+...
+
+### Realtime Database
+
+#### database attribute
+
+...
+
+### ServerValue
+
+Firebase provides some static values based upon the server. We can use the `ServerValue` constant to retrieve these. For instance, to grab the TIMESTAMP on the server, use the `TIMESTAMP` value:
+
+```javascript
+const timestamp = server.ServerValue.TIMESTAMP
+```
+
+### Events
+
+#### on()
+
+...
+
+#### off()
+
+...
 
 ## API Documentation
 

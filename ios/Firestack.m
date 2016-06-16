@@ -91,15 +91,18 @@ RCT_EXPORT_METHOD(listenForAuth)
         [self.bridge.eventDispatcher sendAppEventWithName:@"listenForAuth"
                                                      body:@{
                                                             @"eventName": @"user",
+                                                            @"authenticated": @(true),
                                                             @"user": userProps
                                                             }];
     } else {
+      // TODO: Update this with different error states
       NSDictionary *err = @{
                             @"error": @"No user logged in"
                             };
         [self.bridge.eventDispatcher sendAppEventWithName:@"listenForAuth"
                                                      body:@{
-                                                            @"eventName": @"No user",
+                                                            @"eventName": @"no_user",
+                                                            @"authenticated": @(false),
                                                             @"error": err
                                                             }];
     }
@@ -144,7 +147,7 @@ RCT_EXPORT_METHOD(createUserWithEmail:(NSString *)email
        callback(@[[NSNull null], userProps]);
      } else {
          NSDictionary *err = @{
-                               @"error": @"Signout error",
+                               @"error": @"createUserWithEmailError",
                                @"name": @([error code]),
                                @"description": [error description]
                                };
@@ -165,12 +168,71 @@ RCT_EXPORT_METHOD(signInWithEmail:(NSString *)email
                            callback(@[[NSNull null], userProps]);
                          } else {
                              NSDictionary *err =
-                                [self handleFirebaseError:@"Signin error"
+                                [self handleFirebaseError:@"signinError"
                                                     error:error
                                                  withUser:user];
                              callback(@[err]);
                          }
                        }];
+}
+
+RCT_EXPORT_METHOD(updateUserEmail:(NSString *)email
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRUser *user = [FIRAuth auth].currentUser;
+
+    [user updateEmail:email completion:^(NSError *_Nullable error) {
+        if (error) {
+            // An error happened.
+            NSDictionary *err =
+            [self handleFirebaseError:@"updateEmailError"
+                                error:error
+                             withUser:user];
+            callback(@[err]);
+        } else {
+            // Email updated.
+            NSDictionary *userProps = [self userPropsFromFIRUser:user];
+            callback(@[[NSNull null], userProps]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRUser *user = [FIRAuth auth].currentUser;
+    FIRUserProfileChangeRequest *changeRequest = [user profileChangeRequest];
+
+    NSMutableArray *allKeys = [[userProps allKeys] mutableCopy];
+    for (NSString *key in allKeys) {
+        // i.e. changeRequest.displayName = userProps[displayName];
+        @try {
+            if ([key isEqualToString:@"photoURL"]) {
+                // need to handle this differently
+            } else {
+                [changeRequest setValue:[userProps objectForKey:key] forKey:key];
+            }
+        }
+        @catch (NSException *exception) {
+            NSLog(@"Exception occurred while configuring: %@", exception);
+        }
+        @finally {
+            [changeRequest commitChangesWithCompletion:^(NSError *_Nullable error) {
+                if (error) {
+                    // An error happened.
+                    NSDictionary *err =
+                    [self handleFirebaseError:@"updateEmailError"
+                                        error:error
+                                     withUser:user];
+                    callback(@[err]);
+                } else {
+                    // Profile updated.
+                    NSDictionary *userProps = [self userPropsFromFIRUser:user];
+                    callback(@[[NSNull null], userProps]);
+                }
+            }];
+        }
+    }
 }
 
 #pragma mark - Analytics

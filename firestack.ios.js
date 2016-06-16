@@ -15,7 +15,8 @@ const promisify = fn => (...args) => {
   return new Promise((resolve, reject) => {
     const handler = (err, resp) => err ? reject(err) : resolve(resp);
     args.push(handler);
-    FirebaseHelper[fn].call(FirebaseHelper, ...args);
+    (typeof fn === 'function' ? fn : FirebaseHelper[fn])
+      .call(FirebaseHelper, ...args);
   });
 };
 
@@ -40,7 +41,7 @@ export default class Firestack {
   listenForAuth(callback) {
     const sub = this.on('listenForAuth', callback);
     FirebaseHelper.listenForAuth();
-    return sub;
+    return promisify(() => sub)(sub);
   }
 
   unlistenForAuth() {
@@ -48,16 +49,36 @@ export default class Firestack {
     return promisify('unlistenForAuth')();
   }
 
+  /**
+   * Create a user with the email/password functionality
+   * @param  {string} email    The user's email
+   * @param  {string} password The user's password
+   * @return {Promise}         A promise indicating the completion
+   */
   createUserWithEmail(email, password) {
     return promisify('createUserWithEmail')(email, password);
   }
 
+  /**
+   * Sign a user in with email/password
+   * @param  {string} email    The user's email
+   * @param  {string} password The user's password
+   * @return {Promise}         A promise that is resolved upon completion
+   */
   signInWithEmail(email, password) {
     return promisify('signInWithEmail')(email, password);
   }
 
   signInWithProvider(provider, authToken, authSecret) {
     return promisify('signInWithProvider')(provider, authToken, authSecret);
+  }
+
+  updateUserEmail(email) {
+    return promisify('updateUserEmail')(email);
+  }
+
+  updateUserProfile(obj) {
+    return promisify('updateUserProfile')(obj);
   }
 
   signOut() {
