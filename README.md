@@ -33,6 +33,8 @@ rnpm link
 If you prefer not to use `rnpm`, we can manually link the package together with the following steps, after `npm install`:
 
 1. In XCode, right click on `Libraries` and find the `Add Files to [project name]`.
+
+![Add library to project](http://d.pr/i/2gEH.png)
 // ...
 
 #### Cocoapods

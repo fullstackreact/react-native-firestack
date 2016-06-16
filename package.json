@@ -12,11 +12,6 @@
     "type": "git",
     "url": "git@github.com:fullstackreact/react-native-firestack.git"
   },
-  "files": [
-    "firestack.ios.js",
-    "firestack.android.js",
-    "ios/*"
-  ],
   "nativePackage": true,
   "scripts": {
     "compile": "babel --presets es2015,stage-0 -d . src/",
