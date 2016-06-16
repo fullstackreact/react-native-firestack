@@ -15,8 +15,9 @@
   "files": [
     "firestack.ios.js",
     "firestack.android.js",
-    "ios/*.{h,m}"
+    "ios/*"
   ],
+  "nativePackage": true,
   "scripts": {
     "compile": "babel --presets es2015,stage-0 -d . src/",
     "dev": "npm run compile -- --watch",

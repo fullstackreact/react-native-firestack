@@ -152,9 +152,7 @@ server.signInWithEmail('ari@fullstack.io', '123456')
 
 #### signInWithProvider()
 
-...
-
-#### signInWithProvider()
+We can use an external authentication provider, such as twitter/facebook for authentication. In order to use an external provider, we need to include another library.
 
 ...
 
