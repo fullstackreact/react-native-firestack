@@ -15,10 +15,8 @@ Pod::Spec.new do |s|
   s.preserve_paths  = "**/*.js"
 
   s.xcconfig            = {
-    # 'FRAMEWORK_SEARCH_PATHS' => '$(SRCROOT)/React $(SRCROOT)/Firebase/** $(SRCROOT)/**',
     'OTHER_LDFLAGS' => '$(inherited)'
   }
-  s.dependency 'React/Core'
   # s.libraries       = 'stdc++'
 
   [ 'Firebase/Core',
