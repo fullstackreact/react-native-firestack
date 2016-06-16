@@ -10,7 +10,7 @@
   "main": "firestack",
   "repository": {
     "type": "git",
-    "url": "https://github.com/fullstackreact/react-native-firestack.git"
+    "url": "git@github.com:fullstackreact/react-native-firestack.git"
   },
   "files": [
     "firestack.ios.js",

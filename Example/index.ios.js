@@ -118,15 +118,19 @@ class AuthorizedPage extends Component {
       timestamp: server.ServerValue.TIMESTAMP,
       name: 'mounted',
     });
+
+    this.ref = ref;
   }
 
   componentWillUnmount() {
-    const ref = server.database.ref('things');
+    const ref = this.ref || server.database.ref('things');
 
     ref.push({
       timestamp: server.ServerValue.TIMESTAMP,
       name: 'unmounted'
-    })
+    });
+
+    ref.orderByChild('timestamp').off('value');
   }
 
   render() {
