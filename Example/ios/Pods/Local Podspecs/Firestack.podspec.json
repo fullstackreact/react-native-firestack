@@ -3,24 +3,29 @@
   "version": "0.0.5",
   "homepage": "https://github.com/fullstackreact/react-native-firestack",
   "summary": "A Firebase v3 implementation for react-native",
-  "license": "ISC",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
   "authors": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "platforms": {
-    "ios": "7.0"
+    "ios": "8.0"
   },
   "source": {
-    "git": "https://github.com/fullstackreact/react-native-firestack.git"
+    "git": "https://github.com/fullstackreact/react-native-firestack.git",
+    "tag": "master"
   },
-  "source_files": "ios/*.{h,m}",
+  "source_files": "ios/**/*.{h,m}",
+  "public_header_files": "ios/**/*.h",
   "preserve_paths": "**/*.js",
-  "xcconfig": {
-    "OTHER_LDFLAGS": "$(inherited)"
-  },
+  "description": "Make it easy to work with the new Firebase and React-Native.\nCurrently, this is best installed through npm:\n\n    npm install --save react-native-firestack",
+  "social_media_url": "https://twitter.com/fullstackreact",
+  "frameworks": "UIKit",
   "dependencies": {
-    "React/Core": [
+    "Firebase/Core": [
 
     ],
-    "Firebase/Core": [
+    "Firebase/Analytics": [
 
     ],
     "Firebase/Auth": [
@@ -32,5 +37,10 @@
     "Firebase/Storage": [
 
     ]
-  }
+  },
+  "subspecs": [
+    {
+      "name": "Core"
+    }
+  ]
 }

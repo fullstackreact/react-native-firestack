@@ -1,0 +1,6 @@
+framework module Firestack {
+  umbrella header "Firestack-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -20,9 +20,9 @@
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		2F2C73F7378ED2F92B340512 /* libPods-Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 82CDB1ACA3A9B9C6C13600F7 /* libPods-Example.a */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
-		9A0A2F2B716A883151E7A203 /* libPods-ExampleTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9D0E8221D874C8A4CCF54387 /* libPods-ExampleTests.a */; };
+		877D656F147EFBB645F894C0 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4230D855A0391D3021B6CF83 /* Pods_Example.framework */; };
+		960C42ED65C459B073CD221E /* Pods_ExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE52362A411A8E30F2B19C22 /* Pods_ExampleTests.framework */; };
 		D909B3F81D077D0A00EFDE57 /* libFirestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D909B3F71D077D0A00EFDE57 /* libFirestack.a */; };
 		D9D999D21D07855800617546 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D9D999D11D07855800617546 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
@@ -129,10 +129,10 @@
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		2BFD4F5F822E33CF756ADABA /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
 		40899B89E7DBE2BF113569BA /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
+		4230D855A0391D3021B6CF83 /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
-		82CDB1ACA3A9B9C6C13600F7 /* libPods-Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
-		9D0E8221D874C8A4CCF54387 /* libPods-ExampleTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExampleTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE52362A411A8E30F2B19C22 /* Pods_ExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C48CE35AEEA49B059321B788 /* Pods-ExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleTests/Pods-ExampleTests.release.xcconfig"; sourceTree = "<group>"; };
 		CAB61D6B35DDE453EC6082C5 /* Pods-ExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleTests/Pods-ExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D909B3F71D077D0A00EFDE57 /* libFirestack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFirestack.a; path = "Pods/../build/Debug-iphoneos/Firestack/libFirestack.a"; sourceTree = "<group>"; };
@@ -144,7 +144,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9A0A2F2B716A883151E7A203 /* libPods-ExampleTests.a in Frameworks */,
+				960C42ED65C459B073CD221E /* Pods_ExampleTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,7 +152,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2F2C73F7378ED2F92B340512 /* libPods-Example.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
 				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
@@ -163,6 +162,7 @@
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				D909B3F81D077D0A00EFDE57 /* libFirestack.a in Frameworks */,
+				877D656F147EFBB645F894C0 /* Pods_Example.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,8 +325,8 @@
 			isa = PBXGroup;
 			children = (
 				D909B3F71D077D0A00EFDE57 /* libFirestack.a */,
-				82CDB1ACA3A9B9C6C13600F7 /* libPods-Example.a */,
-				9D0E8221D874C8A4CCF54387 /* libPods-ExampleTests.a */,
+				4230D855A0391D3021B6CF83 /* Pods_Example.framework */,
+				BE52362A411A8E30F2B19C22 /* Pods_ExampleTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
