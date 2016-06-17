@@ -23,7 +23,8 @@
     "compile": "babel --presets es2015,stage-0 -d . src/",
     "dev": "npm run compile -- --watch",
     "cocoapod:validate": "pod spec lint Firestack.podspec",
-    "test": "eslint firestack.ios.js"
+    "test": "eslint firestack.ios.js",
+    "postinstall": "./scripts/postinstall.sh"
   },
   "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "license": "ISC",
