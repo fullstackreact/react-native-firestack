@@ -14,9 +14,9 @@ Pod::Spec.new do |s|
   s.platform        = :ios, "8.0"
   s.source          = { :git => package['repository']['url'], :tag => 'master' }
   # s.source           = { :git => 'https://github.com/fullstackreact/react-native-firestack.git', :tag => s.version.to_s }
-  s.source_files    = 'ios/**/*.{h,m}'
-  s.public_header_files = 'ios/**/*.h'
-  s.preserve_paths  = "**/*.js"
+  s.source_files    = '**/*.{h,m}'
+  s.public_header_files = '**/*.h'
+  s.preserve_paths  = "../../**/*.js"
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?

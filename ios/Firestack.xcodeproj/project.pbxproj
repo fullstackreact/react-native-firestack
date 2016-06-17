@@ -22,7 +22,9 @@
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		877D656F147EFBB645F894C0 /* Pods_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4230D855A0391D3021B6CF83 /* Pods_Example.framework */; };
+		947C069A50F0C1C28D61AF83 /* Pods_Firestack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED05BDE3DC4413E7C41C4F9B /* Pods_Firestack.framework */; };
 		960C42ED65C459B073CD221E /* Pods_ExampleTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BE52362A411A8E30F2B19C22 /* Pods_ExampleTests.framework */; };
+		BF73DA583A3A043CA3682E6E /* Pods_FirestackTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9B298B01FF0E285894124D34 /* Pods_FirestackTests.framework */; };
 		D909B3F81D077D0A00EFDE57 /* libFirestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D909B3F71D077D0A00EFDE57 /* libFirestack.a */; };
 		D9D999D21D07855800617546 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = D9D999D11D07855800617546 /* GoogleService-Info.plist */; };
 /* End PBXBuildFile section */
@@ -114,12 +116,12 @@
 		00C302BB1ABCB91800DB3ED1 /* RCTImage.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTImage.xcodeproj; path = "../node_modules/react-native/Libraries/Image/RCTImage.xcodeproj"; sourceTree = "<group>"; };
 		00C302D31ABCB9D200DB3ED1 /* RCTNetwork.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTNetwork.xcodeproj; path = "../node_modules/react-native/Libraries/Network/RCTNetwork.xcodeproj"; sourceTree = "<group>"; };
 		00C302DF1ABCB9EE00DB3ED1 /* RCTVibration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTVibration.xcodeproj; path = "../node_modules/react-native/Libraries/Vibration/RCTVibration.xcodeproj"; sourceTree = "<group>"; };
-		00E356EE1AD99517003FC87E /* ExampleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExampleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* Firestack.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Firestack.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* ExampleTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ExampleTests.m; sourceTree = "<group>"; };
 		139105B61AF99BAD00B5F7CC /* RCTSettings.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTSettings.xcodeproj; path = "../node_modules/react-native/Libraries/Settings/RCTSettings.xcodeproj"; sourceTree = "<group>"; };
 		139FDEE61B06529A00C62182 /* RCTWebSocket.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTWebSocket.xcodeproj; path = "../node_modules/react-native/Libraries/WebSocket/RCTWebSocket.xcodeproj"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Firestack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Firestack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Example/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Example/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -128,15 +130,21 @@
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Example/main.m; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		2BFD4F5F822E33CF756ADABA /* Pods-Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-Example/Pods-Example.release.xcconfig"; sourceTree = "<group>"; };
+		385B7C4EE687A352AFF6A5AA /* Pods-FirestackTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FirestackTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-FirestackTests/Pods-FirestackTests.release.xcconfig"; sourceTree = "<group>"; };
 		40899B89E7DBE2BF113569BA /* Pods-Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Example/Pods-Example.debug.xcconfig"; sourceTree = "<group>"; };
 		4230D855A0391D3021B6CF83 /* Pods_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
+		98BB42329736EE1E77E98458 /* Pods-Firestack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Firestack.release.xcconfig"; path = "Pods/Target Support Files/Pods-Firestack/Pods-Firestack.release.xcconfig"; sourceTree = "<group>"; };
+		9B298B01FF0E285894124D34 /* Pods_FirestackTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_FirestackTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9B78413AC4DBD1F7B7EFE2A8 /* Pods-Firestack.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Firestack.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Firestack/Pods-Firestack.debug.xcconfig"; sourceTree = "<group>"; };
 		BE52362A411A8E30F2B19C22 /* Pods_ExampleTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_ExampleTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C48CE35AEEA49B059321B788 /* Pods-ExampleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleTests/Pods-ExampleTests.release.xcconfig"; sourceTree = "<group>"; };
+		C8F678CDB9815CE112E5C6D8 /* Pods-FirestackTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FirestackTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-FirestackTests/Pods-FirestackTests.debug.xcconfig"; sourceTree = "<group>"; };
 		CAB61D6B35DDE453EC6082C5 /* Pods-ExampleTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExampleTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-ExampleTests/Pods-ExampleTests.debug.xcconfig"; sourceTree = "<group>"; };
 		D909B3F71D077D0A00EFDE57 /* libFirestack.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libFirestack.a; path = "Pods/../build/Debug-iphoneos/Firestack/libFirestack.a"; sourceTree = "<group>"; };
 		D9D999D11D07855800617546 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../GoogleService-Info.plist"; sourceTree = "<group>"; };
+		ED05BDE3DC4413E7C41C4F9B /* Pods_Firestack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Firestack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -145,6 +153,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				960C42ED65C459B073CD221E /* Pods_ExampleTests.framework in Frameworks */,
+				BF73DA583A3A043CA3682E6E /* Pods_FirestackTests.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -163,6 +172,7 @@
 				139FDEF61B0652A700C62182 /* libRCTWebSocket.a in Frameworks */,
 				D909B3F81D077D0A00EFDE57 /* libFirestack.a in Frameworks */,
 				877D656F147EFBB645F894C0 /* Pods_Example.framework in Frameworks */,
+				947C069A50F0C1C28D61AF83 /* Pods_Firestack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,8 +325,8 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* Example.app */,
-				00E356EE1AD99517003FC87E /* ExampleTests.xctest */,
+				13B07F961A680F5B00A75B9A /* Firestack.app */,
+				00E356EE1AD99517003FC87E /* Firestack.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -327,6 +337,8 @@
 				D909B3F71D077D0A00EFDE57 /* libFirestack.a */,
 				4230D855A0391D3021B6CF83 /* Pods_Example.framework */,
 				BE52362A411A8E30F2B19C22 /* Pods_ExampleTests.framework */,
+				ED05BDE3DC4413E7C41C4F9B /* Pods_Firestack.framework */,
+				9B298B01FF0E285894124D34 /* Pods_FirestackTests.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -338,6 +350,10 @@
 				2BFD4F5F822E33CF756ADABA /* Pods-Example.release.xcconfig */,
 				CAB61D6B35DDE453EC6082C5 /* Pods-ExampleTests.debug.xcconfig */,
 				C48CE35AEEA49B059321B788 /* Pods-ExampleTests.release.xcconfig */,
+				9B78413AC4DBD1F7B7EFE2A8 /* Pods-Firestack.debug.xcconfig */,
+				98BB42329736EE1E77E98458 /* Pods-Firestack.release.xcconfig */,
+				C8F678CDB9815CE112E5C6D8 /* Pods-FirestackTests.debug.xcconfig */,
+				385B7C4EE687A352AFF6A5AA /* Pods-FirestackTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -345,9 +361,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* ExampleTests */ = {
+		00E356ED1AD99517003FC87E /* FirestackTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ExampleTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "FirestackTests" */;
 			buildPhases = (
 				92162ECAC4B9C856B60369AB /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -361,14 +377,14 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = ExampleTests;
+			name = FirestackTests;
 			productName = ExampleTests;
-			productReference = 00E356EE1AD99517003FC87E /* ExampleTests.xctest */;
+			productReference = 00E356EE1AD99517003FC87E /* Firestack.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* Example */ = {
+		13B07F861A680F5B00A75B9A /* Firestack */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Example" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Firestack" */;
 			buildPhases = (
 				FA625CA09766647D8D5B56B9 /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
@@ -382,9 +398,9 @@
 			);
 			dependencies = (
 			);
-			name = Example;
+			name = Firestack;
 			productName = "Hello World";
-			productReference = 13B07F961A680F5B00A75B9A /* Example.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Firestack.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -402,7 +418,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Example" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Firestack" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -457,8 +473,8 @@
 			);
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* Example */,
-				00E356ED1AD99517003FC87E /* ExampleTests */,
+				13B07F861A680F5B00A75B9A /* Firestack */,
+				00E356ED1AD99517003FC87E /* FirestackTests */,
 			);
 		};
 /* End PBXProject section */
@@ -583,7 +599,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExampleTests/Pods-ExampleTests-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FirestackTests/Pods-FirestackTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		2CC765AFD429A0191FB112AD /* [CP] Embed Pods Frameworks */ = {
@@ -598,7 +614,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Example/Pods-Example-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Firestack/Pods-Firestack-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		63FF968567A25A4CFA1EBE72 /* [CP] Embed Pods Frameworks */ = {
@@ -613,7 +629,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-ExampleTests/Pods-ExampleTests-frameworks.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-FirestackTests/Pods-FirestackTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		92162ECAC4B9C856B60369AB /* [CP] Check Pods Manifest.lock */ = {
@@ -643,7 +659,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Example/Pods-Example-resources.sh\"\n";
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Firestack/Pods-Firestack-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		FA625CA09766647D8D5B56B9 /* [CP] Check Pods Manifest.lock */ = {
@@ -686,7 +702,7 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* Example */;
+			target = 13B07F861A680F5B00A75B9A /* Firestack */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -706,7 +722,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CAB61D6B35DDE453EC6082C5 /* Pods-ExampleTests.debug.xcconfig */;
+			baseConfigurationReference = C8F678CDB9815CE112E5C6D8 /* Pods-FirestackTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -716,28 +732,28 @@
 				INFOPLIST_FILE = ExampleTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Example.app/Example";
+				PRODUCT_NAME = Firestack;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Firestack.app/Firestack";
 			};
 			name = Debug;
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C48CE35AEEA49B059321B788 /* Pods-ExampleTests.release.xcconfig */;
+			baseConfigurationReference = 385B7C4EE687A352AFF6A5AA /* Pods-FirestackTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
 				INFOPLIST_FILE = ExampleTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Example.app/Example";
+				PRODUCT_NAME = Firestack;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Firestack.app/Firestack";
 			};
 			name = Release;
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 40899B89E7DBE2BF113569BA /* Pods-Example.debug.xcconfig */;
+			baseConfigurationReference = 9B78413AC4DBD1F7B7EFE2A8 /* Pods-Firestack.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				DEAD_CODE_STRIPPING = NO;
@@ -757,13 +773,13 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_NAME = Example;
+				PRODUCT_NAME = Firestack;
 			};
 			name = Debug;
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2BFD4F5F822E33CF756ADABA /* Pods-Example.release.xcconfig */;
+			baseConfigurationReference = 98BB42329736EE1E77E98458 /* Pods-Firestack.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				HEADER_SEARCH_PATHS = (
@@ -782,7 +798,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_NAME = Example;
+				PRODUCT_NAME = Firestack;
 			};
 			name = Release;
 		};
@@ -875,7 +891,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "ExampleTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "FirestackTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -884,7 +900,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Example" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Firestack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -893,7 +909,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Example" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Firestack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,

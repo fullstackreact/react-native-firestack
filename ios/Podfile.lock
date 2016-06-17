@@ -62,12 +62,12 @@ SPEC CHECKSUMS:
   FirebaseDatabase: 34301d11621a83546f39f670d256477ba6f7fcea
   FirebaseInstanceID: d014d574053a2fe84478f12f7bae96979e7051bb
   FirebaseStorage: e9c32a8d246c07eeefd78180c22736aa1b81e81b
-  Firestack: 00e4c8fa5b9fd75d940431b70cc9e8ff831d9071
+  Firestack: 2ffc94bf455933263f9d1b5945e810f6771c7597
   GoogleInterchangeUtilities: def8415a862effc67d549d5b5b0b9c7a2f97d4de
   GoogleNetworkingUtilities: 3e83269048cfb498dc7ec83ab36813360965c74f
   GoogleSymbolUtilities: 33117db1b5f290c6fbf259585e4885b4c84b98d7
   GoogleUtilities: 56c5ac05b7aa5dc417a1bb85221a9516e04d7032
 
-PODFILE CHECKSUM: 885fb2df580c22729de52927858f88dff06caa05
+PODFILE CHECKSUM: 66ab9a553ba8531719a344a4bf8fcd07005aa5c2
 
 COCOAPODS: 1.0.1

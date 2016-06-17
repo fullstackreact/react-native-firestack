@@ -15,9 +15,9 @@
     "git": "https://github.com/fullstackreact/react-native-firestack.git",
     "tag": "master"
   },
-  "source_files": "ios/**/*.{h,m}",
-  "public_header_files": "ios/**/*.h",
-  "preserve_paths": "**/*.js",
+  "source_files": "**/*.{h,m}",
+  "public_header_files": "**/*.h",
+  "preserve_paths": "../../**/*.js",
   "description": "Make it easy to work with the new Firebase and React-Native.\nCurrently, this is best installed through npm:\n\n    npm install --save react-native-firestack",
   "social_media_url": "https://twitter.com/fullstackreact",
   "frameworks": "UIKit",
