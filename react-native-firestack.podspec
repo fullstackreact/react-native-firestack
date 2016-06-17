@@ -1,15 +1,21 @@
-#
-# Be sure to run `pod lib lint react-native-firestack.podspec' to ensure this is a
-# valid spec before submitting.
-#
-# Any lines starting with a # are optional, but their use is encouraged
-# To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
-#
+require 'json'
+package = JSON.parse(File.read('package.json'))
 
 Pod::Spec.new do |s|
+
   s.name             = 'react-native-firestack'
-  s.version          = '0.1.0'
-  s.summary          = 'A short description of react-native-firestack.'
+  # s.name            = 'Firestack' #package['name']
+  s.version         = package['version']
+  s.homepage        = "https://github.com/fullstackreact/react-native-firestack"
+  s.summary         = "A Firebase v3 implementation for react-native"
+  # s.license         = { :type => package['license'], :file => 'LICENSE' },
+  s.license          = { :type => 'MIT', :file => 'LICENSE' }
+  s.author          = package['author']
+  s.platform        = :ios, "8.0"
+  s.source          = { :git => package['repository']['url'], :tag => 'master' }
+  # s.source           = { :git => 'https://github.com/fullstackreact/react-native-firestack.git', :tag => s.version.to_s }
+  s.source_files    = 'ios/Classes/**/*.{h,m}'
+  s.preserve_paths  = "**/*.js"
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,25 +24,42 @@ Pod::Spec.new do |s|
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
+Make it easy to work with the new Firebase and React-Native.
+Currently, this is best installed through npm:
+
+    npm install --save react-native-firestack
                        DESC
 
-  s.homepage         = 'https://github.com/<GITHUB_USERNAME>/react-native-firestack'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
-  s.license          = { :type => 'MIT', :file => 'LICENSE' }
-  s.author           = { 'Ari Lerner' => 'arilerner@mac.com' }
-  s.source           = { :git => 'https://github.com/<GITHUB_USERNAME>/react-native-firestack.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
 
+  s.social_media_url = 'https://twitter.com/fullstackreact'
   s.ios.deployment_target = '8.0'
 
-  s.source_files = 'react-native-firestack/Classes/**/*'
-  
+  # s.source_files = 'ios/Classes/**/*'
+
   # s.resource_bundles = {
   #   'react-native-firestack' => ['react-native-firestack/Assets/*.png']
   # }
 
-  # s.public_header_files = 'Pod/Classes/**/*.h'
-  # s.frameworks = 'UIKit', 'MapKit'
+  s.public_header_files = 'ios/Classes/**/*.h'
+  s.frameworks = 'UIKit'
   # s.dependency 'AFNetworking', '~> 2.3'
+  s.dependency 'React/Core'
+  # s.libraries       = 'stdc++'
+
+  s.subspec 'Firebase' do |ss|
+    [ 'Firebase/Core',
+      'Firebase/Analytics',
+      'Firebase/Auth',
+      'Firebase/Database',
+      'Firebase/Storage'
+    ].each do |lib|
+      ss.dependency lib
+    end
+  end
+
+  s.subspec 'Core' do |ss|
+    ## Don't install Firebase, i.e.:
+    # pod 'react-native-firestack/Core'
+  end
 end

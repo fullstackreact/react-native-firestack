@@ -1,7 +1,9 @@
-# OS X
+# OSX
+#
 .DS_Store
 
 # Xcode
+#
 build/
 *.pbxuser
 !default.pbxuser
@@ -11,23 +13,33 @@ build/
 !default.mode2v3
 *.perspectivev3
 !default.perspectivev3
-xcuserdata/
+xcuserdata
 *.xccheckout
-profile
 *.moved-aside
 DerivedData
 *.hmap
 *.ipa
+*.xcuserstate
+project.xcworkspace
 
-# Bundler
-.bundle
-
-Carthage
-# We recommend against adding the Pods directory to your .gitignore. However
-# you should judge for yourself, the pros and cons are mentioned at:
-# http://guides.cocoapods.org/using/using-cocoapods.html#should-i-ignore-the-pods-directory-in-source-control
-# 
-# Note: if you ignore the Pods directory, make sure to uncomment
-# `pod install` in .travis.yml
+# Android/IJ
 #
-# Pods/
+.idea
+.gradle
+local.properties
+
+# node.js
+#
+node_modules/
+npm-debug.log
+
+# BUCK
+buck-out/
+\.buckd/
+android/app/libs
+android/keystores/debug.keystore
+Sample/ios/Pods
+ios/Example/ios/Pods
+ios/Example/GoogleService-Info.plist
+ios/Example/config.js
+ios/Example/Pods
