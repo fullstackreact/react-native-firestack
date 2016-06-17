@@ -1,0 +1,13 @@
+use_frameworks!
+
+target 'react-native-firestack_Example' do
+  # pod 'React', :path => '../node_modules/react-native/'
+  pod 'react-native-firestack', :path => '../'
+
+  # target 'react-native-firestack_Tests' do
+  #   inherit! :search_paths
+  #
+  #   # pod 'Specta'
+  #   # pod 'Expecta'
+  # end
+end

@@ -35,6 +35,18 @@ Currently, this is best installed through npm:
   s.social_media_url = 'https://twitter.com/fullstackreact'
   s.ios.deployment_target = '8.0'
 
+  s.pod_target_xcconfig = {
+  # 'ENABLE_BITCODE'         => 'NO',
+  # 'CLANG_MODULES_AUTOLINK'
+  'HEADER_SEARCH_PATHS' => [
+    '$(inherited)',
+    '$(SRCROOT)/../react/**',
+    '$(SRCROOT)/../react-native/React/**',
+    '$(PODS_ROOT)/**'
+  ].join(' '),
+  'OTHER_LDFLAGS'          => '$(inherited) -ObjC' # -undefined dynamic_lookup
+}
+
   # s.source_files = 'ios/Classes/**/*'
 
   # s.resource_bundles = {
@@ -44,18 +56,16 @@ Currently, this is best installed through npm:
   s.public_header_files = 'ios/Classes/**/*.h'
   s.frameworks = 'UIKit'
   # s.dependency 'AFNetworking', '~> 2.3'
-  s.dependency 'React/Core'
+  # s.dependency 'React/Core'
   # s.libraries       = 'stdc++'
 
-  s.subspec 'Firebase' do |ss|
-    [ 'Firebase/Core',
-      'Firebase/Analytics',
-      'Firebase/Auth',
-      'Firebase/Database',
-      'Firebase/Storage'
-    ].each do |lib|
-      ss.dependency lib
-    end
+  [ 'Firebase/Core',
+    'Firebase/Analytics',
+    'Firebase/Auth',
+    'Firebase/Database',
+    'Firebase/Storage'
+  ].each do |lib|
+    s.dependency lib
   end
 
   s.subspec 'Core' do |ss|
