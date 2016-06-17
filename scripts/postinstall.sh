@@ -3,8 +3,9 @@
 # HACK
 # https://github.com/facebook/react-native/issues/637
 
-cp -R Example/ios/Pods/ .
-mv Pods.xcodeproj Firestack.xcodeproj
+DEST=ios/
+cp -R Example/ios/Pods/ $DEST
+mv $DEST/Pods.xcodeproj $DEST/Firestack.xcodeproj
 
 # echo <<-EOE
 # # Uncomment this line to define a global platform for your project
