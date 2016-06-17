@@ -1,1 +1,0 @@
-../../../../FirebaseAuth/Frameworks/FirebaseAuth.framework/Headers/FIRGitHubAuthProvider.h

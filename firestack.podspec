@@ -44,18 +44,16 @@ Currently, this is best installed through npm:
 
   s.frameworks = 'UIKit'
   # s.dependency 'AFNetworking', '~> 2.3'
-  s.dependency 'React/Core'
+  # s.dependency 'React/Core'
   # s.libraries       = 'stdc++'
 
-  s.subspec 'Firebase' do |ss|
     [ 'Firebase/Core',
       'Firebase/Analytics',
       'Firebase/Auth',
       'Firebase/Database',
       'Firebase/Storage'
     ].each do |lib|
-      ss.dependency lib
-    end
+      s.dependency lib
   end
 
   s.subspec 'Core' do |ss|

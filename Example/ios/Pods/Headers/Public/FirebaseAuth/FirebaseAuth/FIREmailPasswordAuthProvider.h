@@ -1,1 +1,0 @@
-../../../../FirebaseAuth/Frameworks/FirebaseAuth.framework/Headers/FIREmailPasswordAuthProvider.h

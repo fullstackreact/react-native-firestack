@@ -28,9 +28,6 @@
   "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "license": "ISC",
   "description": "A firebase v3 adapter",
-  "dependencies": {
-    "react-native": "^0.27.2"
-  },
   "peerDependencies": {
     "firebase": "3.x.x",
     "react": "*",
