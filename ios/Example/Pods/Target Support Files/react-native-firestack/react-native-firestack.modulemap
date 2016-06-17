@@ -1,0 +1,6 @@
+framework module react_native_firestack {
+  umbrella header "react-native-firestack-umbrella.h"
+
+  export *
+  module * { export * }
+}

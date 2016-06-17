@@ -1,0 +1,39 @@
+{
+  "name": "react-native-firestack",
+  "version": "0.0.5",
+  "keywords": [
+    "react-native",
+    "react",
+    "native",
+    "firebase"
+  ],
+  "main": "firestack",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fullstackreact/react-native-firestack.git"
+  },
+  "nativePackage": true,
+  "scripts": {
+    "compile": "babel --presets es2015,stage-0 -d . src/",
+    "dev": "npm run compile -- --watch",
+    "cocoapod:validate": "pod spec lint Firestack.podspec",
+    "test": "eslint firestack.ios.js"
+  },
+  "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
+  "license": "ISC",
+  "description": "A firebase v3 adapter",
+  "peerDependencies": {
+    "firebase": "3.x.x",
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "babel": "^6.5.2",
+    "babel-cli": "^6.10.1",
+    "babel-eslint": "^6.0.4",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "eslint": "^2.9.0",
+    "eslint-plugin-react": "^5.0.1"
+  }
+}

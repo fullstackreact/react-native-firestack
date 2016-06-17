@@ -39,7 +39,5 @@ buck-out/
 android/app/libs
 android/keystores/debug.keystore
 Sample/ios/Pods
-ios/Example/ios/Pods
 ios/Example/GoogleService-Info.plist
 ios/Example/config.js
-ios/Example/Pods
