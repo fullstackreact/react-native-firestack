@@ -35,15 +35,14 @@ RCT_EXPORT_METHOD(signInWithProvider:
                   secret:(NSString *)authTokenSecret
                   callback:(RCTResponseSenderBlock)callback)
 {
-    FIRAuthCredential *credential;
-    if ([provider  isEqual: @"twitter"]) {
-        credential = [FIRTwitterAuthProvider credentialWithToken:authToken
-                                         secret:authTokenSecret];
-    } else {
+    FIRAuthCredential *credential = [self getCredentialForProvider:provider
+                                                             token:authToken
+                                                            secret:authTokenSecret];
+    if (credential == nil) {
       NSDictionary *err = @{
                             @"error": @"Unhandled provider"
                             };
-      callback(@[err]);
+      return callback(@[err]);
     }
 
     [[FIRAuth auth] signInWithCredential:credential
@@ -197,6 +196,99 @@ RCT_EXPORT_METHOD(updateUserEmail:(NSString *)email
     }];
 }
 
+RCT_EXPORT_METHOD(updateUserPassword:(NSString *)newPassword
+                  callback:(RCTResponseSenderBlock) callback)
+{
+
+    FIRUser *user = [FIRAuth auth].currentUser;
+
+    [user updatePassword:newPassword completion:^(NSError *_Nullable error) {
+        if (error) {
+            // An error happened.
+            NSDictionary *err =
+            [self handleFirebaseError:@"updateUserPasswordError"
+                                error:error
+                             withUser:user];
+            callback(@[err]);
+        } else {
+            // Email updated.
+            NSDictionary *userProps = [self userPropsFromFIRUser:user];
+            callback(@[[NSNull null], userProps]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(sendPasswordResetWithEmail:(NSString *)email
+                  callback:(RCTResponseSenderBlock) callback)
+{
+
+    [[FIRAuth auth] sendPasswordResetWithEmail:email
+                                    completion:^(NSError *_Nullable error) {
+        if (error) {
+            // An error happened.
+            NSDictionary *err = @{
+                                  @"error": @"sendPasswordResetWithEmailError",
+                                  @"description": error.localizedDescription
+                                  };
+            callback(@[err]);
+        } else {
+            // Email updated.
+            callback(@[[NSNull null], @{
+                           @"result": @(true)
+                           }]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(deleteUser:(RCTResponseSenderBlock) callback)
+{
+    FIRUser *user = [FIRAuth auth].currentUser;
+
+    [user deleteWithCompletion:^(NSError *_Nullable error) {
+        if (error) {
+            NSDictionary *err =
+            [self handleFirebaseError:@"deleteUserError"
+                                error:error
+                             withUser:user];
+            callback(@[err]);
+        } else {
+            callback(@[[NSNull null], @{@"result": @(true)}]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(reauthenticateWithCredentialForProvider:
+                  (NSString *)provider
+                  token:(NSString *)authToken
+                  secret:(NSString *)authTokenSecret
+                  callback:(RCTResponseSenderBlock)callback)
+{
+    FIRAuthCredential *credential = [self getCredentialForProvider:provider
+                                                             token:authToken
+                                                            secret:authTokenSecret];
+    if (credential == nil) {
+        NSDictionary *err = @{
+                              @"error": @"Unhandled provider"
+                              };
+        return callback(@[err]);
+    }
+
+    FIRUser *user = [FIRAuth auth].currentUser;
+
+    [user reauthenticateWithCredential:credential completion:^(NSError *_Nullable error) {
+        if (error) {
+            NSDictionary *err =
+            [self handleFirebaseError:@"reauthenticateWithCredentialForProviderError"
+                                error:error
+                             withUser:user];
+            callback(@[err]);
+        } else {
+            callback(@[[NSNull null], @{@"result": @(true)}]);
+        }
+    }];
+}
+
+
 RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
                   callback:(RCTResponseSenderBlock) callback)
 {
@@ -208,7 +300,8 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
         // i.e. changeRequest.displayName = userProps[displayName];
         @try {
             if ([key isEqualToString:@"photoURL"]) {
-                // need to handle this differently
+                NSURL *url = [NSURL URLWithString:[userProps valueForKey:key]];
+                [changeRequest setValue:url forKey:key];
             } else {
                 [changeRequest setValue:[userProps objectForKey:key] forKey:key];
             }
@@ -414,6 +507,20 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
   }
 
   return userProps;
+}
+
+- (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
+                  token:(NSString *)authToken
+                  secret:(NSString *)authTokenSecret
+{
+    FIRAuthCredential *credential;
+    if ([provider  isEqual: @"twitter"]) {
+        credential = [FIRTwitterAuthProvider credentialWithToken:authToken
+                                                          secret:authTokenSecret];
+    } else {
+        NSLog(@"Provider not yet handled");
+    }
+    return credential;
 }
 
 @end

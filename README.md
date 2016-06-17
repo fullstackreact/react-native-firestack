@@ -172,47 +172,174 @@ We can use an external authentication provider, such as twitter/facebook for aut
 
 ...
 
-#### updateUserEmail()
+### reauthenticateWithCredentialForProvider()
 
 ...
+
+#### updateUserEmail()
+
+We can update the current user's email by using the command: `updateUserEmail()`. It accepts a single argument: the user's new email:
+
+```javascript
+server.updateUserEmail('ari+rocks@fullstack.io')
+  .then((res) => console.log('Updated user email'))
+  .catch(err => console.error('There was an error updating user email'))
+```
+
+#### updateUserPassword()
+
+We can update the current user's password using the `updateUserPassword()` method. It accepts a single parameter: the new password for the current user
+
+```javascript
+server.updateUserPassword('somethingReallyS3cr3t733t')
+  .then(res => console.log('Updated user password'))
+  .catch(err => console.error('There was an error updating your password'))
+```
+
+### sendPasswordResetWithEmail()
+
+To send a password reset for a user based upon their email, we can call the `sendPasswordResetWithEmail()` method. It accepts a single parameter: the email of the user to send a reset email.
+
+```javascript
+server.sendPasswordResetWithEmail('ari+rocks@fullstack.io')
+  .then(res => console.log('Check your inbox for further instructions'))
+  .catch(err => console.error('There was an error :('))
+```
 
 #### updateUserProfile()
 
-...
+To update the current user's profile, we can call the `updateUserProfile()` method.
+
+It accepts a single parameter:
+
+* object which contains updated key/values for the user's profile. Possible keys are listed [here](https://firebase.google.com/docs/auth/ios/manage-users#update_a_users_profile).
+
+```javascript
+server.updateUserProfile({
+  displayName: 'Ari Lerner'
+})
+  .then(res => console.log('Your profile has been updated'))
+  .catch(err => console.error('There was an error :('))
+```
+
+#### deleteUser()
+
+It's possible to delete a user completely from your account on Firebase. Calling the `deleteUser()` method will take care of this for you.
+
+```javascript
+server.deleteUser()
+.then(res => console.log('Sad to see you go'))
+.catch(err => console.error('There was an error - Now you are trapped!'))
+```
 
 #### signOut()
 
-...
+To sign the current user out, use the `signOut()` method. It accepts no parameters
+
+```javascript
+server.signOut()
+.then(res => console.log('You have been signed out'))
+.catch(err => console.error('Uh oh... something weird happened'))
+```
 
 #### getCurrentUser()
 
-...
+Although you _can_ get the current user using the `getCurrentUser()` method, it's better to use this from within the callback function provided by `listenForAuth()`. However, if you need to get the current user, call the `getCurrentUser()` method:
+
+```javascript
+server.getCurrentUser()
+.then(user => console.log('The currently logged in user', user))
+.catch(err => console.error('An error occurred'))
+```
 
 ### Analytics
 
+Wouldn't it be nice to send analytics about your app usage from your users? Well, you totally can! The Firebase analytics console is incredibly useful and Firestack has a method for interacting with it. You can send any event with contextual information, which automatically includes the currently logged in user using the `logEventWithName()` method. It accepts two parameters: the name of the event and an object containing any contextual information. The values should be serializable (i.e. no complex instance objects).
+
 #### logEventWithName()
 
-...
+```javascript
+server.logEventWithName("launch", {
+  'screen': 'Main screen'
+})
+.then(res => console.log('Sent event named launch'))
+.catch(err => console.error('You should never end up here'));
+```
 
 ### Storage
 
+Firebase's integration with the Google platform expanded it's features to include hosting user-generated files, like photos. Firestack provides a thin layer to handle uploading files to Firebase's storage service.
+
 #### setStorageUrl()
 
-...
+In order to store anything on Firebase, we need to set the storage url provided by Firebase. This can be set by using the `setStorageUrl()` method. Your storageUrl can be found on the firebase console.
+
+![Storage url](http://d.pr/i/1lKjQ.png)
+
+The `setStorageUrl()` method accepts a single parameter: your root storage url.
+
+```javascript
+server.setStorageUrl(`gs://${config.firebase.storageBucket}`)
+.then(() => console.log('The storage url has been set'))
+.catch(() => console.error('This is weird: something happened...'))
+```
 
 #### uploadFile()
 
-...
+We can upload a file using the `uploadFile()` method. Using the `uploadFile()` method, we can set the name of the destination file, the path where we want to store it, as well as any metadata along with the file.
+
+```javascript
+server.uploadFile(`photos/${auth.user.uid}/${filename}`, path, {
+  contentType: 'image/jpeg',
+  contentEncoding: 'base64',
+})
+.then((res) => console.log('The file has been uploaded'))
+.catch(err => console.error('There was an error uploading the file', err))
+```
+
+To upload camera photos, we can combine this method with the `react-native-camera` plugin, for instance:
+
+```javascript
+this.camera.capture()
+.then(({path}) => {
+  server.uploadFile(`photos/${auth.user.uid}/${filename}`, path, {
+    contentType: 'image/jpeg',
+    contentEncoding: 'base64',
+  })
+})
+.catch(err => console.error(err));
+```
 
 #### storage attribute
 
-...
+To retrieve a stored file, we can get the url to download it from using the `storage` attribute. This method allows us to call right through to the native JavaScript object provided by the Firebase library:
+
+```javascript
+server.storage.ref(photo.fullPath)
+.getDownloadURL()
+  .then(url => {
+    // url contains the download url
+  }).catch(err => {
+    console.error('Error downloading photo', err);
+  })
+```
 
 ### Realtime Database
 
 #### database attribute
 
-...
+The native Firebase JavaScript library provides a featureful realtime database that works out of the box. Firestack provides an attribute to interact with the database without needing to configure the JS library.
+
+```javascript
+server.storage
+      .ref(LIST_KEY)
+      .orderByChild('timestamp')
+      .on('value', snapshot => {
+        if (snapshot.val()) {
+          console.log('The list was updated');
+        }
+      });
+```
 
 ### ServerValue
 
@@ -226,14 +353,19 @@ const timestamp = server.ServerValue.TIMESTAMP
 
 #### on()
 
-...
+We can listen to arbitrary events fired by the Firebase library using the `on()` method. The `on()` method accepts a name and a function callback:
+
+```javascript
+server.on('listenForAuth', (evt) => console.log('Got an event'));
+```
 
 #### off()
 
-...
+To unsubscribe to events fired by Firebase, we can call the `off()` method with the name of the event we want to unsubscribe.
 
-## API Documentation
-
+```javascript
+server.off('listenForAuth');
+```
 
 
 ## TODO
