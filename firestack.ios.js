@@ -110,7 +110,7 @@ export default class Firestack {
    * @return {Promise}
    */
   deleteUser() {
-    return promisify('deleteUser')()
+    return promisify('deleteUser')();
   }
 
   /**
@@ -178,7 +178,7 @@ export default class Firestack {
 
   /**
    * The native storage object provided by Firebase
-   * @return {instance} 
+   * @return {instance}
    */
   get storage() {
     return storage();
