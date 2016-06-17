@@ -1,0 +1,36 @@
+{
+  "name": "Firestack",
+  "version": "0.0.5",
+  "homepage": "https://github.com/fullstackreact/react-native-firestack",
+  "summary": "A Firebase v3 implementation for react-native",
+  "license": "ISC",
+  "authors": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
+  "platforms": {
+    "ios": "7.0"
+  },
+  "source": {
+    "git": "https://github.com/fullstackreact/react-native-firestack.git"
+  },
+  "source_files": "ios/*.{h,m}",
+  "preserve_paths": "**/*.js",
+  "xcconfig": {
+    "OTHER_LDFLAGS": "$(inherited)"
+  },
+  "dependencies": {
+    "React/Core": [
+
+    ],
+    "Firebase/Core": [
+
+    ],
+    "Firebase/Auth": [
+
+    ],
+    "Firebase/Database": [
+
+    ],
+    "Firebase/Storage": [
+
+    ]
+  }
+}

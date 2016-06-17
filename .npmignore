@@ -7,5 +7,7 @@ tmp
 # Dependency directory
 node_modules
 
-Example
+Example/GoogleService-Info.plist
+Example/config.js
+
 .travis.yml
