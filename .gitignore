@@ -38,7 +38,6 @@ buck-out/
 \.buckd/
 android/app/libs
 android/keystores/debug.keystore
-Sample/ios/Pods
 Example/GoogleService-Info.plist
 Example/config.js
 Example/node_modules

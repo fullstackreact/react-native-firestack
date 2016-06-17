@@ -7,7 +7,7 @@ target 'Example' do
 
   # Pods for Example
   # pod 'React', :path => '../node_modules/react-native'
-  pod 'Firestack', :path => '../..'
+  pod 'Firestack', :path => './Firestack/'
 
   target 'ExampleTests' do
     inherit! :search_paths

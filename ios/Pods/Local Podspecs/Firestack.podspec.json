@@ -5,7 +5,7 @@
   "summary": "A Firebase v3 implementation for react-native",
   "license": {
     "type": "MIT",
-    "file": "LICENSE"
+    "file": "../../LICENSE"
   },
   "authors": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "platforms": {
