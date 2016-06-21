@@ -17,6 +17,7 @@
     "compile": "babel --presets es2015,stage-0 -d . src/",
     "dev": "npm run compile -- --watch",
     "cocoapod:validate": "cd ios && pod lib lint --subspec=Lib --allow-warnings",
+    "pod:install": "cd ios && pod install",
     "test": "eslint firestack.ios.js",
     "postinstall": "./scripts/postinstall.sh"
   },
