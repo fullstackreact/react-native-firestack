@@ -1,9 +1,8 @@
 {
   "name": "react-native-firestack",
-  "version": "0.0.2",
+  "version": "0.0.1",
   "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "description": "A firebase v3 adapter",
-  "private": true,
   "main": "firestack",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
