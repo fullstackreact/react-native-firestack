@@ -1,20 +1,10 @@
 # Uncomment this line to define a global platform for your project
-# platform :ios, '9.0'
+platform :ios, '8.0'
 
 target 'Firestack' do
-  # Uncomment this line if you're using Swift or would like to use dynamic frameworks
   # use_frameworks!
 
-  # Pods for Firestack
-  # pod 'React', :path => '../node_modules/react-native'
-  # pod 'Firestack', :path => '.'
-  [ 'Firebase/Core',
-    'Firebase/Analytics',
-    'Firebase/Auth',
-    'Firebase/Database',
-    'Firebase/Storage'
-  ].each do |lib|
-    pod lib
-  end
+  pod 'React', :path => '../node_modules/react-native'
+  pod 'react-native-firestack', :path => '..'
 
 end

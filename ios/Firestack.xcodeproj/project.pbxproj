@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		D950369E1D19C77400F7094D /* Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* Firestack.m */; };
 		D9FF4BF31D19F5FF00238046 /* libPods-Firestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D95036B81D19C90300F7094D /* libPods-Firestack.a */; };
-		D9FF4BF51D19F61B00238046 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9FF4BF41D19F61B00238046 /* libReact.a */; };
+		D9FF4C211D19F96C00238046 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D9FF4C201D19F96C00238046 /* libReact.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -41,8 +41,7 @@
 		D950369C1D19C77400F7094D /* Firestack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Firestack.h; path = Firestack/Firestack.h; sourceTree = "<group>"; };
 		D950369D1D19C77400F7094D /* Firestack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Firestack.m; path = Firestack/Firestack.m; sourceTree = "<group>"; };
 		D95036B31D19C90300F7094D /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
-		D9FF4BEE1D19F3F500238046 /* libReact.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libReact.a; path = "../../../React/build/Debug-iphoneos/libReact.a"; sourceTree = "<group>"; };
-		D9FF4BF41D19F61B00238046 /* libReact.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libReact.a; path = "../../../React/build/Debug-iphoneos/libReact.a"; sourceTree = "<group>"; };
+		D9FF4C201D19F96C00238046 /* libReact.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libReact.a; path = "../../../React/build/Debug-iphoneos/libReact.a"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,8 +49,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D9FF4BF51D19F61B00238046 /* libReact.a in Frameworks */,
 				D9FF4BF31D19F5FF00238046 /* libPods-Firestack.a in Frameworks */,
+				D9FF4C211D19F96C00238046 /* libReact.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -69,8 +68,7 @@
 		4C361DE13748C14BF1F87624 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				D9FF4BF41D19F61B00238046 /* libReact.a */,
-				D9FF4BEE1D19F3F500238046 /* libReact.a */,
+				D9FF4C201D19F96C00238046 /* libReact.a */,
 				D95036B31D19C90300F7094D /* Pods.xcodeproj */,
 			);
 			name = Frameworks;
