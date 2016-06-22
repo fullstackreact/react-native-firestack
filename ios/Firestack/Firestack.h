@@ -4,15 +4,10 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
-//#import "../../../../React/Base/RCTBridgeModule.h"
-//#import "../../../../React/Base/RCTEventDispatcher.h"
-//#import "../../../../React/Base/RCTUtils.h"
+#import <UIKit/UIKit.h>
+#import <Firebase.h>
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
-#import "RCTUtils.h"
-#import "Firebase.h"
-
-@import Firebase;
 
 @interface Firestack : NSObject <RCTBridgeModule> {
     FIRAuthStateDidChangeListenerHandle authListenerHandle;
