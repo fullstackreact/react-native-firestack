@@ -8,7 +8,7 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "compile": "babel --presets es2015,stage-0 -d . src/",
-    "dev": "npm run compile -- --watch",
+    "dev": "npm run compile -- --watch"
   },
   "repository": {
     "type": "git",
@@ -26,10 +26,5 @@
     "firebase": "3.x.x",
     "react": "*",
     "react-native": "*"
-  },
-  "devDependencies": {
-    "firebase": "^3.0.5",
-    "react": "^15.1.0",
-    "react-native": "0.27.2"
   }
 }
