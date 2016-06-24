@@ -36,7 +36,6 @@ PODS:
     - GoogleSymbolUtilities (~> 1.0)
 
 DEPENDENCIES:
-  - Firebase/Analytics
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
@@ -54,6 +53,6 @@ SPEC CHECKSUMS:
   GoogleSymbolUtilities: 33117db1b5f290c6fbf259585e4885b4c84b98d7
   GoogleUtilities: 56c5ac05b7aa5dc417a1bb85221a9516e04d7032
 
-PODFILE CHECKSUM: a1603cc0119f004254e397118f0fe219cacf5e55
+PODFILE CHECKSUM: 6af1110d7b6995e4ee0a9b6c203d01a5e85bb791
 
 COCOAPODS: 1.0.1
