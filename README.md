@@ -172,17 +172,48 @@ We can use an external authentication provider, such as twitter/facebook for aut
 
 > By using a separate library, we can keep our dependencies a little lower and the size of the application down.
 
+### OAuth setup with library
+
 We'll use the [react-native-oauth](https://github.com/fullstackreact/react-native-oauth) library, which was built along-side [Firestack](https://github.com/fullstackreact/react-native-firestack) specifically to handle authentication through third-party providers.
 
 > If you prefer to use another library, make sure you pass through the `oauthToken` and `oauthTokenSecret` provided by your other library to call the `signInWithProvider()` method.
 
-Following the instructions at
+Following the instructions on the [react-native-oauth README](https://github.com/fullstackreact/react-native-oauth), we'll need to install it using `npm`:
 
-...
+```javascript
+npm install --save react-native-oauth
+```
+
+It's important to set up the authentication library fully with our app configuration. Make sure to configure your app [along with this step](https://github.com/fullstackreact/react-native-oauth#handle-deep-linking-loading) otherwise authentication _cannot_ work.
+
+Once the app is configured with the instructions, we can call the `oauthManager`'s (or other library's) login method. We'll need to hold on to the `oauthToken` and an `oauthTokenSecret` provided by the provider. Using these values, we can call the `signInWithProvider()` method. The `signInWithProvider()` method accepts three parameters:
+
+1. The provider (such as `twitter`, `facebook`, etc) name
+2. The `authToken` value granted by the provider
+3. The `authTokenSecret` value granted by the provider
+
+```javascript
+// For instance, using the react-native-oauth library, this process
+// looks like:
+
+const appUrl = 'app-uri://oauth-callback/twitter'
+authManager.authorizeWithCallbackURL('twitter', appUrl)
+.then(creds => {
+  return server.signInWithProvider('twitter', creds.oauth_token creds.oauth_token_secret)
+    .then(() => {
+      // We're now signed in through Firebase
+    })
+    .catch(err => {
+      // There was an error
+    })
+})
+```
+
+If the `signInWithProvider()` method resolves correct and we have already set up our `listenForAuth()` method properly, it will fire and we'll have a logged in user through Firebase.
 
 ### reauthenticateWithCredentialForProvider()
 
-...
+When the auth token has expired, we can ask firebase to reauthenticate with the provider. This method accepts the _same_ arguments as `signInWithProvider()` accepts. 
 
 #### updateUserEmail()
 

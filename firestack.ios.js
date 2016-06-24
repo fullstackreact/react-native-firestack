@@ -69,10 +69,24 @@ export default class Firestack {
     return promisify('signInWithEmail')(email, password);
   }
 
+  /**
+   * Sign the user in with a third-party authentication provider
+   * @param  {string} provider   The name of the provider to use for login
+   * @param  {string} authToken  The authToken granted by the provider
+   * @param  {string} authSecret The authToken secret granted by the provider
+   * @return {Promise}           A promise resolved upon completion
+   */
   signInWithProvider(provider, authToken, authSecret) {
     return promisify('signInWithProvider')(provider, authToken, authSecret);
   }
 
+  /**
+   * Reauthenticate a user with a third-party authentication provider
+   * @param  {string} provider The provider name
+   * @param  {string} token    The authToken granted by the provider
+   * @param  {string} secret   The authTokenSecret granted by the provider
+   * @return {Promise}         A promise resolved upon completion
+   */
   reauthenticateWithCredentialForProvider(provider, token, secret) {
     return promisify('reauthenticateWithCredentialForProvider')(provider, token, secret);
   }
