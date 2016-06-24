@@ -51,9 +51,11 @@ RCT_EXPORT_METHOD(signInWithProvider:
                                     NSDictionary *userProps = [self userPropsFromFIRUser:user];
                                     callback(@[[NSNull null], userProps]);
                                   } else {
+                                    NSLog(@"An error occurred: %@", [error localizedDescription]);
                                       // No user is signed in.
                                     NSDictionary *err = @{
-                                                          @"error": @"No user signed in"
+                                                          @"error": @"No user signed in",
+                                                          @"description": [error localizedDescription]
                                                           };
                                     callback(@[err]);
                                   }
@@ -513,7 +515,7 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
                   secret:(NSString *)authTokenSecret
 {
     FIRAuthCredential *credential;
-    if ([provider  isEqual: @"twitter"]) {
+    if ([provider isEqualToString: @"twitter"]) {
         credential = [FIRTwitterAuthProvider credentialWithToken:authToken
                                                           secret:authTokenSecret];
     } else {

@@ -73,7 +73,6 @@ export default class Firestack {
     return promisify('signInWithProvider')(provider, authToken, authSecret);
   }
 
-
   reauthenticateWithCredentialForProvider(provider, token, secret) {
     return promisify('reauthenticateWithCredentialForProvider')(provider, token, secret);
   }

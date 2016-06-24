@@ -168,7 +168,15 @@ server.signInWithEmail('ari@fullstack.io', '123456')
 
 #### signInWithProvider()
 
-We can use an external authentication provider, such as twitter/facebook for authentication. In order to use an external provider, we need to include another library.
+We can use an external authentication provider, such as twitter/facebook for authentication. In order to use an external provider, we need to include another library to handle authentication.
+
+> By using a separate library, we can keep our dependencies a little lower and the size of the application down.
+
+We'll use the [react-native-oauth](https://github.com/fullstackreact/react-native-oauth) library, which was built along-side [Firestack](https://github.com/fullstackreact/react-native-firestack) specifically to handle authentication through third-party providers.
+
+> If you prefer to use another library, make sure you pass through the `oauthToken` and `oauthTokenSecret` provided by your other library to call the `signInWithProvider()` method.
+
+Following the instructions at
 
 ...
 
