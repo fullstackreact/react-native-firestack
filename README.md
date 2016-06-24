@@ -213,7 +213,7 @@ If the `signInWithProvider()` method resolves correct and we have already set up
 
 ### reauthenticateWithCredentialForProvider()
 
-When the auth token has expired, we can ask firebase to reauthenticate with the provider. This method accepts the _same_ arguments as `signInWithProvider()` accepts. 
+When the auth token has expired, we can ask firebase to reauthenticate with the provider. This method accepts the _same_ arguments as `signInWithProvider()` accepts.
 
 #### updateUserEmail()
 
@@ -406,6 +406,15 @@ To unsubscribe to events fired by Firebase, we can call the `off()` method with 
 server.off('listenForAuth');
 ```
 
+## Contributing
+
+This is _open-source_ software and we can make it rock for everyone through contributions.
+
+```shell
+git clone https://github.com/fullstackreact/react-native-firestack.git
+cd react-native-firestack
+npm install
+```
 
 ## TODO
 
