@@ -166,6 +166,20 @@ server.signInWithEmail('ari@fullstack.io', '123456')
   })
 ```
 
+#### signInWithCustomToken()
+
+To sign a user using a self-signed custom token, use the `signInWithCustomToken()` function. It accepts one parameter, the custom token:
+
+```javascript
+server.signInWithCustomToken(TOKEN)
+  .then((user) => {
+    console.log('User successfully logged in', user)
+  })
+  .catch((err) => {
+    console.error('User signin error', err);
+  })
+```
+
 #### signInWithProvider()
 
 We can use an external authentication provider, such as twitter/facebook for authentication. In order to use an external provider, we need to include another library to handle authentication.
