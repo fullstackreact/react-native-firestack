@@ -51,14 +51,6 @@ If you prefer not to use `rnpm`, we can manually link the package together with 
 
 ![Recursive paths](http://d.pr/i/1hAr1.png)
 
-#### Cocoapods
-
-You can also install `Firestack` as a cocoapod by adding the line to your `ios/Podfile`
-
-```ruby
-pod 'Firestack'
-```
-
 ### Android
 
 Coming soon
@@ -384,7 +376,7 @@ server.storage.ref(photo.fullPath)
 The native Firebase JavaScript library provides a featureful realtime database that works out of the box. Firestack provides an attribute to interact with the database without needing to configure the JS library.
 
 ```javascript
-server.storage
+server.database
       .ref(LIST_KEY)
       .orderByChild('timestamp')
       .on('value', snapshot => {
