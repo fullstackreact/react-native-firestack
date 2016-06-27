@@ -13,6 +13,7 @@
     FIRAuthStateDidChangeListenerHandle authListenerHandle;
 }
 
+@property (nonatomic) BOOL debug;
 @property (atomic) BOOL configured;
 @property (nonatomic, strong) NSDictionary *configuration;
 

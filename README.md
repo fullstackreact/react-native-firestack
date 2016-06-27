@@ -8,7 +8,7 @@ Firestack is a _light-weight_ layer sitting atop the native Firebase libraries f
 
 ## Why?
 
-Firebase is awesome and it's combination with the Google Cloud Platform makes it super awesome. Sadly, the latest version of Firebase requires the `window` object. That's where Firestack comes in! Firestack provides a really thin layer that sits on top of the native Firebase SDKs and attempts to use the JavaScript library as much as possible rather than reinventing the wheel. 
+Firebase is awesome and it's combination with the Google Cloud Platform makes it super awesome. Sadly, the latest version of Firebase requires the `window` object. That's where Firestack comes in! Firestack provides a really thin layer that sits on top of the native Firebase SDKs and attempts to use the JavaScript library as much as possible rather than reinventing the wheel.
 
 ## Installing
 
@@ -96,6 +96,25 @@ const firestack = new Firestack();
 firestack.configure()
   .then(() => console.log("Project configured and ready to boot"));
 ```
+
+We can pass _custom_ options with the `configure()` method by passing an object with configuration options. The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. That is, all of the following key/value pairs are optional if the native configuration is set.
+
+| option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
+|----------------|----------|-------------------------|----------------------------------------|
+| debug | bool | false | When set to true, Firestack will log messages to the console and fire `debug` events we can listen to in `js` |
+| googleAppID | string | "" | The Google App ID that is used to uniquely identify an instance of an app. |
+| databaseURL | string | "" | The database root (i.e. https://my-app.firebaseio.com) |
+| deepLinkURLScheme | string | "" | URL scheme to set up durable deep link service |
+| storageBucket | string | "" | The Google Cloud storage bucket name |
+| androidClientID | string | "" | The Android client ID used in Google AppInvite when an iOS app has it's android version |
+| GCMSenderID | string | "" | The Project number from the Google Developer's console used to configure Google Cloud Messaging |
+| trackingID | string | "" | The tracking ID for Google Analytics |
+| clientID | string | "" | The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google |
+| APIKey | string | "" | The secret iOS API key used for authenticating requests from our app |
+
+In _most_ cases, you shouldn't need to overwrite these configuration options, but they are available to you if necessary.
+
+## API documentation
 
 Firestack is broken up into multiple parts, based upon the different API features that Firebase provides.
 

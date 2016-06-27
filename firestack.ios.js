@@ -22,15 +22,17 @@ const promisify = fn => (...args) => {
 
 export default class Firestack {
   constructor(options) {
-    this.options = options;
+    this.options = options || {};
     this.appInstance = app.initializeApp(options);
     this.configured = false;
 
     this.eventHandlers = {};
   }
 
-  configure() {
-    return promisify('configure')()
+  configure(opts) {
+    opts = opts || {};
+    const firestackOptions = Object.assign({}, this.options, opts);
+    return promisify('configureWithOptions')(firestackOptions)
     .then((...args) => {
       this.configured = true;
       return args;

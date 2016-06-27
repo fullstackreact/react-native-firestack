@@ -12,41 +12,85 @@
 
 RCT_EXPORT_MODULE(Firestack);
 
-RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
+RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
+                  callback:(RCTResponseSenderBlock)callback)
 {
-  @try {
-    if (!self.configured) {
-      [FIRApp configure];
-      self->_configured = YES;
+    // Are we debugging, yo?
+    self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
+
+    FIROptions *firestackOptions = [FIROptions defaultOptions];
+    // Bundle ID either from options OR from the main bundle
+    NSString *bundleID = [firestackOptions valueForKey:@"bundleID"];
+    if ([opts valueForKey:@"bundleID"]) {
+        bundleID = [opts valueForKey:@"bundleID"];
+    } else {
+        if (bundleID == nil) {
+            bundleID = [[NSBundle mainBundle] bundleIdentifier];
+        }
     }
-  }
-  @catch (NSException *exception) {
-    NSLog(@"Exception occurred while configuring: %@", exception);
-  }
-  @finally {
-    callback(@[[NSNull null]]);
-  }
+    // Prefer the user configuration options over the default options
+    NSArray *keyOptions = @[@"APIKey", @"clientID", @"trackingID",
+                            @"GCMSenderID", @"androidClientID",
+                            @"googleAppID", @"databaseURL",
+                            @"deepLinkURLScheme", @"storageBucket"];
+
+    NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithCapacity:[keyOptions count]];
+    for (int i=0; i < [keyOptions count]; i++) {
+        // Traditional for loop here
+        @try {
+            NSString *key = [keyOptions objectAtIndex:i];
+            NSString *value = [opts valueForKey:key];
+            if (value != nil) {
+                [props setObject:value forKey:key];
+            } else if ([firestackOptions valueForKey:key] != nil) {
+                [props setObject:[firestackOptions valueForKey:key] forKey:key];
+            }
+        }
+        @catch (NSException *err) {
+            // Uh oh?
+            NSLog(@"An error occurred: %@", err);
+        }
+    }
+
+    for (NSString *key in props) {
+        [self debugLog:key msg:[props valueForKey:key]];
+    }
+    [self debugLog:@"bundleID" msg:bundleID];
+
+    @try {
+        FIROptions *finalOptions = [[FIROptions alloc] initWithGoogleAppID:[props valueForKey:@"googleAppID"]
+                                                                  bundleID:bundleID
+                                                               GCMSenderID:[props valueForKey:@"GCMSenderID"]
+                                                                    APIKey:[props valueForKey:@"APIKey"]
+                                                                  clientID:[props valueForKey:@"clientID"]
+                                                                trackingID:[props valueForKey:@"trackingID"]
+                                                           androidClientID:[props valueForKey:@"androidClientID"]
+                                                               databaseURL:[props valueForKey:@"databaseURL"]
+                                                             storageBucket:[props valueForKey:@"storageBucket"]
+                                                         deepLinkURLScheme:[props valueForKey:@"deepLinkURLScheme"]];
+        if (!self.configured) {
+            [FIRApp configureWithOptions:finalOptions];
+            self->_configured = YES;
+        }
+        callback(@[[NSNull null]]);
+    }
+    @catch (NSException *exception) {
+        NSLog(@"Exception occurred while configuring: %@", exception);
+        [self debugLog:@"Configuring error"
+                   msg:[NSString stringWithFormat:@"An error occurred while configuring: %@", [exception debugDescription]]];
+        NSDictionary *errProps = @{
+                                   @"error": [exception name],
+                                   @"description": [exception debugDescription]
+                                   };
+        callback(@[errProps]);
+    }
 }
 
-RCT_EXPORT_METHOD(signInWithCustomToken:
-                  (NSString *)customToken
-                  callback:(RCTResponseSenderBlock) callback)
+RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
 {
-    [[FIRAuth auth]
-      signInWithCustomToken:customToken
-      completion:^(FIRUser *user, NSError *error) {
-
-        if (user != nil) {
-          NSDictionary *userProps = [self userPropsFromFIRUser:user];
-          callback(@[[NSNull null], userProps]);
-        } else {
-          NSDictionary *err =
-          [self handleFirebaseError:@"signinError"
-                         error:error
-                      withUser:user];
-          callback(@[err]);
-        }
-    }];
+    NSDictionary *props = @{};
+    [self configureWithOptions:props
+                      callback:callback];
 }
 
 RCT_EXPORT_METHOD(signInWithProvider:
@@ -109,23 +153,22 @@ RCT_EXPORT_METHOD(listenForAuth)
       // User is signed in.
         NSDictionary *userProps = [self userPropsFromFIRUser:user];
 //        callback(@[[NSNull null], userProps]);
-        [self.bridge.eventDispatcher sendAppEventWithName:@"listenForAuth"
-                                                     body:@{
-                                                            @"eventName": @"user",
-                                                            @"authenticated": @(true),
-                                                            @"user": userProps
-                                                            }];
+        [self sendJSEvent:@"listenForAuth" props: @{
+                                                @"eventName": @"user",
+                                                @"authenticated": @(true),
+                                                @"user": userProps
+                                            }];
     } else {
       // TODO: Update this with different error states
       NSDictionary *err = @{
                             @"error": @"No user logged in"
                             };
-        [self.bridge.eventDispatcher sendAppEventWithName:@"listenForAuth"
-                                                     body:@{
-                                                            @"eventName": @"no_user",
-                                                            @"authenticated": @(false),
-                                                            @"error": err
-                                                            }];
+        [self sendJSEvent:@"listenForAuth"
+                  props:@{
+                    @"eventName": @"no_user",
+                    @"authenticated": @(false),
+                    @"error": err
+                }];
     }
   }];
 }
@@ -408,27 +451,24 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
   // Listen for state changes, errors, and completion of the upload.
   [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
     // Upload resumed, also fires when the upload starts
-    [self.bridge.eventDispatcher sendAppEventWithName:@"uploadResumed"
-                                                 body:@{
-                                                        @"ref": snapshot.reference.bucket
-                                                        }];
+      [self sendJSEvent:@"uploadResumed" props:@{
+                                               @"ref": snapshot.reference.bucket
+                                               }];
   }];
 
   [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
     // Upload paused
-    [self.bridge.eventDispatcher sendAppEventWithName:@"uploadPaused"
-                                                 body:@{
-                                                        @"ref": snapshot.reference.bucket
-                                                      }];
+[self sendJSEvent:@"uploadPaused" props:@{
+                                          @"ref": snapshot.reference.bucket
+                                          }];
   }];
   [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
     // Upload reported progress
     double percentComplete = 100.0 * (snapshot.progress.completedUnitCount) / (snapshot.progress.totalUnitCount);
 
-    [self.bridge.eventDispatcher sendAppEventWithName:@"uploadProgress"
-                                                 body:@{
-                                                        @"progress": @(percentComplete || 0.0)
-                                                      }];
+      [self sendJSEvent:@"uploadProgress" props:@{
+                                                @"progress": @(percentComplete || 0.0)
+                                                }];
 
   }];
 
@@ -543,6 +583,30 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
         NSLog(@"Provider not yet handled");
     }
     return credential;
+}
+
+- (void) debugLog:(NSString *)title
+              msg:(NSString *)msg
+{
+    if (self.debug) {
+        [self sendJSEvent:@"debug"
+                    props:@{
+                            @"name": title,
+                            @"message": msg
+                            }];
+}
+}
+
+- (void) sendJSEvent:(NSString *)title
+             props:(NSDictionary *)props
+{
+    @try {
+        [self.bridge.eventDispatcher sendAppEventWithName:title
+                                                 body:props];
+    }
+    @catch (NSException *exception) {
+        NSLog(@"An exception occurred while throwing JS event: %@", [exception debugDescription]);
+    }
 }
 
 @end
