@@ -102,6 +102,7 @@ We can pass _custom_ options with the `configure()` method by passing an object 
 | option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
 |----------------|----------|-------------------------|----------------------------------------|
 | debug | bool | false | When set to true, Firestack will log messages to the console and fire `debug` events we can listen to in `js` |
+| bundleID | string | Default from app `[NSBundle mainBundle]` | The bundle ID for the app to be bundled with |
 | googleAppID | string | "" | The Google App ID that is used to uniquely identify an instance of an app. |
 | databaseURL | string | "" | The database root (i.e. https://my-app.firebaseio.com) |
 | deepLinkURLScheme | string | "" | URL scheme to set up durable deep link service |
@@ -111,6 +112,17 @@ We can pass _custom_ options with the `configure()` method by passing an object 
 | trackingID | string | "" | The tracking ID for Google Analytics |
 | clientID | string | "" | The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google |
 | APIKey | string | "" | The secret iOS API key used for authenticating requests from our app |
+
+For instance:
+
+```javascript
+firestack.configure({
+  debug: true,
+  googleAppID: 'sticker-me'
+})
+.then(() => console.log("Project configured and ready to boot"));
+firestack.on('debug', msg => console.log('Received debug message', msg))
+```
 
 In _most_ cases, you shouldn't need to overwrite these configuration options, but they are available to you if necessary.
 
