@@ -81,6 +81,15 @@ export default class Firestack {
   }
 
   /**
+   * Sign the user in with a custom auth token
+   * @param  {string} customToken  A self-signed custom auth token.
+   * @return {Promise}             A promise resolved upon completion
+   */
+  signInWithCustomToken(customToken) {
+    return promisify('signInWithCustomToken')(customToken);
+  }
+
+  /**
    * Reauthenticate a user with a third-party authentication provider
    * @param  {string} provider The provider name
    * @param  {string} token    The authToken granted by the provider
