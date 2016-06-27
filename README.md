@@ -364,6 +364,8 @@ firestack.setStorageUrl(`gs://${config.firebase.storageBucket}`)
 .catch(() => console.error('This is weird: something happened...'))
 ```
 
+If the `storageBucket` key is passed as a configuration option, this method is automatically called for us by default.
+
 #### uploadFile()
 
 We can upload a file using the `uploadFile()` method. Using the `uploadFile()` method, we can set the name of the destination file, the path where we want to store it, as well as any metadata along with the file.

@@ -20,13 +20,11 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
 
     FIROptions *firestackOptions = [FIROptions defaultOptions];
     // Bundle ID either from options OR from the main bundle
-    NSString *bundleID = [firestackOptions valueForKey:@"bundleID"];
+    NSString *bundleID;
     if ([opts valueForKey:@"bundleID"]) {
         bundleID = [opts valueForKey:@"bundleID"];
     } else {
-        if (bundleID == nil) {
-            bundleID = [[NSBundle mainBundle] bundleIdentifier];
-        }
+        bundleID = [[NSBundle mainBundle] bundleIdentifier];
     }
     // Prefer the user configuration options over the default options
     NSArray *keyOptions = @[@"APIKey", @"clientID", @"trackingID",
@@ -52,11 +50,6 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
         }
     }
 
-    for (NSString *key in props) {
-        [self debugLog:key msg:[props valueForKey:key]];
-    }
-    [self debugLog:@"bundleID" msg:bundleID];
-
     @try {
         FIROptions *finalOptions = [[FIROptions alloc] initWithGoogleAppID:[props valueForKey:@"googleAppID"]
                                                                   bundleID:bundleID
@@ -68,8 +61,19 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                                                                databaseURL:[props valueForKey:@"databaseURL"]
                                                              storageBucket:[props valueForKey:@"storageBucket"]
                                                          deepLinkURLScheme:[props valueForKey:@"deepLinkURLScheme"]];
+
+        for (NSString *key in props) {
+            [self debugLog:key msg:[finalOptions valueForKey:key]];
+        }
+        [self debugLog:@"bundleID" msg:bundleID];
+
         if (!self.configured) {
             [FIRApp configureWithOptions:finalOptions];
+
+            if ([props valueForKey:@"storageBucket"]) {
+                [self setStorageUrl:[NSString stringWithFormat:@"gs://%@", [props valueForKey:@"storageBucket"]]
+                           callback:nil];
+            }
             self->_configured = YES;
         }
         callback(@[[NSNull null]]);
@@ -416,10 +420,12 @@ RCT_EXPORT_METHOD(setStorageUrl:(NSString *)name
   }
 
   [storageConfig setValue:name forKey:@"url"];
-
   [cfg setObject:storageConfig forKey:@"storage"];
 
   self.configuration = cfg;
+    if (callback != nil) {
+        callback(@[[NSNull null], self.configuration]);
+    }
 }
 
 RCT_EXPORT_METHOD(uploadFile:(NSString *) name
