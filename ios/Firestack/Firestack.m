@@ -28,6 +28,27 @@ RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
   }
 }
 
+RCT_EXPORT_METHOD(signInWithCustomToken:
+                  (NSString *)customToken
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    [[FIRAuth auth]
+      signInWithCustomToken:customToken
+      completion:^(FIRUser *user, NSError *error) {
+
+        if (user != nil) {
+          NSDictionary *userProps = [self userPropsFromFIRUser:user];
+          callback(@[[NSNull null], userProps]);
+        } else {
+          NSDictionary *err =
+          [self handleFirebaseError:@"signinError"
+                         error:error
+                      withUser:user];
+          callback(@[err]);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(signInWithProvider:
                   (NSString *)provider
                   token:(NSString *)authToken

@@ -51,14 +51,6 @@ If you prefer not to use `rnpm`, we can manually link the package together with 
 
 ![Recursive paths](http://d.pr/i/1hAr1.png)
 
-#### Cocoapods
-
-You can also install `Firestack` as a cocoapod by adding the line to your `ios/Podfile`
-
-```ruby
-pod 'Firestack'
-```
-
 ### Android
 
 Coming soon
@@ -166,6 +158,20 @@ server.signInWithEmail('ari@fullstack.io', '123456')
   })
 ```
 
+#### signInWithCustomToken()
+
+To sign a user using a self-signed custom token, use the `signInWithCustomToken()` function. It accepts one parameter, the custom token:
+
+```javascript
+server.signInWithCustomToken(TOKEN)
+  .then((user) => {
+    console.log('User successfully logged in', user)
+  })
+  .catch((err) => {
+    console.error('User signin error', err);
+  })
+```
+
 #### signInWithProvider()
 
 We can use an external authentication provider, such as twitter/facebook for authentication. In order to use an external provider, we need to include another library to handle authentication.
@@ -199,7 +205,7 @@ Once the app is configured with the instructions, we can call the `oauthManager`
 const appUrl = 'app-uri://oauth-callback/twitter'
 authManager.authorizeWithCallbackURL('twitter', appUrl)
 .then(creds => {
-  return server.signInWithProvider('twitter', creds.oauth_token creds.oauth_token_secret)
+  return server.signInWithProvider('twitter', creds.oauth_token, creds.oauth_token_secret)
     .then(() => {
       // We're now signed in through Firebase
     })
@@ -370,7 +376,7 @@ server.storage.ref(photo.fullPath)
 The native Firebase JavaScript library provides a featureful realtime database that works out of the box. Firestack provides an attribute to interact with the database without needing to configure the JS library.
 
 ```javascript
-server.storage
+server.database
       .ref(LIST_KEY)
       .orderByChild('timestamp')
       .on('value', snapshot => {
