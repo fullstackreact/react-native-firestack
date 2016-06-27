@@ -205,7 +205,7 @@ Once the app is configured with the instructions, we can call the `oauthManager`
 const appUrl = 'app-uri://oauth-callback/twitter'
 authManager.authorizeWithCallbackURL('twitter', appUrl)
 .then(creds => {
-  return server.signInWithProvider('twitter', creds.oauth_token creds.oauth_token_secret)
+  return server.signInWithProvider('twitter', creds.oauth_token, creds.oauth_token_secret)
     .then(() => {
       // We're now signed in through Firebase
     })
