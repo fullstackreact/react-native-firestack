@@ -465,3 +465,4 @@ The following is left to be done:
 
 - [ ] Add Android support
 - [ ] Add Cloud Messaging
+- [ ] TODO: Finish Facebook integration
