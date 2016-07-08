@@ -463,4 +463,5 @@ npm install
 
 The following is left to be done:
 
-* Add Android support
+[ ] Add Android support
+[ ] Add Cloud Messaging
