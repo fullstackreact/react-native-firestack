@@ -8,7 +8,8 @@ target 'Firestack' do
     'Firebase/Core',
     'Firebase/Auth',
     'Firebase/Storage',
-    'Firebase/Database'
+    'Firebase/Database',
+    'Firebase/RemoteConfig'
   ].each do |lib|
     pod lib
   end

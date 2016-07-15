@@ -20,11 +20,45 @@ const promisify = fn => (...args) => {
   });
 };
 
+/**
+ * Configuration class
+ */
+const defaultExpiration = 60 * 60 * 24; // one day
+class RemoteConfig {
+  constructor(options) {
+    this.config = options || {};
+
+    this.setDefaultRemoteConfig(options)
+    .then(() => this.configured = true);
+  }
+
+  setDefaultRemoteConfig(options) {
+    return promisify('setDefaultRemoteConfig')(options);
+  }
+
+  fetchWithExpiration(expirationSeconds=defaultExpiration) {
+    return promisify('fetchWithExpiration')(expirationSeconds)
+  }
+
+  config(name) {
+    return promisify('configValueForKey')(name);
+  }
+
+  setDev() {
+    return promisify('setDev')();
+  }
+}
+
 export default class Firestack {
   constructor(options) {
     this.options = options || {};
+
+    this._remoteConfig = options.remoteConfig || {};
+    delete options.remoteConfig;
+
     this.appInstance = app.initializeApp(options);
     this.configured = false;
+    this._debug = options.debug || false;
 
     this.eventHandlers = {};
   }
@@ -174,15 +208,15 @@ export default class Firestack {
   }
 
   // Storage
-
-  /**
-   * Configure the library to store the storage url
-   * @param {string} url A string of your firebase storage url
-   * @return {Promise}
-   */
-  setStorageUrl(url) {
-    return promisify('setStorageUrl')(url);
-  }
+  //
+  // /**
+  //  * Configure the library to store the storage url
+  //  * @param {string} url A string of your firebase storage url
+  //  * @return {Promise}
+  //  */
+  // setStorageUrl(url) {
+  //   return promisify('setStorageUrl')(url);
+  // }
 
   /**
    * Upload a filepath
@@ -197,7 +231,8 @@ export default class Firestack {
 
   // database
   get database() {
-    return db();
+    db.enableLogging(this._debug);
+    return db()
   }
 
   /**
@@ -211,6 +246,16 @@ export default class Firestack {
   // other
   get ServerValue() {
     return db.ServerValue;
+  }
+
+  /**
+   * remote config
+   */
+  get remoteConfig() {
+    if (!this.remoteConfig) {
+      this.remoteConfig = new RemoteConfig(this._remoteConfig);
+    }
+    return this.remoteConfig;
   }
 
   on(name, cb) {
