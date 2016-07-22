@@ -312,6 +312,16 @@ firestack.deleteUser()
 .catch(err => console.error('There was an error - Now you are trapped!'))
 ```
 
+#### getToken()
+
+If you want user's token, use `getToken()` method.
+
+```javascript
+firestack.getToken()
+.then(res => console.log(res.token))
+.catch(err => console.error('error'))
+```
+
 #### signOut()
 
 To sign the current user out, use the `signOut()` method. It accepts no parameters

@@ -338,7 +338,7 @@ RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback)
                              withUser:user];
             callback(@[err]);
         } else {
-            callback(@[[NSNull null], @{@"result": token}]);
+            callback(@[[NSNull null], @{@"token": token}]);
         }
     }];
 }
