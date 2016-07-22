@@ -326,6 +326,40 @@ RCT_EXPORT_METHOD(deleteUser:(RCTResponseSenderBlock) callback)
     }];
 }
 
+RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback)
+{
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    [user getTokenWithCompletion:^(NSString *token, NSError *_Nullable error) {
+        if (error) {
+            NSDictionary *err =
+            [self handleFirebaseError:@"getTokenError"
+                                error:error
+                             withUser:user];
+            callback(@[err]);
+        } else {
+            callback(@[[NSNull null], @{@"result": token}]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
+{
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    [user getTokenWithCompletion:^(NSString token , NSError *_Nullable error) {
+        if (error) {
+            NSDictionary *err =
+            [self handleFirebaseError:@"deleteUserError"
+                                error:error
+                             withUser:user];
+            callback(@[err]);
+        } else {
+            callback(@[[NSNull null], @{@"result": token}]);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(reauthenticateWithCredentialForProvider:
                   (NSString *)provider
                   token:(NSString *)authToken

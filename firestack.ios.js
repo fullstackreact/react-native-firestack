@@ -136,6 +136,13 @@ export default class Firestack {
   deleteUser() {
     return promisify('deleteUser')()
   }
+  /**
+   * get the token of current user
+   * @return {Promise}
+   */
+  getToken() {
+    return promisify('getToken')()
+  }
 
   /**
    * Update the current user's profile
