@@ -619,6 +619,11 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
     if ([provider isEqualToString: @"twitter"]) {
         credential = [FIRTwitterAuthProvider credentialWithToken:authToken
                                                           secret:authTokenSecret];
+    } if ([provider isEqualToString: @"facebook"]) {
+        credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
+    } if ([provider isEqualToString: @"google"]) {
+        credential = [FIRGoogleAuthProvider credentialWithToken:authToken
+                                                          secret:authTokenSecret];
     } else {
         NSLog(@"Provider not yet handled");
     }
