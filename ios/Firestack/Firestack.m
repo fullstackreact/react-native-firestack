@@ -347,7 +347,7 @@ RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
 {
     FIRUser *user = [FIRAuth auth].currentUser;
     
-    [user getTokenWithCompletion:^(NSString token , NSError *_Nullable error) {
+    [user getTokenWithCompletion:^(NSString *token , NSError *_Nullable error) {
         if (error) {
             NSDictionary *err =
             [self handleFirebaseError:@"deleteUserError"
@@ -622,8 +622,8 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
     } if ([provider isEqualToString: @"facebook"]) {
         credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
     } if ([provider isEqualToString: @"google"]) {
-        credential = [FIRGoogleAuthProvider credentialWithToken:authToken
-                                                          secret:authTokenSecret];
+        credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
+                                                          accessToken:authTokenSecret];
     } else {
         NSLog(@"Provider not yet handled");
     }
