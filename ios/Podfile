@@ -1,17 +1,27 @@
 # Uncomment this line to define a global platform for your project
-# platform :ios, '9.0'
+platform :ios, '8.0'
 
 target 'Firestack' do
-  use_frameworks!
+   use_frameworks!
 
-  [
-    'Firebase/Core',
-    'Firebase/Auth',
-    'Firebase/Storage',
-    'Firebase/Database',
-    'Firebase/RemoteConfig'
-  ].each do |lib|
-    pod lib
-  end
+  podspec :path => "./Firestack.podspec"
+
+  #  [
+  #    'Firebase',
+  #    'Firebase/Auth',
+  #    'Firebase/Storage',
+  #    'Firebase/Database',
+  #    'Firebase/RemoteConfig'
+  #  ].each do |lib|
+  #    pod lib
+  #  end
+  #
+  #  post_install do |installer|
+  #   installer.pods_project.targets.each do |target|
+  #     target.build_configurations.each do |configuration|
+  #       target.build_settings(configuration.name)['ONLY_ACTIVE_ARCH'] = 'NO'
+  #     end
+  #   end
+  # end
 
 end

@@ -17,7 +17,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
 {
     // Are we debugging, yo?
     self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
-    
+
     FIROptions *firestackOptions = [FIROptions defaultOptions];
     // Bundle ID either from options OR from the main bundle
     NSString *bundleID;
@@ -31,7 +31,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                             @"GCMSenderID", @"androidClientID",
                             @"googleAppID", @"databaseURL",
                             @"deepLinkURLScheme", @"storageBucket"];
-    
+
     NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithCapacity:[keyOptions count]];
     for (int i=0; i < [keyOptions count]; i++) {
         // Traditional for loop here
@@ -49,7 +49,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
             NSLog(@"An error occurred: %@", err);
         }
     }
-    
+
     @try {
         FIROptions *finalOptions = [[FIROptions alloc] initWithGoogleAppID:[props valueForKey:@"googleAppID"]
                                                                   bundleID:bundleID
@@ -61,16 +61,16 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                                                                databaseURL:[props valueForKey:@"databaseURL"]
                                                              storageBucket:[props valueForKey:@"storageBucket"]
                                                          deepLinkURLScheme:[props valueForKey:@"deepLinkURLScheme"]];
-        
+
         for (NSString *key in props) {
             [self debugLog:key msg:[finalOptions valueForKey:key]];
         }
         [self debugLog:@"bundleID" msg:bundleID];
-        
+
         // Save configuration option
         NSDictionary *cfg = [self getConfig];
         [cfg setValuesForKeysWithDictionary:props];
-        
+
         if (!self.configured) {
             [FIRApp configureWithOptions:finalOptions];
             self->_configured = YES;
@@ -111,23 +111,31 @@ RCT_EXPORT_METHOD(signInWithProvider:
                               };
         return callback(@[err]);
     }
-    
-    [[FIRAuth auth] signInWithCredential:credential
-                              completion:^(FIRUser *user, NSError *error) {
-                                  if (user != nil) {
-                                      // User is signed in.
-                                      NSDictionary *userProps = [self userPropsFromFIRUser:user];
-                                      callback(@[[NSNull null], userProps]);
-                                  } else {
-                                      NSLog(@"An error occurred: %@", [error localizedDescription]);
-                                      // No user is signed in.
-                                      NSDictionary *err = @{
-                                                            @"error": @"No user signed in",
-                                                            @"description": [error localizedDescription]
-                                                            };
-                                      callback(@[err]);
-                                  }
-                              }];
+
+    NSLog(@"signinWithCredential: %@", credential);
+
+    @try {
+        [[FIRAuth auth] signInWithCredential:credential
+                                  completion:^(FIRUser *user, NSError *error) {
+                                      if (user != nil) {
+                                          // User is signed in.
+                                          NSDictionary *userProps = [self userPropsFromFIRUser:user];
+                                          callback(@[[NSNull null], userProps]);
+                                      } else {
+                                          NSLog(@"An error occurred: %@", [error localizedDescription]);
+                                          NSLog(@"Error: %@", error);
+                                          // No user is signed in.
+                                          NSDictionary *err = @{
+                                                                @"error": @"No user signed in",
+                                                                @"description": [error localizedDescription]
+                                                                };
+                                          callback(@[err]);
+                                      }
+                                  }];
+    } @catch (NSException *exception) {
+        [self handleException:exception
+                 withCallback:callback];
+    }
 }
 
 RCT_EXPORT_METHOD(signOut:(RCTResponseSenderBlock)callback)
@@ -151,7 +159,7 @@ RCT_EXPORT_METHOD(listenForAuth)
 {
     self->authListenerHandle = [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth,
                                                                                FIRUser *_Nullable user) {
-        
+
         if (user != nil) {
             // User is signed in.
             NSDictionary *userProps = [self userPropsFromFIRUser:user];
@@ -187,7 +195,7 @@ RCT_EXPORT_METHOD(unlistenForAuth:(RCTResponseSenderBlock)callback)
 RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
 {
     FIRUser *user = [FIRAuth auth].currentUser;
-    
+
     if (user != nil) {
         NSDictionary *userProps = [self userPropsFromFIRUser:user];
         callback(@[[NSNull null], userProps]);
@@ -247,7 +255,7 @@ RCT_EXPORT_METHOD(updateUserEmail:(NSString *)email
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRUser *user = [FIRAuth auth].currentUser;
-    
+
     [user updateEmail:email completion:^(NSError *_Nullable error) {
         if (error) {
             // An error happened.
@@ -267,9 +275,9 @@ RCT_EXPORT_METHOD(updateUserEmail:(NSString *)email
 RCT_EXPORT_METHOD(updateUserPassword:(NSString *)newPassword
                   callback:(RCTResponseSenderBlock) callback)
 {
-    
+
     FIRUser *user = [FIRAuth auth].currentUser;
-    
+
     [user updatePassword:newPassword completion:^(NSError *_Nullable error) {
         if (error) {
             // An error happened.
@@ -289,7 +297,7 @@ RCT_EXPORT_METHOD(updateUserPassword:(NSString *)newPassword
 RCT_EXPORT_METHOD(sendPasswordResetWithEmail:(NSString *)email
                   callback:(RCTResponseSenderBlock) callback)
 {
-    
+
     [[FIRAuth auth] sendPasswordResetWithEmail:email
                                     completion:^(NSError *_Nullable error) {
                                         if (error) {
@@ -311,7 +319,7 @@ RCT_EXPORT_METHOD(sendPasswordResetWithEmail:(NSString *)email
 RCT_EXPORT_METHOD(deleteUser:(RCTResponseSenderBlock) callback)
 {
     FIRUser *user = [FIRAuth auth].currentUser;
-    
+
     [user deleteWithCompletion:^(NSError *_Nullable error) {
         if (error) {
             NSDictionary *err =
@@ -340,9 +348,9 @@ RCT_EXPORT_METHOD(reauthenticateWithCredentialForProvider:
                               };
         return callback(@[err]);
     }
-    
+
     FIRUser *user = [FIRAuth auth].currentUser;
-    
+
     [user reauthenticateWithCredential:credential completion:^(NSError *_Nullable error) {
         if (error) {
             NSDictionary *err =
@@ -362,7 +370,7 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 {
     FIRUser *user = [FIRAuth auth].currentUser;
     FIRUserProfileChangeRequest *changeRequest = [user profileChangeRequest];
-    
+
     NSMutableArray *allKeys = [[userProps allKeys] mutableCopy];
     for (NSString *key in allKeys) {
         // i.e. changeRequest.displayName = userProps[displayName];
@@ -421,23 +429,23 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
                   callback:(RCTResponseSenderBlock) callback)
 {
     NSDictionary *cfg = [self getConfig];
-    
+
     NSString *urlStr = [self getStorageUrl];
-    
+
     if (urlStr == nil) {
         NSError *err = [[NSError alloc] init];
         [err setValue:@"Storage configuration error" forKey:@"name"];
         [err setValue:@"Call setStorageUrl() first" forKey:@"description"];
         return callback(@[err]);
     }
-    
+
     FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:urlStr];
     FIRStorageReference *uploadRef = [storageRef child:name];
-    
+
     NSURL *localFile = [NSURL fileURLWithPath:path];
-    
+
     FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
-    
+
     FIRStorageUploadTask *uploadTask = [uploadRef putFile:localFile
                                                  metadata:firmetadata];
     // Listen for state changes, errors, and completion of the upload.
@@ -447,7 +455,7 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
                                                    @"ref": snapshot.reference.bucket
                                                    }];
     }];
-    
+
     [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload paused
         [self sendJSEvent:@"uploadPaused" props:@{
@@ -457,13 +465,13 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
     [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload reported progress
         double percentComplete = 100.0 * (snapshot.progress.completedUnitCount) / (snapshot.progress.totalUnitCount);
-        
+
         [self sendJSEvent:@"uploadProgress" props:@{
                                                     @"progress": @(percentComplete || 0.0)
                                                     }];
-        
+
     }];
-    
+
     [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload completed successfully
         FIRStorageReference *ref = snapshot.reference;
@@ -473,10 +481,10 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
                                 @"name": ref.name,
                                 @"metadata": [snapshot.metadata dictionaryRepresentation]
                                 };
-        
+
         callback(@[[NSNull null], props]);
     }];
-    
+
     [uploadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
         if (snapshot.error != nil) {
             NSError *err = [[NSError alloc] init];
@@ -498,7 +506,7 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
                     [err setValue:@"Unknown error" forKey:@"description"];
                     break;
             }
-            
+
             callback(@[err]);
         }}];
 }
@@ -512,7 +520,7 @@ RCT_EXPORT_METHOD(setDefaultRemoteConfig:(NSDictionary *)props
         // Create remote Config instance
         self.remoteConfigInstance = [FIRRemoteConfig remoteConfig];
     }
-    
+
     [self.remoteConfigInstance setDefaults:props];
     callback(@[[NSNull null], props]);
 }
@@ -534,8 +542,8 @@ RCT_EXPORT_METHOD(configValueForKey:(NSString *)name
                               };
         callback(@[err]);
     }
-    
-    
+
+
     FIRRemoteConfigValue *value = [self.remoteConfigInstance configValueForKey:name];
     callback(@[[NSNull null], value.stringValue]);
 }
@@ -550,9 +558,9 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
                               };
         callback(@[err]);
     }
-    
+
     NSTimeInterval expirationDuration = [expirationSeconds doubleValue];
-    
+
     [self.remoteConfigInstance fetchWithExpirationDuration:expirationDuration completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *error) {
         if (status == FIRRemoteConfigFetchStatusSuccess) {
             NSLog(@"Config fetched!");
@@ -560,12 +568,12 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
             callback(@[[NSNull null], @(YES)]);
         } else {
             NSLog(@"Error %@", error.localizedDescription);
-            
+
             NSDictionary *err = @{
                                   @"error": @"No configuration instance",
                                   @"msg": [error localizedDescription]
                                   };
-            
+
             callback(@[err]);
         }
     }];
@@ -591,7 +599,7 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
                                 [error localizedDescription], @"rawDescription",
                                 [[error userInfo] description], @"userInfo",
                                 nil];
-    
+
     NSString *description = @"Unknown error";
     switch (error.code) {
         case FIRAuthErrorCodeInvalidEmail:
@@ -622,12 +630,12 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
                                         @"anonymous": @(user.anonymous),
                                         @"displayName": user.displayName ? user.displayName : @""
                                         } mutableCopy];
-    
+
     if ([user valueForKey:@"photoURL"] != nil) {
         [userProps setValue: [NSString stringWithFormat:@"%@", user.photoURL]
                      forKey:@"photoURL"];
     }
-    
+
     return userProps;
 }
 
@@ -643,6 +651,19 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
         NSLog(@"Provider not yet handled");
     }
     return credential;
+}
+
+- (void) handleException:(NSException *)exception
+            withCallback:(RCTResponseSenderBlock)callback
+{
+    NSString *errDesc = [exception description];
+    NSLog(@"An error occurred: %@", errDesc);
+    // No user is signed in.
+    NSDictionary *err = @{
+                          @"error": @"No user signed in",
+                          @"description": errDesc
+                          };
+    callback(@[err]);
 }
 
 - (void) debugLog:(NSString *)title
