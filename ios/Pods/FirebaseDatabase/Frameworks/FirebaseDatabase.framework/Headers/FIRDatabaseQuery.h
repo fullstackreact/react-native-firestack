@@ -44,7 +44,7 @@ typedef NSUInteger FIRDatabaseHandle;
 @interface FIRDatabaseQuery : NSObject
 
 
-/** @name Attaching observers to read data */
+/** @name Attach observers to read data */
 
 /**
  * observeEventType:withBlock: is used to listen for data changes at a particular location.
@@ -307,7 +307,7 @@ typedef NSUInteger FIRDatabaseHandle;
 
 
 /**
-* Get a FIRDatabaseReference for the location of this query.
+* Gets a FIRDatabaseReference for the location of this query.
 *
 * @return A FIRDatabaseReference for the location of this query.
 */

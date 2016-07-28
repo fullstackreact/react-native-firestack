@@ -1,3 +1,7 @@
+# 2016-06-19 -- v1.0.7
+
+- Fix remote-notifications warning on app submission.
+
 # 2016-05-16 -- v1.0.6
 
 - Fix CocoaPod linter issues for InstanceID pod.

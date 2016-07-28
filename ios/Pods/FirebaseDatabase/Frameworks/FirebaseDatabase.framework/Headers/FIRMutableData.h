@@ -82,7 +82,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 
 /**
- * To modify the data contained by this instance of FIRMutableData, set this to any of the native types support by Firebase Database:
+ * To modify the data contained by this instance of FIRMutableData, set this to any of the native types supported by Firebase Database:
  *
  * * NSNumber (includes BOOL)
  * * NSDictionary
@@ -90,7 +90,7 @@ NS_ASSUME_NONNULL_BEGIN
  * * NSString
  * * nil / NSNull to remove the data
  *
- * Note that setting the value will override the priority at this location.
+ * Note that setting this value will override the priority at this location.
  *
  * @return The current data at this location as a native object
  */
