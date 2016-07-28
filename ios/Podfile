@@ -4,30 +4,5 @@ platform :ios, '8.0'
 target 'Firestack' do
    use_frameworks!
 
-  podspec :path => "./Firestack.podspec"
-  project 'Firestack'
-
-  #  [
-  #    'Firebase',
-  #    'Firebase/Auth',
-  #    'Firebase/Storage',
-  #    'Firebase/Database',
-  #    'Firebase/RemoteConfig'
-  #  ].each do |lib|
-  #    pod lib
-  #  end
-
-  #  post_install do |installer|
-  #   installer.pods_project.targets.each do |target|
-  #     target.build_configurations.each do |configuration|
-  #       target.build_settings(configuration.name)['LIBRARY_SEARCH_PATHS'] = [
-  #         '$(inherited)',
-  #         '$(SRCROOT)/../../React',
-  #         '$(SRCROOT)/../../node_modules/react-native/React',
-  #         '$(SRCROOT)/../../react-native/React'
-  #       ]
-  #     end
-  #   end
-  # end
-
+   podspec :path => "../Firestack.podspec"
 end

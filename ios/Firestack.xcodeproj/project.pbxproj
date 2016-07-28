@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		34479201EEBCE83274AC8AC5 /* Pods_Firestack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D19566CC272D13C2115F15C8 /* Pods_Firestack.framework */; };
 		D950369E1D19C77400F7094D /* Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* Firestack.m */; };
 		D9FF4BF31D19F5FF00238046 /* Pods_Firestack.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D95036B81D19C90300F7094D /* Pods_Firestack.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
@@ -44,10 +45,10 @@
 		134814201AA4EA6300B7C361 /* libFirestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFirestack.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		612D3268D15D0E9231997758 /* Pods-Firestack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Firestack.release.xcconfig"; path = "Pods/Target Support Files/Pods-Firestack/Pods-Firestack.release.xcconfig"; sourceTree = "<group>"; };
 		CEE8E427185097CF7EF3A3EB /* Pods-Firestack.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Firestack.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Firestack/Pods-Firestack.debug.xcconfig"; sourceTree = "<group>"; };
+		D19566CC272D13C2115F15C8 /* Pods_Firestack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Firestack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D950369C1D19C77400F7094D /* Firestack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Firestack.h; path = Firestack/Firestack.h; sourceTree = "<group>"; };
 		D950369D1D19C77400F7094D /* Firestack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Firestack.m; path = Firestack/Firestack.m; sourceTree = "<group>"; };
 		D95036B31D19C90300F7094D /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
-		F73732AB87B93D6C70882AD0 /* Pods_Firestack.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Firestack.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +57,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9FF4BF31D19F5FF00238046 /* Pods_Firestack.framework in Frameworks */,
+				34479201EEBCE83274AC8AC5 /* Pods_Firestack.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,7 +76,7 @@
 			isa = PBXGroup;
 			children = (
 				D95036B31D19C90300F7094D /* Pods.xcodeproj */,
-				F73732AB87B93D6C70882AD0 /* Pods_Firestack.framework */,
+				D19566CC272D13C2115F15C8 /* Pods_Firestack.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -310,7 +312,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = CEE8E427185097CF7EF3A3EB /* Pods-Firestack.debug.xcconfig */;
 			buildSettings = {
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				DYLIB_INSTALL_NAME_BASE = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -326,7 +328,7 @@
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
+				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACH_O_TYPE = mh_dylib;
 				ONLY_ACTIVE_ARCH = YES;
@@ -344,7 +346,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 612D3268D15D0E9231997758 /* Pods-Firestack.release.xcconfig */;
 			buildSettings = {
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				DYLIB_INSTALL_NAME_BASE = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -360,7 +362,7 @@
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
-				LD_DYLIB_INSTALL_NAME = "$(DYLIB_INSTALL_NAME_BASE:standardizepath)/$(EXECUTABLE_PATH)";
+				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACH_O_TYPE = mh_dylib;
 				OTHER_LDFLAGS = (

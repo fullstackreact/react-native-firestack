@@ -4,7 +4,7 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+// #import <UIKit/UIKit.h>
 #import <Firebase.h>
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
