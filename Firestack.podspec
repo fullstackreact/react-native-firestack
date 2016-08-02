@@ -4,8 +4,6 @@ version = package["version"]
 repo = package['repository']
 author = package['author']
 
-default_header_search_paths = ["$(inherited)", "${SRCROOT}/../../React/**", "${SRCROOT}/../node_modules/react-native/**"]
-
 Pod::Spec.new do |s|
 
   s.name         = "Firestack"
@@ -27,53 +25,42 @@ Pod::Spec.new do |s|
   # s.tvos.deployment_target = "9.0"
 
   s.source = { :git => repo['url'], :tag => "v#{version}" }
-  s.public_header_files = "ios/Firestack/*.h", "Pods/**/*.h"
+  s.public_header_files = "ios/Firestack/*.h"
 
   s.source_files   = 'ios/Firestack/*.{h,m}'
   s.preserve_paths = 'README.md', 'package.json', '*.js'
 
   s.default_subspec = 'Core'
-
   s.subspec 'Core' do |ss|
-    [
-      'Firebase/Core',
-      'Firebase/Auth',
-      'Firebase/Storage',
-      'Firebase/Database',
-      'Firebase/RemoteConfig'
-    ].each do |lib|
-      ss.dependency lib
-    end
 
-  
-    ss.xcconfig = {
-      'HEADER_SEARCH_PATHS' => default_header_search_paths.join(' ')
-    }
+    ss.dependency 'Firebase/Core'
+    ss.dependency 'Firebase/Auth'
+    ss.dependency 'Firebase/Storage'
+    ss.dependency 'Firebase/Database'
+    ss.dependency 'Firebase/RemoteConfig'
 
-    ss.user_target_xcconfig = {
-      'HEADER_SEARCH_PATHS' => default_header_search_paths.join(' '),
-      'FRAMEWORK_SEARCH_PATHS' => default_header_search_paths.join(' ')
-    }
+    s.ios.frameworks = [
+      'CFNetwork', 'Security',
+      'SystemConfiguration'
+    ]
+    s.ios.libraries = ['icucore', 'c++']
   end
 
-  s.subspec 'Test' do |ss|
-    ss.dependency 'Firestack/Core'
-    # ss.dependency 'React'
-
-    ss.xcconfig = {
-      'HEADER_SEARCH_PATHS' => [
-        default_header_search_paths,
-        "$(SRCROOT)/../../react-native/React/**",
-      ].flatten.join(' ')
-    }
+  # Dev is used only to stub for lib linting and development
+  s.subspec 'Dev' do |ss|
+    ss.dependency "React"
   end
 
-  # s.vendored_frameworks = ['Firebase']
-
-  # s.ios.framework           = [
-  #   'SystemConfiguration', 'CFNetwork', 'Security', 'UIKit',
-  #   'CoreFoundation', 'StoreKit', 'MobileCoreServices',
-  # ]
+  s.xcconfig = {
+    'HEADER_SEARCH_PATHS' => [
+        "$(inherited)", "${SRCROOT}/../../React/**", "${SRCROOT}/../../node_modules/react-native/**"
+      ].join(' '),
+    'FRAMEWORK_SEARCH_PATHS' => [
+        "$(inherited)", 
+        "${PODS_ROOT}/Firebase/**",
+      ].join(' '),
+    'OTHER_LDFLAGS' => '$(inherited) -ObjC'
+  }
 
   s.requires_arc = true
 end

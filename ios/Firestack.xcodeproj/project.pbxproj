@@ -301,6 +301,7 @@
 					"-undefined",
 					dynamic_lookup,
 					"-lc++",
+					"-ObjC",
 				);
 				PRODUCT_NAME = Firestack;
 				SKIP_INSTALL = YES;
@@ -333,6 +334,7 @@
 					"-undefined",
 					dynamic_lookup,
 					"-lc++",
+					"-ObjC",
 				);
 				PRODUCT_NAME = Firestack;
 				SKIP_INSTALL = YES;

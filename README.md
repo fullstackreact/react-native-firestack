@@ -24,40 +24,21 @@ To use Firestack, we'll need to have a development environment that includes the
 
 We need to link the package with our development packaging. We have two options to handle linking:
 
-#### Through CocoaPods
+#### Through CocoaPods (iOS only)
 
 Unfortunately, until we can link cocoapods in a library dynamically, we must use CocoaPods to use Firestack. Although it's not terribly difficult to do, we're stuck with this requirement for the time being. 
 
-#### Automatically with [rnpm](https://github.com/rnpm/rnpm)
+In order to use cocoapods, we'll first need to install it. The [getting started](https://guides.cocoapods.org/using/getting-started.html) guide through CocoaPods offers a nice introduction on installing and using [Cocoapods](https://cocoapods.org/). 
 
-[rnpm](https://github.com/rnpm/rnpm) is a React Native package manager which can help to automate the process of linking package environments.
+Cocoapods is delivered as a ruby gem, so we'll need to make sure we have ruby installed. (We recommend using [rvm](https://rvm.io/)) to manage environments. 
 
-```bash
-rnpm link
+```shell
+gem install cocoapods
 ```
 
-#### Manually
+> If you run into issues installing cocoapods, please see their [getting started guide](https://guides.cocoapods.org/using/getting-started.html) for help. 
 
-If you prefer not to use `rnpm`, we can manually link the package together with the following steps, after `npm install`:
-
-1. In XCode, right click on `Libraries` and find the `Add Files to [project name]`.
-
-![Add library to project](http://d.pr/i/2gEH.png)
-
-2. Add the `node_modules/react-native-firestack/ios/Firestack.xcodeproj`
-
-![Firebase.xcodeproj in Libraries listing](http://d.pr/i/19ktP.png)
-
-3. In the project's "Build Settings" tab in your app's target, add `libFirestack.a` to the list of `Link Binary with Libraries`
-
-![Linking binaries](http://d.pr/i/1cHgs.png)
-
-4. Ensure that the `Build Settings` of the `Firestack.xcodeproj` project is ticked to _All_ and it's `Header Search Paths` include both of the following paths _and_ are set to _recursive_:
-
-  1. `$(SRCROOT)/../../react-native/React`
-  2. `$(SRCROOT)/../node_modules/react-native/React`
-
-![Recursive paths](http://d.pr/i/1hAr1.png)
+With cocoapods installed, we'll need to 
 
 ### Android
 
@@ -469,4 +450,5 @@ The following is left to be done:
 
 - [ ] Add Android support
 - [ ] Add Cloud Messaging
+- [ ] Move to use swift (cleaner syntax)
 - [ ] TODO: Finish Facebook integration
