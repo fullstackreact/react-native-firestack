@@ -25,5 +25,10 @@
     "firebase": "3.x.x",
     "react": "*",
     "react-native": "*"
+  },
+  "rnpm": {
+    "ios": {
+      "project": "ios/Firestack.xcodeproj"
+    }
   }
 }

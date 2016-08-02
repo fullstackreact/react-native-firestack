@@ -9,6 +9,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "FIRStorageConstants.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class FIRStorageMetadata;
@@ -46,6 +48,11 @@ NS_ASSUME_NONNULL_BEGIN
  * Error during task execution, or nil if no error occurred.
  */
 @property(readonly, copy, nonatomic, nullable) NSError *error;
+
+/**
+ * Status of the task.
+ */
+@property(readonly, nonatomic) FIRStorageTaskStatus status;
 
 @end
 

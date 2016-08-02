@@ -1,6 +1,0 @@
-framework module Pods_Firestack {
-  umbrella header "Pods-Firestack-umbrella.h"
-
-  export *
-  module * { export * }
-}

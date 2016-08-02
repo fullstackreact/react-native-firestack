@@ -14,7 +14,7 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2016 Google Inc.</string>
+			<string>Copyright 2016 Google</string>
 			<key>Title</key>
 			<string>Firebase</string>
 			<key>Type</key>
@@ -22,7 +22,7 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2016 Google Inc.</string>
+			<string>Copyright 2016 Google</string>
 			<key>Title</key>
 			<string>FirebaseAnalytics</string>
 			<key>Type</key>
@@ -30,7 +30,7 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2016 Google Inc. All Rights Reserved.</string>
+			<string>Copyright 2016 Google</string>
 			<key>Title</key>
 			<string>FirebaseAuth</string>
 			<key>Type</key>
@@ -46,9 +46,17 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2016 Google Inc.</string>
+			<string>Copyright 2016 Google</string>
 			<key>Title</key>
 			<string>FirebaseInstanceID</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Copyright 2016 Google</string>
+			<key>Title</key>
+			<string>FirebaseRemoteConfig</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -57,6 +65,14 @@
 			<string>Copyright 2016 Google Inc.</string>
 			<key>Title</key>
 			<string>FirebaseStorage</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Copyright 2015 Google Inc.</string>
+			<key>Title</key>
+			<string>GoogleIPhoneUtilities</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>
@@ -73,6 +89,14 @@
 			<string>Copyright 2015 Google Inc.</string>
 			<key>Title</key>
 			<string>GoogleNetworkingUtilities</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Copyright 2015 Google Inc.</string>
+			<key>Title</key>
+			<string>GoogleParsingUtilities</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 		</dict>

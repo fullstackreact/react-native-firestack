@@ -3,4 +3,11 @@ framework module FirebaseDatabase {
 
   export *
   module * { export * }
+
+  link framework "CFNetwork"
+  link framework "Security"
+  link framework "SystemConfiguration"
+
+  link "c++"
+  link "icucore"
 }
