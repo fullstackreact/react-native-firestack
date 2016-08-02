@@ -68,6 +68,8 @@ Pod::Spec.new do |s|
     }
   end
 
+  # s.vendored_frameworks = ['Firebase']
+
   # s.ios.framework           = [
   #   'SystemConfiguration', 'CFNetwork', 'Security', 'UIKit',
   #   'CoreFoundation', 'StoreKit', 'MobileCoreServices',

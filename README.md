@@ -24,6 +24,10 @@ To use Firestack, we'll need to have a development environment that includes the
 
 We need to link the package with our development packaging. We have two options to handle linking:
 
+#### Through CocoaPods
+
+Unfortunately, until we can link cocoapods in a library dynamically, we must use CocoaPods to use Firestack. Although it's not terribly difficult to do, we're stuck with this requirement for the time being. 
+
 #### Automatically with [rnpm](https://github.com/rnpm/rnpm)
 
 [rnpm](https://github.com/rnpm/rnpm) is a React Native package manager which can help to automate the process of linking package environments.
