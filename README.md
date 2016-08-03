@@ -24,36 +24,38 @@ To use Firestack, we'll need to have a development environment that includes the
 
 We need to link the package with our development packaging. We have two options to handle linking:
 
-#### Through CocoaPods (iOS only)
+#### Automatically with [rnpm](https://github.com/rnpm/rnpm)
 
-Unfortunately, until we can link cocoapods in a library dynamically, we must use CocoaPods to use Firestack. Although it's not terribly difficult to do, we're stuck with this requirement for the time being. 
+[rnpm](https://github.com/rnpm/rnpm) is a React Native package manager which can help to automate the process of linking package environments.
 
-In order to use cocoapods, we'll first need to install it. The [getting started](https://guides.cocoapods.org/using/getting-started.html) guide through CocoaPods offers a nice introduction on installing and using [Cocoapods](https://cocoapods.org/). 
-
-Cocoapods is delivered as a ruby gem, so we'll need to make sure we have ruby installed. (We recommend using [rvm](https://rvm.io/)) to manage environments. 
-
-```shell
-gem install cocoapods
+```bash
+rnpm link
 ```
 
-> If you run into issues installing cocoapods, please see their [getting started guide](https://guides.cocoapods.org/using/getting-started.html) for help. 
+Firestack will automatically pull in all of the Firebase requirements and link Firebase to our own project.
 
+#### Manually
 
-With cocoapods installed, we'll need to create a `Podfile` to manage our dependencies and list our new `Firestack` library as a dependency of our project.
+If you prefer not to use `rnpm`, we can manually link the package together with the following steps, after `npm install`:
 
-```shell
-(cd ios && pod init)
-```
+1. In XCode, right click on `Libraries` and find the `Add Files to [project name]`.
 
-This command will create a `Podfile` in the `ios/` directory of our project. In this file, we'll need to list our dependencies. For now, we'll list one. The `Podfile` itself can be incredibly simple
+![Add library to project](http://d.pr/i/2gEH.png)
 
+2. Add the `node_modules/react-native-firestack/ios/Firestack.xcodeproj`
 
-```ruby
-platform :ios, '8.0'
-target 'RoundHere' do
-  pod 'Firestack', :path => '../node_modules/react-native-firestack'
-end
-```
+![Firebase.xcodeproj in Libraries listing](http://d.pr/i/19ktP.png)
+
+3. In the project's "Build Settings" tab in your app's target, add `libFirestack.a` to the list of `Link Binary with Libraries`
+
+![Linking binaries](http://d.pr/i/1cHgs.png)
+
+4. Ensure that the `Build Settings` of the `Firestack.xcodeproj` project is ticked to _All_ and it's `Header Search Paths` include both of the following paths _and_ are set to _recursive_:
+
+  1. `$(SRCROOT)/../../react-native/React`
+  2. `$(SRCROOT)/../node_modules/react-native/React`
+
+![Recursive paths](http://d.pr/i/1hAr1.png)
 
 ### Android
 
