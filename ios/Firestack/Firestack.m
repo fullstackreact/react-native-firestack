@@ -335,6 +335,40 @@ RCT_EXPORT_METHOD(deleteUser:(RCTResponseSenderBlock) callback)
     }];
 }
 
+RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback)
+{
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    [user getTokenWithCompletion:^(NSString *token, NSError *_Nullable error) {
+        if (error) {
+            NSDictionary *err =
+            [self handleFirebaseError:@"getTokenError"
+                                error:error
+                             withUser:user];
+            callback(@[err]);
+        } else {
+            callback(@[[NSNull null], @{@"token": token}]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
+{
+    FIRUser *user = [FIRAuth auth].currentUser;
+    
+    [user getTokenWithCompletion:^(NSString *token , NSError *_Nullable error) {
+        if (error) {
+            NSDictionary *err =
+            [self handleFirebaseError:@"deleteUserError"
+                                error:error
+                             withUser:user];
+            callback(@[err]);
+        } else {
+            callback(@[[NSNull null], @{@"result": token}]);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(reauthenticateWithCredentialForProvider:
                   (NSString *)provider
                   token:(NSString *)authToken
@@ -654,6 +688,11 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
     if ([provider isEqualToString: @"twitter"]) {
         credential = [FIRTwitterAuthProvider credentialWithToken:authToken
                                                           secret:authTokenSecret];
+    } if ([provider isEqualToString: @"facebook"]) {
+        credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
+    } if ([provider isEqualToString: @"google"]) {
+        credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
+                                                          accessToken:authTokenSecret];
     } else {
         NSLog(@"Provider not yet handled");
     }

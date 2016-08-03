@@ -252,6 +252,31 @@ authManager.authorizeWithCallbackURL('twitter', appUrl)
 })
 ```
 
+### socialLogin with custom Library
+If you don't want to use [react-native-oauth](https://github.com/fullstackreact/react-native-oauth), you can use other library such as [react-native-facebook-login](https://github.com/magus/react-native-facebook-login). 
+
+```javascript
+var {FBLogin, FBLoginManager} = require('react-native-facebook-login');
+
+var Login = React.createClass({
+  render: function() {
+    return (
+      <FBLogin 
+        onLogin={function(data){
+          console.log("Logged in!");
+          console.log(data);
+          let token = data.credentials.token
+          firestack.signInWithProvider('facebook', token, '') // facebook need only access token.
+            .then((user)=>{
+              console.log(user)
+            })
+        }}
+      />
+    );
+  }
+});
+```
+
 If the `signInWithProvider()` method resolves correct and we have already set up our `listenForAuth()` method properly, it will fire and we'll have a logged in user through Firebase.
 
 ### reauthenticateWithCredentialForProvider()
@@ -312,6 +337,16 @@ It's possible to delete a user completely from your account on Firebase. Calling
 firestack.deleteUser()
 .then(res => console.log('Sad to see you go'))
 .catch(err => console.error('There was an error - Now you are trapped!'))
+```
+
+#### getToken()
+
+If you want user's token, use `getToken()` method.
+
+```javascript
+firestack.getToken()
+.then(res => console.log(res.token))
+.catch(err => console.error('error'))
 ```
 
 #### signOut()
