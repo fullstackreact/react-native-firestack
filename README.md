@@ -38,7 +38,22 @@ gem install cocoapods
 
 > If you run into issues installing cocoapods, please see their [getting started guide](https://guides.cocoapods.org/using/getting-started.html) for help. 
 
-With cocoapods installed, we'll need to 
+
+With cocoapods installed, we'll need to create a `Podfile` to manage our dependencies and list our new `Firestack` library as a dependency of our project.
+
+```shell
+(cd ios && pod init)
+```
+
+This command will create a `Podfile` in the `ios/` directory of our project. In this file, we'll need to list our dependencies. For now, we'll list one. The `Podfile` itself can be incredibly simple
+
+
+```ruby
+platform :ios, '8.0'
+target 'RoundHere' do
+  pod 'Firestack', :path => '../node_modules/react-native-firestack'
+end
+```
 
 ### Android
 

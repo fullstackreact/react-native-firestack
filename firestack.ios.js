@@ -11,20 +11,20 @@ const storage = require('firebase/storage');
 import {NativeModules, NativeAppEventEmitter} from 'react-native';
 const FirebaseHelper = NativeModules.Firestack;
 
-const promisify = fn => (...args) => {
-  return new Promise((resolve, reject) => {
-    const handler = (err, resp) => err ? reject(err) : resolve(resp);
-    args.push(handler);
-    (typeof fn === 'function' ? fn : FirebaseHelper[fn])
-      .call(FirebaseHelper, ...args);
-  });
-};
+import promisify from './lib/promisify'
+import RemoteConfig from './lib/remoteConfig'
 
-export default class Firestack {
+export class Firestack {
+
   constructor(options) {
     this.options = options || {};
+
+    this._remoteConfig = options.remoteConfig || {};
+    delete options.remoteConfig;
+
     this.appInstance = app.initializeApp(options);
     this.configured = false;
+    this._debug = options.debug || false;
 
     this.eventHandlers = {};
   }
@@ -174,15 +174,15 @@ export default class Firestack {
   }
 
   // Storage
-
-  /**
-   * Configure the library to store the storage url
-   * @param {string} url A string of your firebase storage url
-   * @return {Promise}
-   */
-  setStorageUrl(url) {
-    return promisify('setStorageUrl')(url);
-  }
+  //
+  // /**
+  //  * Configure the library to store the storage url
+  //  * @param {string} url A string of your firebase storage url
+  //  * @return {Promise}
+  //  */
+  // setStorageUrl(url) {
+  //   return promisify('setStorageUrl')(url);
+  // }
 
   /**
    * Upload a filepath
@@ -197,7 +197,8 @@ export default class Firestack {
 
   // database
   get database() {
-    return db();
+    db.enableLogging(this._debug);
+    return db()
   }
 
   /**
@@ -211,6 +212,24 @@ export default class Firestack {
   // other
   get ServerValue() {
     return db.ServerValue;
+  }
+
+  /**
+   * remote config
+   */
+  get remoteConfig() {
+    if (!this.remoteConfig) {
+      this.remoteConfig = new RemoteConfig(this._remoteConfig);
+    }
+    return this.remoteConfig;
+  }
+
+  /**
+   * Redux store
+   **/
+  store(store) {
+    this._store = store;
+    return this;
   }
 
   on(name, cb) {
@@ -227,5 +246,6 @@ export default class Firestack {
       this.eventHandlers.forEach(subscription => subscription.remove());
     }
   }
-
 }
+
+export default Firestack

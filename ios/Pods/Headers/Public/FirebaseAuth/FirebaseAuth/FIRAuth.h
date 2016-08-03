@@ -1,0 +1,1 @@
+../../../../FirebaseAuth/Frameworks/frameworks/FirebaseAuth.framework/Headers/FIRAuth.h

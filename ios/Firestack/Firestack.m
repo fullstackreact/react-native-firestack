@@ -8,6 +8,8 @@
 
 @implementation Firestack
 
+@import Firebase;
+
 @synthesize bridge = _bridge;
 
 RCT_EXPORT_MODULE(Firestack);

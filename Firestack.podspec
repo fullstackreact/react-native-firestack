@@ -4,16 +4,26 @@ version = package["version"]
 repo = package['repository']
 author = package['author']
 
+all_pods = [      
+  'FirebaseAnalytics', 'FirebaseAuth', 'FirebaseRemoteConfig',
+  'FirebaseDatabase', 'FirebaseStorage', 'FirebaseInstanceID',
+  'GoogleInterchangeUtilities', 'GoogleIPhoneUtilities',
+  'GoogleNetworkingUtilities', 'GoogleParsingUtilities',
+  'GoogleSymbolUtilities'
+]
+
 Pod::Spec.new do |s|
 
   s.name         = "Firestack"
   s.version      = version
   s.summary      = "Firestack makes working with Firebase v3 easy"
+
   s.description  = <<-DESC
   Wanna integrate firebase into your app using React Native?
                    DESC
 
   s.homepage     = "http://fullstackreact.com"
+
   s.license      = { :type => "MIT", :file => "LICENSE" }
   s.author             = { "Ari Lerner" => author }
   s.social_media_url   = 'http://twitter.com/fullstackio'
@@ -61,6 +71,4 @@ Pod::Spec.new do |s|
       ].join(' '),
     'OTHER_LDFLAGS' => '$(inherited) -ObjC'
   }
-
-  s.requires_arc = true
 end
