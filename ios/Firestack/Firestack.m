@@ -6,9 +6,9 @@
 
 #import "Firestack.h"
 
-@implementation Firestack
-
 @import Firebase;
+
+@implementation Firestack
 
 @synthesize bridge = _bridge;
 

@@ -50,8 +50,7 @@ Pod::Spec.new do |s|
     ss.dependency 'Firebase/RemoteConfig'
 
     s.ios.frameworks = [
-      'CFNetwork', 'Security',
-      'SystemConfiguration'
+      'CFNetwork', 'Security', 'SystemConfiguration'
     ]
     s.ios.libraries = ['icucore', 'c++']
   end
@@ -63,11 +62,14 @@ Pod::Spec.new do |s|
 
   s.xcconfig = {
     'HEADER_SEARCH_PATHS' => [
-        "$(inherited)", "${SRCROOT}/../../React/**", "${SRCROOT}/../../node_modules/react-native/**"
+        "$(inherited)", 
+        "${SRCROOT}/../../React/**", 
+        "${SRCROOT}/../../node_modules/react-native/**"
       ].join(' '),
     'FRAMEWORK_SEARCH_PATHS' => [
         "$(inherited)", 
         "${PODS_ROOT}/Firebase/**",
+        "${PODS_ROOT}/FirebaseStorage/**",
       ].join(' '),
     'OTHER_LDFLAGS' => '$(inherited) -ObjC'
   }

@@ -7,80 +7,43 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		058542404FBDFB7EB22CC37DF2212E76 /* Pods-Firestack-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AC80BC36FB996FD0F7B31BD0854DD404 /* Pods-Firestack-dummy.m */; };
-		119E626E5DDAA2D3893AE501A422F9EB /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7336C3619B6C46F51EBB5A19DD32AEF5 /* Security.framework */; };
-		37EA0EA8823156E333CB2426DAB836FB /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6DE1CA2C649A7D498907EDA2BB79F456 /* CFNetwork.framework */; };
-		39D524884CC77320B5C9F3E499EB8399 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 764F56587A817DAF4471759BE67F5970 /* Foundation.framework */; };
-		5A679002C14D5DA8B7E1D6CF28FBE746 /* Firestack.h in Headers */ = {isa = PBXBuildFile; fileRef = 63D3B0922E2332A37F654575AA0EBA57 /* Firestack.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		93E8B088F7BBAFC12C940B09F58DCA1D /* Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = E2D77D1F8021347E5DF5902393CA4022 /* Firestack.m */; };
-		A0AD75ED886A34E924867A1AD571012C /* Firestack-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 630EEF4BC10BE80D080C7F8431C68F5B /* Firestack-dummy.m */; };
-		B7AD96AAA6F2D12B49DE1C60879352A6 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16074B17A28C3B533169A6D610280008 /* SystemConfiguration.framework */; };
-		C859D7A1C1B574AF504EFAF6AE0510C3 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 764F56587A817DAF4471759BE67F5970 /* Foundation.framework */; };
+		085C459D23AE921EAA78C7B4B8B6D38F /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */; };
+		0AEAF196CD2ACAB2FE8CC7A6E8409F05 /* Pods-Firestack-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = AC80BC36FB996FD0F7B31BD0854DD404 /* Pods-Firestack-dummy.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		0C5B29C4A10AC20EED0994FDA1E8FDF7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D41D8CD98F00B204E9800998ECF8427E /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 967B10F2AAD0D6403187B24D1C65FD67;
-			remoteInfo = Firestack;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		08BB73338FFC1236F126F6B863C4DF66 /* GoogleNetworkingUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleNetworkingUtilities.framework; path = Frameworks/GoogleNetworkingUtilities.framework; sourceTree = "<group>"; };
-		09843F3D4411A816CC443A056FD11D99 /* Firestack.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Firestack.xcconfig; sourceTree = "<group>"; };
 		10116FF21FF36C0470AF8DC479846C8B /* Pods-Firestack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Firestack.release.xcconfig"; sourceTree = "<group>"; };
 		1201963F6211BDAD8A0FB04D8BFB230D /* FirebaseAuth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAuth.framework; path = Frameworks/frameworks/FirebaseAuth.framework; sourceTree = "<group>"; };
-		13746D1915AA79D9A22DD32602386C07 /* libPods-Firestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Firestack.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		16074B17A28C3B533169A6D610280008 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/SystemConfiguration.framework; sourceTree = DEVELOPER_DIR; };
 		2087ACABA3ABBF1245E8BC7313912361 /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Frameworks/frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		24FCEF7C1A248E8C3F6F8F742103CE1E /* GoogleIPhoneUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleIPhoneUtilities.framework; path = Frameworks/GoogleIPhoneUtilities.framework; sourceTree = "<group>"; };
 		263C4EBDD83DEC0161C7FFD9D158941A /* Pods-Firestack-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Firestack-resources.sh"; sourceTree = "<group>"; };
-		2674237B6804A6D95CFB8FDECC8D351F /* Firestack-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Firestack-prefix.pch"; sourceTree = "<group>"; };
 		34CD217D4EDFEA229BF9081F4B857093 /* Firebase.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Firebase.h; path = Analytics/Sources/Firebase.h; sourceTree = "<group>"; };
 		3A7E9C23AAC71135534DCB6D6741DD17 /* Pods-Firestack-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-Firestack-acknowledgements.plist"; sourceTree = "<group>"; };
 		51A75E82F89362C648FB3F5AA4C31000 /* Pods-Firestack.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-Firestack.debug.xcconfig"; sourceTree = "<group>"; };
 		60F54387289D8C71AE8B7D3FF57E3A1A /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Frameworks/frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
-		630EEF4BC10BE80D080C7F8431C68F5B /* Firestack-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Firestack-dummy.m"; sourceTree = "<group>"; };
-		63D3B0922E2332A37F654575AA0EBA57 /* Firestack.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = Firestack.h; sourceTree = "<group>"; };
 		66D61DC6FA6A786A5D81A8B2D64B20A5 /* FirebaseStorage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseStorage.framework; path = Frameworks/FirebaseStorage.framework; sourceTree = "<group>"; };
 		6B891AFCC4A7E0F259038F91C61EA036 /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = Frameworks/GoogleUtilities.framework; sourceTree = "<group>"; };
 		6C972655B053E5F7D4130EF4AB51D23F /* FirebaseDatabase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseDatabase.framework; path = Frameworks/FirebaseDatabase.framework; sourceTree = "<group>"; };
-		6DE1CA2C649A7D498907EDA2BB79F456 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/CFNetwork.framework; sourceTree = DEVELOPER_DIR; };
-		7336C3619B6C46F51EBB5A19DD32AEF5 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
-		7549A2F2E6EC17AAB372BF79707BF265 /* libFirestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFirestack.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		764F56587A817DAF4471759BE67F5970 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		78ADCBBCCC1ADA1A92D49AEC07ACE32E /* FirebaseRemoteConfig.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseRemoteConfig.framework; path = Frameworks/frameworks/FirebaseRemoteConfig.framework; sourceTree = "<group>"; };
+		85D309819A828D8F409CC57D97B2C80C /* libPods-Firestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Firestack.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		A68A13D4407469A2A207125AC0B25507 /* GoogleInterchangeUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleInterchangeUtilities.framework; path = Frameworks/GoogleInterchangeUtilities.framework; sourceTree = "<group>"; };
 		AC80BC36FB996FD0F7B31BD0854DD404 /* Pods-Firestack-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-Firestack-dummy.m"; sourceTree = "<group>"; };
 		CD4F0A93CF23C5D2E8E0AFF7282C3857 /* FIRInstanceID.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FIRInstanceID.h; path = Sources/FIRInstanceID.h; sourceTree = "<group>"; };
+		CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS9.3.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		D4663694440B210754F07AF74865B29D /* GoogleParsingUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleParsingUtilities.framework; path = Frameworks/GoogleParsingUtilities.framework; sourceTree = "<group>"; };
-		E2D77D1F8021347E5DF5902393CA4022 /* Firestack.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = Firestack.m; sourceTree = "<group>"; };
 		E662B6EEA48A59EF473672A9FB5F9C49 /* GoogleSymbolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSymbolUtilities.framework; path = Frameworks/GoogleSymbolUtilities.framework; sourceTree = "<group>"; };
 		E6B307CB884373019013A21353935A96 /* Pods-Firestack-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-Firestack-acknowledgements.markdown"; sourceTree = "<group>"; };
 		F59A93F4A018FD9ACD6DD581749559CA /* Pods-Firestack-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-Firestack-frameworks.sh"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		70B1437ADB5E349DF836801F3BF3680C /* Frameworks */ = {
+		F7B8334F4F139A3967B9F2DE452E3963 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37EA0EA8823156E333CB2426DAB836FB /* CFNetwork.framework in Frameworks */,
-				39D524884CC77320B5C9F3E499EB8399 /* Foundation.framework in Frameworks */,
-				119E626E5DDAA2D3893AE501A422F9EB /* Security.framework in Frameworks */,
-				B7AD96AAA6F2D12B49DE1C60879352A6 /* SystemConfiguration.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		777FAB92F1AA33D249BF59E8195986B2 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				C859D7A1C1B574AF504EFAF6AE0510C3 /* Foundation.framework in Frameworks */,
+				085C459D23AE921EAA78C7B4B8B6D38F /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -118,24 +81,6 @@
 			path = "Target Support Files/Pods-Firestack";
 			sourceTree = "<group>";
 		};
-		14B8B9B15ECBE87983FF987239AB2D7B /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				21E8101B1E2DBD0F5665941ACCDCEC22 /* iOS */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		186488FDF9A8C523527B61C3279BF416 /* Firestack */ = {
-			isa = PBXGroup;
-			children = (
-				7A6758DC5A218DB3BA4E1750DE75CD26 /* ios */,
-				CCA40D0668341BEECFF7BC60DF04EC06 /* Support Files */,
-			);
-			name = Firestack;
-			path = ../..;
-			sourceTree = "<group>";
-		};
 		1CFC14C6DEBDAF1F4BDEDEEFFAEDD427 /* FirebaseRemoteConfig */ = {
 			isa = PBXGroup;
 			children = (
@@ -144,32 +89,20 @@
 			path = FirebaseRemoteConfig;
 			sourceTree = "<group>";
 		};
-		21E8101B1E2DBD0F5665941ACCDCEC22 /* iOS */ = {
-			isa = PBXGroup;
-			children = (
-				6DE1CA2C649A7D498907EDA2BB79F456 /* CFNetwork.framework */,
-				764F56587A817DAF4471759BE67F5970 /* Foundation.framework */,
-				7336C3619B6C46F51EBB5A19DD32AEF5 /* Security.framework */,
-				16074B17A28C3B533169A6D610280008 /* SystemConfiguration.framework */,
-			);
-			name = iOS;
-			sourceTree = "<group>";
-		};
-		3128DB7D2F400881BFF4938FFFDF86F3 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				7549A2F2E6EC17AAB372BF79707BF265 /* libFirestack.a */,
-				13746D1915AA79D9A22DD32602386C07 /* libPods-Firestack.a */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		36B7653B15220587111A53E09F9DEC98 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
 				60F54387289D8C71AE8B7D3FF57E3A1A /* FirebaseAnalytics.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		3DCAB2B7CDE207B3958B6CB957FCC758 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				CEC22C73C1608DFA5D5D78BDCB218219 /* Foundation.framework */,
+			);
+			name = iOS;
 			sourceTree = "<group>";
 		};
 		491E86714F667AEE2A37BB98E3DBCB3E /* FirebaseInstanceID */ = {
@@ -245,6 +178,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		6B4983448F1A23327D292D81DDFD4643 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				85D309819A828D8F409CC57D97B2C80C /* libPods-Firestack.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		78F980406D4C2B861136A880F21EE08E /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -253,22 +194,13 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		7A6758DC5A218DB3BA4E1750DE75CD26 /* ios */ = {
-			isa = PBXGroup;
-			children = (
-				BA575B8BF3D1E5881E1D14407F88448C /* Firestack */,
-			);
-			path = ios;
-			sourceTree = "<group>";
-		};
 		7DB346D0F39D3F0E887471402A8071AB = {
 			isa = PBXGroup;
 			children = (
 				93A4A3777CF96A4AAC1D13BA6DCCEA73 /* Podfile */,
-				B4494984729A3F89B5B5DD83A778B5F2 /* Development Pods */,
-				14B8B9B15ECBE87983FF987239AB2D7B /* Frameworks */,
+				BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */,
 				94AF0F1D26F9F244D225CA596AA112F7 /* Pods */,
-				3128DB7D2F400881BFF4938FFFDF86F3 /* Products */,
+				6B4983448F1A23327D292D81DDFD4643 /* Products */,
 				AC198A4C27405EDFC4F34222662AE83A /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
@@ -325,14 +257,6 @@
 			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
-		B4494984729A3F89B5B5DD83A778B5F2 /* Development Pods */ = {
-			isa = PBXGroup;
-			children = (
-				186488FDF9A8C523527B61C3279BF416 /* Firestack */,
-			);
-			name = "Development Pods";
-			sourceTree = "<group>";
-		};
 		B9935B615E12A88E5BD2E5B342451A54 /* FirebaseAuth */ = {
 			isa = PBXGroup;
 			children = (
@@ -341,13 +265,12 @@
 			path = FirebaseAuth;
 			sourceTree = "<group>";
 		};
-		BA575B8BF3D1E5881E1D14407F88448C /* Firestack */ = {
+		BC3CA7F9E30CC8F7E2DD044DD34432FC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				63D3B0922E2332A37F654575AA0EBA57 /* Firestack.h */,
-				E2D77D1F8021347E5DF5902393CA4022 /* Firestack.m */,
+				3DCAB2B7CDE207B3958B6CB957FCC758 /* iOS */,
 			);
-			path = Firestack;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		C1E7C746EF67284F31CCB242FFEB82B4 /* Frameworks */ = {
@@ -380,17 +303,6 @@
 				C1E7C746EF67284F31CCB242FFEB82B4 /* Frameworks */,
 			);
 			path = GoogleNetworkingUtilities;
-			sourceTree = "<group>";
-		};
-		CCA40D0668341BEECFF7BC60DF04EC06 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				09843F3D4411A816CC443A056FD11D99 /* Firestack.xcconfig */,
-				630EEF4BC10BE80D080C7F8431C68F5B /* Firestack-dummy.m */,
-				2674237B6804A6D95CFB8FDECC8D351F /* Firestack-prefix.pch */,
-			);
-			name = "Support Files";
-			path = "ios/Pods/Target Support Files/Firestack";
 			sourceTree = "<group>";
 		};
 		D6268B61459A4C2B83CA56570BE8B0CD /* FirebaseAnalytics */ = {
@@ -427,50 +339,21 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		91BDD2EE506EDE0B04C16A159DDD384C /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				5A679002C14D5DA8B7E1D6CF28FBE746 /* Firestack.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		497B8F86B4917928226CDDB22FCCC360 /* Pods-Firestack */ = {
+		815EB7527B696DB4C2DE9602F3C0A177 /* Pods-Firestack */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 153956BF874F8E2FD968EBED52552315 /* Build configuration list for PBXNativeTarget "Pods-Firestack" */;
+			buildConfigurationList = B5FCC2C8BBB82D3D6FE3B7D2717D2AA2 /* Build configuration list for PBXNativeTarget "Pods-Firestack" */;
 			buildPhases = (
-				552A01961767A650D003FC62B5FD5CA8 /* Sources */,
-				777FAB92F1AA33D249BF59E8195986B2 /* Frameworks */,
+				E488618ACDE96DC57B35D1C7CB46CFF7 /* Sources */,
+				F7B8334F4F139A3967B9F2DE452E3963 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				72E938A86F6719197855E6F90D69F36C /* PBXTargetDependency */,
 			);
 			name = "Pods-Firestack";
 			productName = "Pods-Firestack";
-			productReference = 13746D1915AA79D9A22DD32602386C07 /* libPods-Firestack.a */;
-			productType = "com.apple.product-type.library.static";
-		};
-		967B10F2AAD0D6403187B24D1C65FD67 /* Firestack */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 558B24748D560034E6CA72957991060C /* Build configuration list for PBXNativeTarget "Firestack" */;
-			buildPhases = (
-				91D1ED3900ACEA597A6A9B24B2E2D029 /* Sources */,
-				70B1437ADB5E349DF836801F3BF3680C /* Frameworks */,
-				91BDD2EE506EDE0B04C16A159DDD384C /* Headers */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = Firestack;
-			productName = Firestack;
-			productReference = 7549A2F2E6EC17AAB372BF79707BF265 /* libFirestack.a */;
+			productReference = 85D309819A828D8F409CC57D97B2C80C /* libPods-Firestack.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
@@ -490,47 +373,28 @@
 				en,
 			);
 			mainGroup = 7DB346D0F39D3F0E887471402A8071AB;
-			productRefGroup = 3128DB7D2F400881BFF4938FFFDF86F3 /* Products */;
+			productRefGroup = 6B4983448F1A23327D292D81DDFD4643 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				967B10F2AAD0D6403187B24D1C65FD67 /* Firestack */,
-				497B8F86B4917928226CDDB22FCCC360 /* Pods-Firestack */,
+				815EB7527B696DB4C2DE9602F3C0A177 /* Pods-Firestack */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		552A01961767A650D003FC62B5FD5CA8 /* Sources */ = {
+		E488618ACDE96DC57B35D1C7CB46CFF7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				058542404FBDFB7EB22CC37DF2212E76 /* Pods-Firestack-dummy.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		91D1ED3900ACEA597A6A9B24B2E2D029 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				A0AD75ED886A34E924867A1AD571012C /* Firestack-dummy.m in Sources */,
-				93E8B088F7BBAFC12C940B09F58DCA1D /* Firestack.m in Sources */,
+				0AEAF196CD2ACAB2FE8CC7A6E8409F05 /* Pods-Firestack-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		72E938A86F6719197855E6F90D69F36C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = Firestack;
-			target = 967B10F2AAD0D6403187B24D1C65FD67 /* Firestack */;
-			targetProxy = 0C5B29C4A10AC20EED0994FDA1E8FDF7 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		2B2A6C99C16992E2F6E98782F6E4A819 /* Debug */ = {
+		3F175AD555FE99CC866D1EC5B0C70985 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 51A75E82F89362C648FB3F5AA4C31000 /* Pods-Firestack.debug.xcconfig */;
 			buildSettings = {
@@ -545,7 +409,7 @@
 					"$(SRCROOT)/../../../react-native/React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MACH_O_TYPE = mh_dylib;
+				MACH_O_TYPE = staticlib;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -604,15 +468,14 @@
 			};
 			name = Debug;
 		};
-		4A619AD359AD78BED7DBCB9ED6D4B679 /* Release */ = {
+		614BA28AAF6D400E5046DAA5D4D2EFAD /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 09843F3D4411A816CC443A056FD11D99 /* Firestack.xcconfig */;
+			baseConfigurationReference = 10116FF21FF36C0470AF8DC479846C8B /* Pods-Firestack.release.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "Target Support Files/Firestack/Firestack-prefix.pch";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"${PODS_ROOT}/Headers/**",
@@ -620,6 +483,7 @@
 					"$(SRCROOT)/../../../react-native/React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				MACH_O_TYPE = staticlib;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -627,9 +491,9 @@
 					dynamic_lookup,
 				);
 				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
@@ -674,82 +538,9 @@
 			};
 			name = Release;
 		};
-		C0061BBD06F15377CD893CDE38290DBF /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 09843F3D4411A816CC443A056FD11D99 /* Firestack.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_PREFIX_HEADER = "Target Support Files/Firestack/Firestack-prefix.pch";
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"${PODS_ROOT}/Headers/**",
-					"$(SRCROOT)/../../../React/**",
-					"$(SRCROOT)/../../../react-native/React/**",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MTL_ENABLE_DEBUG_INFO = YES;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-undefined",
-					dynamic_lookup,
-				);
-				OTHER_LIBTOOLFLAGS = "";
-				PRIVATE_HEADERS_FOLDER_PATH = "";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PUBLIC_HEADERS_FOLDER_PATH = "";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
-			};
-			name = Debug;
-		};
-		E4082EF84D401EFFC8024D02FB1A4E89 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 10116FF21FF36C0470AF8DC479846C8B /* Pods-Firestack.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"${PODS_ROOT}/Headers/**",
-					"$(SRCROOT)/../../../React/**",
-					"$(SRCROOT)/../../../react-native/React/**",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MACH_O_TYPE = mh_dylib;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-undefined",
-					dynamic_lookup,
-				);
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		153956BF874F8E2FD968EBED52552315 /* Build configuration list for PBXNativeTarget "Pods-Firestack" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				2B2A6C99C16992E2F6E98782F6E4A819 /* Debug */,
-				E4082EF84D401EFFC8024D02FB1A4E89 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		2D8E8EC45A3A1A1D94AE762CB5028504 /* Build configuration list for PBXProject "Pods" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -759,11 +550,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		558B24748D560034E6CA72957991060C /* Build configuration list for PBXNativeTarget "Firestack" */ = {
+		B5FCC2C8BBB82D3D6FE3B7D2717D2AA2 /* Build configuration list for PBXNativeTarget "Pods-Firestack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C0061BBD06F15377CD893CDE38290DBF /* Debug */,
-				4A619AD359AD78BED7DBCB9ED6D4B679 /* Release */,
+				3F175AD555FE99CC866D1EC5B0C70985 /* Debug */,
+				614BA28AAF6D400E5046DAA5D4D2EFAD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

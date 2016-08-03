@@ -1,0 +1,1 @@
+../../../../FirebaseDatabase/Frameworks/FirebaseDatabase.framework/Headers/FirebaseDatabase.h

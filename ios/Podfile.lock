@@ -38,14 +38,6 @@ PODS:
   - FirebaseStorage (1.0.2):
     - FirebaseAnalytics (~> 3.2)
     - GoogleNetworkingUtilities (~> 1.2)
-  - Firestack (0.0.2):
-    - Firestack/Core (= 0.0.2)
-  - Firestack/Core (0.0.2):
-    - Firebase/Auth
-    - Firebase/Core
-    - Firebase/Database
-    - Firebase/RemoteConfig
-    - Firebase/Storage
   - GoogleInterchangeUtilities (1.2.1):
     - GoogleSymbolUtilities (~> 1.0)
   - GoogleIPhoneUtilities (1.2.1):
@@ -61,11 +53,11 @@ PODS:
     - GoogleSymbolUtilities (~> 1.0)
 
 DEPENDENCIES:
-  - Firestack (from `../`)
-
-EXTERNAL SOURCES:
-  Firestack:
-    :path: "../"
+  - Firebase/Auth
+  - Firebase/Core
+  - Firebase/Database
+  - Firebase/RemoteConfig
+  - Firebase/Storage
 
 SPEC CHECKSUMS:
   Firebase: 754562547af419cc2f4b15247fee419081924bc2
@@ -75,7 +67,6 @@ SPEC CHECKSUMS:
   FirebaseInstanceID: ba1e640935235e5fac39dfa816fe7660e72e1a8a
   FirebaseRemoteConfig: c5378e689c1edb54ff62061b8f6a908263dd80ae
   FirebaseStorage: fa2a87dee81f682f553af6839daa37a750e65f6a
-  Firestack: b248e760446e93c68c34dbaa891d1d2f2c0303a5
   GoogleInterchangeUtilities: def8415a862effc67d549d5b5b0b9c7a2f97d4de
   GoogleIPhoneUtilities: 63f25e93a3ddcb66884d182aab3a660d98f1479b
   GoogleNetworkingUtilities: 3e83269048cfb498dc7ec83ab36813360965c74f
@@ -83,6 +74,6 @@ SPEC CHECKSUMS:
   GoogleSymbolUtilities: 33117db1b5f290c6fbf259585e4885b4c84b98d7
   GoogleUtilities: 56c5ac05b7aa5dc417a1bb85221a9516e04d7032
 
-PODFILE CHECKSUM: 87a05ce87fe0515d14ab781d97524d211aa017f5
+PODFILE CHECKSUM: 19dee440fb6a2e26dc0083983be8069f40bcbe4f
 
 COCOAPODS: 1.0.1

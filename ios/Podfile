@@ -3,17 +3,17 @@ source 'https://github.com/CocoaPods/Specs.git'
 platform :ios, '8.0'
 
 def common_specs
-  pod 'Firestack', :path => '../'
+  # pod 'Firestack', :path => '../'
   # pod 'React', :path => '../node_modules/react-native'
-  # [
-  #   'Firebase/Core',
-  #   'Firebase/Auth',
-  #   'Firebase/Storage',
-  #   'Firebase/Database',
-  #   'Firebase/RemoteConfig'
-  # ].each do |lib|
-  #   pod lib
-  # end
+  [
+    'Firebase/Core',
+    'Firebase/Auth',
+    'Firebase/Storage',
+    'Firebase/Database',
+    'Firebase/RemoteConfig'
+  ].each do |lib|
+    pod lib
+  end
 end
 
 target 'Firestack' do
