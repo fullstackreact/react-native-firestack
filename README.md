@@ -53,7 +53,27 @@ If you prefer not to use `rnpm`, we can manually link the package together with 
   1. `$(SRCROOT)/../../react-native/React`
   2. `$(SRCROOT)/../node_modules/react-native/React`
 
+<<<<<<< Updated upstream
 ![Recursive paths](http://d.pr/i/1hAr1.png)
+=======
+With cocoapods installed, we'll need to create a `Podfile` to manage our dependencies and list our new `Firestack` library as a dependency of our project.
+
+```shell
+(cd ios && pod init)
+```
+
+This command will create a `Podfile` in the `ios/` directory of our project. In this file, we'll need to list our dependencies. For now, we'll list one. The `Podfile` itself can be incredibly simple
+
+
+```ruby
+platform :ios, '8.0'
+target 'RoundHere' do
+  pod 'Firestack', :path => '../node_modules/react-native-firestack'
+end
+```
+
+
+>>>>>>> Stashed changes
 
 ### Android
 

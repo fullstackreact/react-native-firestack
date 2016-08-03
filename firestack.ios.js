@@ -11,45 +11,11 @@ const storage = require('firebase/storage');
 import {NativeModules, NativeAppEventEmitter} from 'react-native';
 const FirebaseHelper = NativeModules.Firestack;
 
-const promisify = fn => (...args) => {
-  return new Promise((resolve, reject) => {
-    const handler = (err, resp) => err ? reject(err) : resolve(resp);
-    args.push(handler);
-    (typeof fn === 'function' ? fn : FirebaseHelper[fn])
-      .call(FirebaseHelper, ...args);
-  });
-};
+import promisify from './lib/promisify'
+import RemoteConfig from './lib/remoteConfig'
 
-/**
- * Configuration class
- */
-const defaultExpiration = 60 * 60 * 24; // one day
-class RemoteConfig {
-  constructor(options) {
-    this.config = options || {};
+export class Firestack {
 
-    this.setDefaultRemoteConfig(options)
-    .then(() => this.configured = true);
-  }
-
-  setDefaultRemoteConfig(options) {
-    return promisify('setDefaultRemoteConfig')(options);
-  }
-
-  fetchWithExpiration(expirationSeconds=defaultExpiration) {
-    return promisify('fetchWithExpiration')(expirationSeconds)
-  }
-
-  config(name) {
-    return promisify('configValueForKey')(name);
-  }
-
-  setDev() {
-    return promisify('setDev')();
-  }
-}
-
-export default class Firestack {
   constructor(options) {
     this.options = options || {};
 
@@ -258,6 +224,14 @@ export default class Firestack {
     return this.remoteConfig;
   }
 
+  /**
+   * Redux store
+   **/
+  store(store) {
+    this._store = store;
+    return this;
+  }
+
   on(name, cb) {
     if (!this.eventHandlers[name]) {
       this.eventHandlers[name] = [];
@@ -272,5 +246,6 @@ export default class Firestack {
       this.eventHandlers.forEach(subscription => subscription.remove());
     }
   }
-
 }
+
+export default Firestack

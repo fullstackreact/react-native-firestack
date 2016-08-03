@@ -4,6 +4,14 @@ version = package["version"]
 repo = package['repository']
 author = package['author']
 
+all_pods = [      
+  'FirebaseAnalytics', 'FirebaseAuth', 'FirebaseRemoteConfig',
+  'FirebaseDatabase', 'FirebaseStorage', 'FirebaseInstanceID',
+  'GoogleInterchangeUtilities', 'GoogleIPhoneUtilities',
+  'GoogleNetworkingUtilities', 'GoogleParsingUtilities',
+  'GoogleSymbolUtilities'
+]
+
 Pod::Spec.new do |s|
 
   s.name         = "Firestack"
@@ -60,20 +68,37 @@ Pod::Spec.new do |s|
   # s.tvos.deployment_target = "9.0"
 
 
+<<<<<<< Updated upstream
   # ――― Source Location ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  Specify the location from where the source should be retrieved.
   #  Supports git, hg, bzr, svn and HTTP.
   #
+=======
+  s.default_subspec = 'Core'
+  s.subspec 'Core' do |ss|
+    ss.dependency "React" ## Really don't want to do this...
+>>>>>>> Stashed changes
 
   # s.source       = { :git => "https://github.com/fullstackreact/react-native-firestack.git", :tag => "#{s.version}" }
   s.source = { :git => repo['url'], :tag => "feature/remoteConfig" }
   # s.source_files  = "ios/Firestack"#, "ios/Firestack/*.{h,m}"
 
+<<<<<<< Updated upstream
   s.source_files   = 'ios/Firestack/**/*.{h,m}'
   s.preserve_paths = 'README.md', 'package.json', '**/*.js'
   # s.preserve_paths = "**/*.js", "ios/Firestack/Pods/**/*.h"
   # s.preserve_paths = ["**/*.js", "ios/Firestack/Pods/**/*"]
+=======
+    s.ios.frameworks = [
+      'CFNetwork', 'Security',
+      'SystemConfiguration',
+      ].flatten,
+    s.ios.libraries = [
+      'icucore', 'c++',
+    ]
+  end
+>>>>>>> Stashed changes
 
   [
     'Firebase/Core',
@@ -86,8 +111,40 @@ Pod::Spec.new do |s|
   end
   s.dependency 'React'
 
+<<<<<<< Updated upstream
   s.pod_target_xcconfig = {
     'OTHER_LDFLAGS' => '$(inherited) -ObjC -lBOZO'
+=======
+  s.xcconfig = {
+    'HEADER_SEARCH_PATHS' => [
+        "$(inherited)", "${SRCROOT}/../../React/**", "${SRCROOT}/../../node_modules/react-native/**",
+        all_pods.map {|pod| "${PODS_ROOT}/#{pod}/Frameworks/**" }.flatten
+      ].flatten.join(' '),
+    # 'FRAMEWORK_SEARCH_PATHS' => [
+        # "$(inherited)", 
+        # "${PODS_ROOT}/FirebaseAnalytics/Frameworks/frameworks",
+        # "${PODS_ROOT}/FirebaseAuth/Frameworks",
+        # "${PODS_ROOT}/FirebaseRemoteConfig/Frameworks",
+        # "${PODS_ROOT}/FirebaseDatabase/Frameworks",
+        # "${PODS_ROOT}/FirebaseStorage/Frameworks",
+        # "${PODS_ROOT}/FirebaseInstanceID/Frameworks/frameworks",
+        # "${PODS_ROOT}/FirebaseRemoteConfig/Frameworks",
+        # "${PODS_ROOT}/GoogleInterchangeUtilities/Frameworks",
+        # "${PODS_ROOT}/GoogleIPhoneUtilities/Frameworks",
+        # "${PODS_ROOT}/GoogleNetworkingUtilities/Frameworks",
+        # "${PODS_ROOT}/GoogleParsingUtilities/Frameworks",
+        # "${PODS_ROOT}/GoogleSymbolUtilities/Frameworks",
+      # ].join(' '),
+    # 'LIBRARY_SEARCH_PATHS' => [
+    #     "$(inherited)", 
+    #     all_pods.map {|name| "${PODS_ROOT}/#{name}/**"}.flatten
+    #   ].flatten.join(' '),
+    # 'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/Frameworks',
+    'OTHER_LDFLAGS' => [
+      '$(inherited) -ObjC', 
+      # "${PODS_ROOT}/FirebaseAnalytics/Frameworks/frameworks"
+      ].flatten.join(' ')
+>>>>>>> Stashed changes
   }
 
   # s.ios.vendored_library    = 'libFirestack.a'

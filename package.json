@@ -3,7 +3,7 @@
   "version": "0.0.2",
   "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "description": "A firebase v3 adapter",
-  "main": "firestack",
+  "main": "index",
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "compile": "babel --presets es2015,stage-0 -d . src/",
