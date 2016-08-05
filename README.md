@@ -20,6 +20,12 @@ npm install react-native-firestack --save
 
 To use Firestack, we'll need to have a development environment that includes the same prerequisites of Firebase.
 
+Regardless of which linking you choose to run with, it is _very_ important to "embed" the framework `libFirestack.a` in your application. Until we can find an automated way of handling this, *this needs to be done manually*.
+
+Find your application tab in Xcode, click on `Build Phases`. In there, find the build phase of `Embed Frameworks` and click the `+` button and add `libFirestack.a` to the list. Make sure the `Code Sign on Copy` checkbox is ticked on and the destination is Frameworks with an empty subpath.
+
+![Embed frameworks](http://d.pr/i/1aZq5.png)
+
 ### iOS
 
 We need to link the package with our development packaging. We have two options to handle linking:
