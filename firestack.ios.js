@@ -22,21 +22,23 @@ export class Firestack {
     this._remoteConfig = options.remoteConfig || {};
     delete options.remoteConfig;
 
-    this.appInstance = app.initializeApp(options);
     this.configured = false;
     this._debug = options.debug || false;
 
     this.eventHandlers = {};
+
+    this.configure(options);
   }
 
   configure(opts) {
     opts = opts || {};
     const firestackOptions = Object.assign({}, this.options, opts);
+    this.appInstance = app.initializeApp(firestackOptions);
     return promisify('configureWithOptions')(firestackOptions)
     .then((...args) => {
       this.configured = true;
       return args;
-    });
+    }).catch((err) => {})
   }
 
   // Auth
@@ -49,6 +51,12 @@ export class Firestack {
   unlistenForAuth() {
     this.off('listenForAuth');
     return promisify('unlistenForAuth')();
+  }
+
+  setStore(store) {
+    if (store) {
+      this._store = store;
+    }
   }
 
   /**
@@ -234,9 +242,8 @@ export class Firestack {
   /**
    * Redux store
    **/
-  store(store) {
-    this._store = store;
-    return this;
+  get store() {
+    return this._store;
   }
 
   on(name, cb) {

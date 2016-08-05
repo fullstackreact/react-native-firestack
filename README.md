@@ -500,6 +500,8 @@ npm install
 
 The following is left to be done:
 
+- [ ] Complete FirebaseModule functionality
+- [ ] Document FirebaseModule
 - [ ] Add Android support
 - [ ] Add Cloud Messaging
 - [ ] Move to use swift (cleaner syntax)
