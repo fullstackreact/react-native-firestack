@@ -394,12 +394,12 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		3F175AD555FE99CC866D1EC5B0C70985 /* Debug */ = {
+		1D06C908BA81E0C3976F7857471AF843 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 51A75E82F89362C648FB3F5AA4C31000 /* Pods-Firestack.debug.xcconfig */;
+			baseConfigurationReference = 10116FF21FF36C0470AF8DC479846C8B /* Pods-Firestack.release.xcconfig */;
 			buildSettings = {
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (
@@ -409,8 +409,10 @@
 					"$(SRCROOT)/../../../react-native/React/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_DYLIB_INSTALL_NAME = "@rpath/${EXECUTABLE_PATH}";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @rpath @loader_path/../Frameworks @executable_path/Frameworks";
 				MACH_O_TYPE = staticlib;
-				MTL_ENABLE_DEBUG_INFO = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-undefined",
@@ -424,7 +426,7 @@
 				SKIP_INSTALL = YES;
 				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
 			};
-			name = Debug;
+			name = Release;
 		};
 		47BEF9D903506B003EA5C2B249729489 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -468,38 +470,6 @@
 			};
 			name = Debug;
 		};
-		614BA28AAF6D400E5046DAA5D4D2EFAD /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 10116FF21FF36C0470AF8DC479846C8B /* Pods-Firestack.release.xcconfig */;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				HEADER_SEARCH_PATHS = (
-					"$(inherited)",
-					"${PODS_ROOT}/Headers/**",
-					"$(SRCROOT)/../../../React/**",
-					"$(SRCROOT)/../../../react-native/React/**",
-				);
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
-				MACH_O_TYPE = staticlib;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				OTHER_LDFLAGS = (
-					"$(inherited)",
-					"-undefined",
-					dynamic_lookup,
-				);
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
-			};
-			name = Release;
-		};
 		AAF678CED40D3499169D10F63CA0719E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -538,6 +508,40 @@
 			};
 			name = Release;
 		};
+		FB481EC6E4954E2AEDEA9390B0AF9D24 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 51A75E82F89362C648FB3F5AA4C31000 /* Pods-Firestack.debug.xcconfig */;
+			buildSettings = {
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"${PODS_ROOT}/Headers/**",
+					"$(SRCROOT)/../../../React/**",
+					"$(SRCROOT)/../../../react-native/React/**",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				LD_DYLIB_INSTALL_NAME = "@rpath/${EXECUTABLE_PATH}";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @rpath @loader_path/../Frameworks @executable_path/Frameworks";
+				MACH_O_TYPE = staticlib;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					"-undefined",
+					dynamic_lookup,
+				);
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+			};
+			name = Debug;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -553,8 +557,8 @@
 		B5FCC2C8BBB82D3D6FE3B7D2717D2AA2 /* Build configuration list for PBXNativeTarget "Pods-Firestack" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				3F175AD555FE99CC866D1EC5B0C70985 /* Debug */,
-				614BA28AAF6D400E5046DAA5D4D2EFAD /* Release */,
+				FB481EC6E4954E2AEDEA9390B0AF9D24 /* Debug */,
+				1D06C908BA81E0C3976F7857471AF843 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

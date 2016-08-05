@@ -463,9 +463,7 @@ RCT_EXPORT_METHOD(uploadFile:(NSString *) name
                   path:(NSString *)path
                   metadata:(NSDictionary *)metadata
                   callback:(RCTResponseSenderBlock) callback)
-{
-    NSDictionary *cfg = [self getConfig];
-    
+{    
     NSString *urlStr = [self getStorageUrl];
     
     if (urlStr == nil) {

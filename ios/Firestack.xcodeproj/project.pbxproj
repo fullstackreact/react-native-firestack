@@ -9,6 +9,12 @@
 /* Begin PBXBuildFile section */
 		8CCBD6DBFA92784E209B2036 /* libPods-Firestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BC7A41E090E02D6F58081C8B /* libPods-Firestack.a */; };
 		D950369E1D19C77400F7094D /* Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* Firestack.m */; };
+		D9CFBE7A1D531088002623BF /* FirebaseAnalytics.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D9CFBE791D531088002623BF /* FirebaseAnalytics.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D9CFBE7C1D531092002623BF /* FirebaseAuth.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D9CFBE7B1D531092002623BF /* FirebaseAuth.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D9CFBE7E1D5310A1002623BF /* FirebaseDatabase.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D9CFBE7D1D5310A1002623BF /* FirebaseDatabase.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D9CFBE801D5310AA002623BF /* FirebaseInstanceID.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D9CFBE7F1D5310AA002623BF /* FirebaseInstanceID.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D9CFBE821D5310B4002623BF /* FirebaseRemoteConfig.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D9CFBE811D5310B4002623BF /* FirebaseRemoteConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		D9CFBE841D5310BD002623BF /* FirebaseStorage.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = D9CFBE831D5310BD002623BF /* FirebaseStorage.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,9 +31,15 @@
 		58B511D91A9E6C8500147676 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
+			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				D9CFBE7A1D531088002623BF /* FirebaseAnalytics.framework in CopyFiles */,
+				D9CFBE7C1D531092002623BF /* FirebaseAuth.framework in CopyFiles */,
+				D9CFBE7E1D5310A1002623BF /* FirebaseDatabase.framework in CopyFiles */,
+				D9CFBE801D5310AA002623BF /* FirebaseInstanceID.framework in CopyFiles */,
+				D9CFBE821D5310B4002623BF /* FirebaseRemoteConfig.framework in CopyFiles */,
+				D9CFBE841D5310BD002623BF /* FirebaseStorage.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -40,6 +52,13 @@
 		D950369C1D19C77400F7094D /* Firestack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Firestack.h; path = Firestack/Firestack.h; sourceTree = "<group>"; };
 		D950369D1D19C77400F7094D /* Firestack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Firestack.m; path = Firestack/Firestack.m; sourceTree = "<group>"; };
 		D95036B31D19C90300F7094D /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
+		D9CFBE441D531058002623BF /* buildScript.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = buildScript.sh; sourceTree = "<group>"; };
+		D9CFBE791D531088002623BF /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Pods/FirebaseAnalytics/Frameworks/frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
+		D9CFBE7B1D531092002623BF /* FirebaseAuth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAuth.framework; path = Pods/FirebaseAuth/Frameworks/frameworks/FirebaseAuth.framework; sourceTree = "<group>"; };
+		D9CFBE7D1D5310A1002623BF /* FirebaseDatabase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseDatabase.framework; path = Pods/FirebaseDatabase/Frameworks/FirebaseDatabase.framework; sourceTree = "<group>"; };
+		D9CFBE7F1D5310AA002623BF /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Pods/FirebaseInstanceID/Frameworks/frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };
+		D9CFBE811D5310B4002623BF /* FirebaseRemoteConfig.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseRemoteConfig.framework; path = Pods/FirebaseRemoteConfig/Frameworks/frameworks/FirebaseRemoteConfig.framework; sourceTree = "<group>"; };
+		D9CFBE831D5310BD002623BF /* FirebaseStorage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseStorage.framework; path = Pods/FirebaseStorage/Frameworks/FirebaseStorage.framework; sourceTree = "<group>"; };
 		E20739D9E57A13C3D42A4876 /* Pods-Firestack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Firestack.release.xcconfig"; path = "Pods/Target Support Files/Pods-Firestack/Pods-Firestack.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -75,6 +94,12 @@
 		4C361DE13748C14BF1F87624 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D9CFBE831D5310BD002623BF /* FirebaseStorage.framework */,
+				D9CFBE811D5310B4002623BF /* FirebaseRemoteConfig.framework */,
+				D9CFBE7F1D5310AA002623BF /* FirebaseInstanceID.framework */,
+				D9CFBE7D1D5310A1002623BF /* FirebaseDatabase.framework */,
+				D9CFBE7B1D531092002623BF /* FirebaseAuth.framework */,
+				D9CFBE791D531088002623BF /* FirebaseAnalytics.framework */,
 				D95036B31D19C90300F7094D /* Pods.xcodeproj */,
 				BC7A41E090E02D6F58081C8B /* libPods-Firestack.a */,
 			);
@@ -84,6 +109,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				D9CFBE441D531058002623BF /* buildScript.sh */,
 				D950369C1D19C77400F7094D /* Firestack.h */,
 				D950369D1D19C77400F7094D /* Firestack.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -310,6 +336,7 @@
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACH_O_TYPE = mh_dylib;
@@ -344,6 +371,7 @@
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_DYLIB_INSTALL_NAME = "";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACH_O_TYPE = mh_dylib;

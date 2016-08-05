@@ -24,12 +24,12 @@ To use Firestack, we'll need to have a development environment that includes the
 
 We need to link the package with our development packaging. We have two options to handle linking:
 
-#### Automatically with [rnpm](https://github.com/rnpm/rnpm)
+#### Automatically with react-native-cli
 
-[rnpm](https://github.com/rnpm/rnpm) is a React Native package manager which can help to automate the process of linking package environments.
+React native ships with a `link` command that can be used to link the projects together, which can help automate the process of linking our package environments.
 
 ```bash
-rnpm link
+react-native link react-native-firestack
 ```
 
 Firestack will automatically pull in all of the Firebase requirements and link Firebase to our own project.

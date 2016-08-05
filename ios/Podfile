@@ -26,6 +26,9 @@ target 'Firestack' do
       target.build_configurations.each do |configuration|
         # target.build_settings(configuration.name)['FRAMEWORK_SEARCH_PATHS'] = flat_frameworks
         target.build_settings(configuration.name)['USER_HEADER_SEARCH_PATHS'] = "$(BUILT_PRODUCTS_DIR)"
+        target.build_settings(configuration.name)['LD_DYLIB_INSTALL_NAME'] = '@rpath/${EXECUTABLE_PATH}'
+        target.build_settings(configuration.name)['LD_RUNPATH_SEARCH_PATHS'] = '$(inherited) @rpath @loader_path/../Frameworks @executable_path/Frameworks'
+
         target.build_settings(configuration.name)['HEADER_SEARCH_PATHS'] = [
           "$(inherited)", "${PODS_ROOT}/Headers/**",
           "$(SRCROOT)/../../../React/**",

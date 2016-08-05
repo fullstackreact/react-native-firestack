@@ -40,25 +40,10 @@ Pod::Spec.new do |s|
   s.source_files   = 'ios/Firestack/*.{h,m}'
   s.preserve_paths = 'README.md', 'package.json', '*.js'
 
-  s.default_subspec = 'Core'
-  s.subspec 'Core' do |ss|
-
-    ss.dependency 'Firebase/Core'
-    ss.dependency 'Firebase/Auth'
-    ss.dependency 'Firebase/Storage'
-    ss.dependency 'Firebase/Database'
-    ss.dependency 'Firebase/RemoteConfig'
-
-    s.ios.frameworks = [
-      'CFNetwork', 'Security', 'SystemConfiguration'
-    ]
-    s.ios.libraries = ['icucore', 'c++']
-  end
-
-  # Dev is used only to stub for lib linting and development
-  s.subspec 'Dev' do |ss|
-    ss.dependency "React"
-  end
+  s.ios.frameworks = [
+    'CFNetwork', 'Security', 'SystemConfiguration'
+  ]
+  s.ios.libraries = ['icucore', 'c++', 'sqlite3', 'z']
 
   s.xcconfig = {
     'HEADER_SEARCH_PATHS' => [
