@@ -1,6 +1,6 @@
 {
   "name": "react-native-firestack",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "description": "A firebase v3 adapter",
   "main": "index",
