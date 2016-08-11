@@ -2,13 +2,13 @@
  * @providesModule Firestack
  * @flow
  */
-const FirebaseManager = require('firebase');
+const firebase = require('firebase');
 
 const app = require('firebase/app');
 const db = require('firebase/database');
 const storage = require('firebase/storage');
 
-import {NativeModules, NativeAppEventEmitter} from 'react-native';
+import {NativeModules, NativeAppEventEmitter, AsyncStorage} from 'react-native';
 const FirebaseHelper = NativeModules.Firestack;
 
 import promisify from './lib/promisify'
@@ -24,6 +24,7 @@ export class Firestack {
 
     this.configured = false;
     this._debug = options.debug || false;
+    this.auth = null;
 
     this.eventHandlers = {};
 
@@ -34,6 +35,7 @@ export class Firestack {
     opts = opts || {};
     const firestackOptions = Object.assign({}, this.options, opts);
     this.appInstance = app.initializeApp(firestackOptions);
+
     return promisify('configureWithOptions')(firestackOptions)
     .then((...args) => {
       this.configured = true;
@@ -43,6 +45,10 @@ export class Firestack {
 
   // Auth
   listenForAuth(callback) {
+    this.on('listenForAuth', auth => {
+      this._updateUserTokenFromPromise(Promise.resolve(auth));
+    });
+
     const sub = this.on('listenForAuth', callback);
     FirebaseHelper.listenForAuth();
     return promisify(() => sub)(sub);
@@ -76,7 +82,7 @@ export class Firestack {
    * @return {Promise}         A promise that is resolved upon completion
    */
   signInWithEmail(email, password) {
-    return promisify('signInWithEmail')(email, password);
+    return this._updateUserTokenFromPromise(promisify('signInWithEmail')(email, password))
   }
 
   /**
@@ -87,7 +93,7 @@ export class Firestack {
    * @return {Promise}           A promise resolved upon completion
    */
   signInWithProvider(provider, authToken, authSecret) {
-    return promisify('signInWithProvider')(provider, authToken, authSecret);
+    return this._updateUserTokenFromPromise(promisify('signInWithProvider')(provider, authToken, authSecret))
   }
 
   /**
@@ -96,7 +102,7 @@ export class Firestack {
    * @return {Promise}             A promise resolved upon completion
    */
   signInWithCustomToken(customToken) {
-    return promisify('signInWithCustomToken')(customToken);
+    return this._updateUserTokenFromPromise(promisify('signInWithCustomToken')(customToken))
   }
 
   /**
@@ -107,9 +113,12 @@ export class Firestack {
    * @return {Promise}         A promise resolved upon completion
    */
   reauthenticateWithCredentialForProvider(provider, token, secret) {
-    return promisify('reauthenticateWithCredentialForProvider')(provider, token, secret);
+    return this._updateUserTokenFromPromise(promisify('reauthenticateWithCredentialForProvider')(provider, token, secret))
   }
 
+  _updateUserTokenFromPromise(promise) {
+    return promise;
+  }
 
   /**
    * Update the current user's email
@@ -213,7 +222,7 @@ export class Firestack {
   // database
   get database() {
     db.enableLogging(this._debug);
-    return db()
+    return this.appInstance.database();
   }
 
   /**
@@ -237,6 +246,13 @@ export class Firestack {
       this.remoteConfig = new RemoteConfig(this._remoteConfig);
     }
     return this.remoteConfig;
+  }
+
+  /**
+   * app instance
+   **/
+  get app() {
+    return this.appInstance;
   }
 
   /**

@@ -12,6 +12,8 @@
 
 @synthesize bridge = _bridge;
 
+typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
+
 RCT_EXPORT_MODULE(Firestack);
 
 RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
@@ -98,6 +100,28 @@ RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
                       callback:callback];
 }
 
+
+RCT_EXPORT_METHOD(signInWithCustomToken:
+                  (NSString *)customToken
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    [[FIRAuth auth]
+      signInWithCustomToken:customToken
+      completion:^(FIRUser *user, NSError *error) {
+
+        if (user != nil) {
+          NSDictionary *userProps = [self userPropsFromFIRUser:user];
+          callback(@[[NSNull null], userProps]);
+        } else {
+          NSDictionary *err =
+          [self handleFirebaseError:@"signinError"
+                         error:error
+                      withUser:user];
+          callback(@[err]);
+        }
+    }];
+}
+
 RCT_EXPORT_METHOD(signInWithProvider:
                   (NSString *)provider
                   token:(NSString *)authToken
@@ -113,8 +137,6 @@ RCT_EXPORT_METHOD(signInWithProvider:
                               };
         return callback(@[err]);
     }
-    
-    NSLog(@"signinWithCredential: %@", credential);
     
     @try {
         [[FIRAuth auth] signInWithCredential:credential
@@ -164,13 +186,21 @@ RCT_EXPORT_METHOD(listenForAuth)
         
         if (user != nil) {
             // User is signed in.
-            NSDictionary *userProps = [self userPropsFromFIRUser:user];
-            //        callback(@[[NSNull null], userProps]);
-            [self sendJSEvent:@"listenForAuth" props: @{
-                                                        @"eventName": @"user",
-                                                        @"authenticated": @(true),
-                                                        @"user": userProps
-                                                        }];
+            [self userPropsFromFIRUserWithToken:user
+                                    andCallback:^(NSDictionary *userProps, NSError * error) {
+                                        if (error != nil) {
+                                            [self sendJSEvent:@"listenForAuth" props: @{
+                                                                                        @"eventName": @"userTokenError",
+                                                                                        @"msg": [error localizedFailureReason]
+                                                                                        }];
+                                        } else {
+                                            [self sendJSEvent:@"listenForAuth" props: @{
+                                                                                    @"eventName": @"user",
+                                                                                    @"authenticated": @(true),
+                                                                                    @"user": userProps
+                                                                                    }];
+                                        }
+                                    }];
         } else {
             // TODO: Update this with different error states
             NSDictionary *err = @{
@@ -242,7 +272,10 @@ RCT_EXPORT_METHOD(signInWithEmail:(NSString *)email
                          completion:^(FIRUser *user, NSError *error) {
                              if (user != nil) {
                                  NSDictionary *userProps = [self userPropsFromFIRUser:user];
-                                 callback(@[[NSNull null], userProps]);
+                                 
+                                 callback(@[[NSNull null], @{
+                                                @"user": userProps
+                                                }]);
                              } else {
                                  NSDictionary *err =
                                  [self handleFirebaseError:@"signinError"
@@ -347,7 +380,8 @@ RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback)
                              withUser:user];
             callback(@[err]);
         } else {
-            callback(@[[NSNull null], @{@"token": token}]);
+            NSDictionary *userProps = [self userPropsFromFIRUser:user];
+            callback(@[[NSNull null], @{@"token": token, @"user": userProps}]);
         }
     }];
 }
@@ -359,12 +393,13 @@ RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
     [user getTokenWithCompletion:^(NSString *token , NSError *_Nullable error) {
         if (error) {
             NSDictionary *err =
-            [self handleFirebaseError:@"deleteUserError"
+            [self handleFirebaseError:@"getTokenWithCompletion"
                                 error:error
                              withUser:user];
             callback(@[err]);
         } else {
-            callback(@[[NSNull null], @{@"result": token}]);
+            NSDictionary *userProps = [self userPropsFromFIRUser:user];
+            callback(@[[NSNull null], @{@"token": token, @"user": userProps}]);
         }
     }];
 }
@@ -618,6 +653,8 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
     }];
 }
 
+#pragma mark Database
+
 #pragma mark Helpers
 
 - (NSDictionary *) getConfig
@@ -667,7 +704,9 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
                                         @"email": user.email ? user.email : @"",
                                         @"emailVerified": @(user.emailVerified),
                                         @"anonymous": @(user.anonymous),
-                                        @"displayName": user.displayName ? user.displayName : @""
+                                        @"displayName": user.displayName ? user.displayName : @"",
+                                        @"refreshToken": user.refreshToken,
+                                        @"providerID": user.providerID
                                         } mutableCopy];
     
     if ([user valueForKey:@"photoURL"] != nil) {
@@ -676,6 +715,20 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
     }
     
     return userProps;
+}
+
+- (void) userPropsFromFIRUserWithToken:(FIRUser *) user
+                           andCallback:(UserWithTokenResponse) callback
+{
+    NSMutableDictionary *userProps = [[self userPropsFromFIRUser:user] mutableCopy];
+    [user getTokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
+        if (error != nil) {
+            return callback(nil, error);
+        }
+        
+        [userProps setValue:token forKey:@"idToken"];
+        callback(userProps, nil);
+    }];
 }
 
 - (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
