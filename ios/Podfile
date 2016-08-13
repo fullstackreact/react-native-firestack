@@ -10,7 +10,8 @@ def common_specs
     'Firebase/Auth',
     'Firebase/Storage',
     'Firebase/Database',
-    'Firebase/RemoteConfig'
+    'Firebase/RemoteConfig',
+    'Firebase/Messaging'
   ].each do |lib|
     pod lib
   end
