@@ -65,7 +65,45 @@ If you prefer not to use `rnpm`, we can manually link the package together with 
 
 ### Android
 
-Coming soon
+Full Android support is coming soon, as it currently supports a smaller feature-set than the iOS version. Just as we do with iOS, we'll need to install the library using `npm` and call `link` on the library:
+
+```bash
+react-native link react-native-firestack
+```
+
+Firestack includes the Firebase libraries and will link those directly into our project automatically.
+
+#### Manually
+
+To install `react-native-firestack` manually in our project, we'll need to import the package from `io.fullstack.firestack` in our project's `android/app/src/main/java/com/[app name]/MainApplication.java` and list it as a package for ReactNative in the `getPackages()` function:
+
+```java
+package com.appName;
+// ...
+import io.fullstack.firestack.FirestackPackage;
+// ...
+public class MainApplication extends Application implements ReactApplication {
+    // ...
+
+    @Override
+    protected List<ReactPackage> getPackages() {
+      return Arrays.<ReactPackage>asList(
+          new MainReactPackage(),
+            new FirestackPackage()
+      );
+    }
+  };
+  // ...
+}
+```
+
+We'll also need to list it in our `android/app/build.gradle` file as a dependency that we want React Native to compile. In the `dependencies` listing, add the `compile` line:
+
+```java
+dependencies {
+  compile project(':react-native-firestack')
+}
+```
 
 ## Firebase setup
 
