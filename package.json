@@ -30,5 +30,8 @@
     "ios": {
       "project": "ios/Firestack.xcodeproj"
     }
+  },
+  "devDependencies": {
+    "debug": "^2.2.0"
   }
 }
