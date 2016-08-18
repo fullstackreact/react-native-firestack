@@ -12,12 +12,16 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReactContext;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
@@ -40,6 +44,37 @@ class FirestackModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return "Firestack";
+  }
+
+  @ReactMethod
+  public void configureWithOptions(ReadableMap params, final Callback onSuccess) {
+    ReactContext mCtx = getReactApplicationContext();
+    FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
+
+    if (params.hasKey("apiKey")) {
+        builder.setApiKey(params.getString("apiKey"));
+    }
+    if (params.hasKey("gcmSenderID")) {
+        builder.setGcmSenderId(params.getString("gcmSenderID"));
+    }
+    if (params.hasKey("storageBucket")) {
+        builder.setStorageBucket(params.getString("storageBucket"));
+    }
+    if (params.hasKey("databaseURL")) {
+        builder.setDatabaseUrl(params.getString("databaseURL"));
+    }
+    if (params.hasKey("clientID")) {
+        builder.setApplicationId(params.getString("clientID"));
+    }
+
+    try {
+        FirebaseApp app = FirebaseApp.initializeApp(mCtx, builder.build());
+    }
+    catch (Exception e){
+
+    }
+
+    onSuccess.invoke();
   }
 
   @ReactMethod
