@@ -1,10 +1,8 @@
 package io.fullstack.firestack;
 
 import android.content.Context;
-
-import android.content.Context;
+import android.util.Log;
 import android.support.annotation.NonNull;
-import android.widget.Toast;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -31,6 +29,7 @@ import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 class FirestackModule extends ReactContextBaseJavaModule {
+  private static final String TAG = "FirestackModule";
   private Context context;
   private FirebaseAuth mAuth;
   private FirebaseUser user;
@@ -47,7 +46,9 @@ class FirestackModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void configureWithOptions(ReadableMap params, final Callback onSuccess) {
+  public void configureWithOptions(ReadableMap params, final Callback onComplete) {
+    System.out.println("Calling configureWithOptions");
+    Log.i(TAG, "configureWithOptions");
     ReactContext mCtx = getReactApplicationContext();
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
@@ -68,13 +69,16 @@ class FirestackModule extends ReactContextBaseJavaModule {
     }
 
     try {
+        Log.i(TAG, "Configuring");
         FirebaseApp app = FirebaseApp.initializeApp(mCtx, builder.build());
+        Log.i(TAG, "Configured");
+        onComplete.invoke();
     }
-    catch (Exception e){
-
+    catch (Exception ex){
+        Log.e(TAG, "ERROR configureWithOptions");
+        Log.e(TAG, ex.getMessage());
+        onComplete.invoke();
     }
-
-    onSuccess.invoke();
   }
 
   @ReactMethod
