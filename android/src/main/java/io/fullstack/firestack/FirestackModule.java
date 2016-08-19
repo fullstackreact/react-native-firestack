@@ -33,6 +33,7 @@ class FirestackModule extends ReactContextBaseJavaModule {
   private static final String TAG = "FirestackModule";
   private Context context;
   private FirebaseAuth mAuth;
+  private FirebaseApp app;
   private FirebaseUser user;
   private FirebaseAuth.AuthStateListener mAuthListener;
 
@@ -49,7 +50,7 @@ class FirestackModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void configureWithOptions(ReadableMap params, @Nullable final Callback onComplete) {
-    Log.d(TAG, "configureWithOptions");
+    Log.i(TAG, "configureWithOptions");
 
     ReactContext mCtx = getReactApplicationContext();
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
@@ -66,35 +67,45 @@ class FirestackModule extends ReactContextBaseJavaModule {
     }
     if (params.hasKey("gcmSenderID")) {
       final String gcmSenderID = params.getString("gcmSenderID");
-      Log.d(TAG, "Setting gcmSenderID from params" + gcmSenderID );
+      Log.d(TAG, "Setting gcmSenderID from params " + gcmSenderID );
       builder.setGcmSenderId(gcmSenderID);
     }
     if (params.hasKey("storageBucket")) {
       final String storageBucket = params.getString("storageBucket");
-      Log.d(TAG, "Setting storageBucket from params" + storageBucket);
+      Log.d(TAG, "Setting storageBucket from params " + storageBucket);
       builder.setStorageBucket(storageBucket);
     }
     if (params.hasKey("databaseURL")) {
       final String databaseURL = params.getString("databaseURL");
-      Log.d(TAG, "Setting databaseURL from params" + databaseURL);
+      Log.d(TAG, "Setting databaseURL from params " + databaseURL);
       builder.setDatabaseUrl(databaseURL);
     }
     if (params.hasKey("clientID")) {
       final String clientID = params.getString("clientID");
-      Log.d(TAG, "Setting clientID from params" + clientID);
+      Log.d(TAG, "Setting clientID from params " + clientID);
       builder.setApplicationId(clientID);
     }
 
     try {
-        Log.i(TAG, "Configuring");
-        FirebaseApp app = FirebaseApp.initializeApp(mCtx, builder.build());
+        Log.i(TAG, "Configuring app");
+        if (app == null) {
+          app = FirebaseApp.initializeApp(mCtx, builder.build());
+        }
         Log.i(TAG, "Configured");
-        onComplete.invoke(app);
+        System.out.println("Configured");
+
+        WritableMap resp = Arguments.createMap();
+        resp.putString("msg", "success");
+        onComplete.invoke(null, resp);
     }
     catch (Exception ex){
         Log.e(TAG, "ERROR configureWithOptions");
         Log.e(TAG, ex.getMessage());
-        onComplete.invoke(ex.getMessage());
+
+        WritableMap resp = Arguments.createMap();
+        resp.putString("msg", ex.getMessage());
+
+        onComplete.invoke(resp);
     }
   }
 
