@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -29,9 +30,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-class FirestackModule extends ReactContextBaseJavaModule {
+class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "FirestackModule";
   private Context context;
+  private ReactContext mReactContext;
   private FirebaseAuth mAuth;
   private FirebaseApp app;
   private FirebaseUser user;
@@ -40,6 +42,8 @@ class FirestackModule extends ReactContextBaseJavaModule {
   public FirestackModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.context = reactContext;
+    mReactContext = reactContext;
+
     Log.d(TAG, "New FirestackModule instance");
   }
 
@@ -52,7 +56,6 @@ class FirestackModule extends ReactContextBaseJavaModule {
   public void configureWithOptions(ReadableMap params, @Nullable final Callback onComplete) {
     Log.i(TAG, "configureWithOptions");
 
-    ReactContext mCtx = getReactApplicationContext();
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
 
     if (params.hasKey("applicationId")) {
@@ -89,7 +92,7 @@ class FirestackModule extends ReactContextBaseJavaModule {
     try {
         Log.i(TAG, "Configuring app");
         if (app == null) {
-          app = FirebaseApp.initializeApp(mCtx, builder.build());
+          app = FirebaseApp.initializeApp(mReactContext, builder.build());
         }
         Log.i(TAG, "Configured");
         System.out.println("Configured");
@@ -112,7 +115,6 @@ class FirestackModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void listenForAuth() {
     mAuthListener = new FirebaseAuth.AuthStateListener() {
-    ReactContext mCtx = getReactApplicationContext();
 
     @Override
     public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -126,10 +128,10 @@ class FirestackModule extends ReactContextBaseJavaModule {
             msgMap.putBoolean("authenticated", true);
             msgMap.putMap("user", userMap);
 
-            sendEvent(mCtx, "listenForAuth", msgMap);
+            sendEvent("listenForAuth", msgMap);
         } else {
             msgMap.putBoolean("authenticated", false);
-            sendEvent(mCtx, "listenForAuth", msgMap);
+            sendEvent("listenForAuth", msgMap);
         }
         }
       };
@@ -270,10 +272,9 @@ class FirestackModule extends ReactContextBaseJavaModule {
     /**
     * send a JS event
     **/
-    private void sendEvent(ReactContext reactContext,
-                       String eventName,
+    private void sendEvent(String eventName,
                        WritableMap params) {
-        reactContext
+        mReactContext
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
             .emit(eventName, params);
     }
@@ -297,4 +298,22 @@ class FirestackModule extends ReactContextBaseJavaModule {
         onFail.invoke(error);
     }
 
+    @Override
+    public void onHostResume() {
+        WritableMap params = Arguments.createMap();
+        params.putBoolean("isForground", true);
+        sendEvent("FirestackAppState", params);
+    }
+
+    @Override
+    public void onHostPause() {
+        WritableMap params = Arguments.createMap();
+        params.putBoolean("isForground", false);
+        sendEvent("FirestackAppState", params);
+    }
+
+    @Override
+    public void onHostDestroy() {
+
+    }
 }
