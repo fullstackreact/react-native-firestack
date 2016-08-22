@@ -138,7 +138,7 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     }
 
     @ReactMethod
-    public void createUserWithEmailAndPassword(final String email, final String password, final Callback onSuccess, final Callback onFail) {
+    public void createUserWithEmail(final String email, final String password, final Callback onComplete) {
       mAuth = FirebaseAuth.getInstance();
 
       mAuth.createUserWithEmailAndPassword(email, password)
@@ -147,16 +147,16 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
                   public void onComplete(@NonNull Task<AuthResult> task) {
                       if (task.isSuccessful()) {
                           user = task.getResult().getUser();
-                          userCallback(onSuccess);
+                          userCallback(user, onComplete);
                       }else{
-                          userErrorCallback(task, onFail);
+                          userErrorCallback(task, onComplete);
                       }
                   }
               });
     }
 
     @ReactMethod
-    public void signInWithEmailAndPassword(final String email, final String password, final Callback onSuccess, final Callback onFail) {
+    public void signInWithEmail(final String email, final String password, final Callback onSuccess, final Callback onFail) {
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -165,7 +165,7 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             user = task.getResult().getUser();
-                            userCallback(onSuccess);
+                            userCallback(user, onSuccess);
                         } else {
                             userErrorCallback(task, onFail);
                         }
@@ -174,19 +174,37 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     }
 
     @ReactMethod
-    public void getCurrentUser(final Callback onSuccess, final Callback onFail) {
-        mAuth = FirebaseAuth.getInstance();
-
-        user = mAuth.getCurrentUser();
-        if(user == null){
-            onFail.invoke("not logged in");
-        }else{
-            userCallback(onSuccess);
-        }
+    public void signInWithProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
+      // TODO
+      todoNote("signInWithProvider", callback);
     }
 
     @ReactMethod
-    public void sendPasswordResetEmail(String email, final Callback onSuccess, final Callback onFail) {
+    public void signInWithCustomToken(final String customToken, final Callback callback) {
+      // TODO
+      todoNote("signInWithCustomToken", callback);
+    }
+
+    @ReactMethod
+    public void reauthenticateWithCredentialForProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
+      // TODO:
+      todoNote("reauthenticateWithCredentialForProvider", callback);
+    }
+
+    @ReactMethod
+    public void updateUserEmail(final String email, final Callback callback) {
+      // TODO
+      todoNote("updateUserEmail", callback);
+    }
+
+    @ReactMethod
+    public void updateUserPassword(final String newPassword, final Callback callback) {
+      // TODO
+      todoNote("updateUserPassword", callback);
+    }
+
+    @ReactMethod
+    public void sendPasswordResetWithEmail(final String email, final Callback callback) {
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.sendPasswordResetEmail(email)
@@ -194,16 +212,62 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
                         if(task.isSuccessful()){
-                            onSuccess.invoke("complete");
+                            WritableMap resp = new WritableMap();
+                            resp.putString("status", "complete");
+                            callback.invoke(null, resp);
                         }else{
-                            onFail.invoke(task.getException().toString());
+                            callback.invoke(task.getException().toString());
                         }
                     }
                 });
     }
 
     @ReactMethod
-    public void googleLogin(String IdToken, final Callback onSuccess, final Callback onFail) {
+    public void deleteUser(final Callback callback) {
+      // TODO
+      todoNote("deleteUser", callback);
+    }
+
+    @ReactMethod
+    public void getToken(final Callback callback) {
+      // TODO
+      todoNote("getToken", callback);
+    }
+
+    @ReactMethod
+    public void updateUserProfile(final ReadableMap props, final Callback callback) {
+      // TODO
+      todoNote("updateUserProfile", callback);
+    }
+
+    @ReactMethod
+    public void signOut(final Callback callback) {
+      // TODO
+      todoNote("signOut", callback);
+    }
+
+    @ReactMethod
+    public void getCurrentUser(final Callback callback) {
+        mAuth = FirebaseAuth.getInstance();
+
+        user = mAuth.getCurrentUser();
+        if(user == null){
+            noUserCallback(callback)
+        }else{
+            userCallback(user, callback);
+        }
+    }
+
+    @ReactMethod
+    public void logEventWithName(final String name, final String props, final Callback callback) {
+      // TODO
+      todoNote("logEventWithName", callback);
+    }
+
+
+    // TODO: Check these things
+    @ReactMethod
+    public void googleLogin(String IdToken, final Callback callback) {
         mAuth = FirebaseAuth.getInstance();
 
         AuthCredential credential = GoogleAuthProvider.getCredential(IdToken, null);
@@ -240,9 +304,29 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
                 });
     }
 
-    public void userCallback(final Callback onSuccess) {
-        mAuth = FirebaseAuth.getInstance();
+    // STORAGE
+    @ReactMethod
+    public void uploadFile(final String name, final String filepath, final ReadableMap metadata, final Callback callback) {
+      // TODO
+      todoNote("uploadFile", callback);
+    }
+
+    // TODO NOTE
+    public void todoNote(final String name, final Callback callback) {
+      Log.e(TAG, "The method " + name + " has not yet been implemented.")
+      Log.e(TAG, "Feel free to contribute to finish the method in the source.")
+      WritableMap errorMap = Arguments.createMap();
+      errorMap.putString("error", "unimplemented");
+      callback.invoke(errorMap);
+    }
+
+    public void userCallback(@Nullable FirebaseUser user, final Callback onComplete) {
         WritableMap userMap = getUserMap();
+
+        if (!user) {
+          mAuth = FirebaseAuth.getInstance();
+          user = mAuth.getCurrentUser();
+        }
 
         user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
@@ -254,9 +338,28 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
                 userMap.putString("uid", user.getUid());
                 userMap.putString("provider", user.getProviderId());
 
-                onSuccess.invoke(userMap);
+                onComplete.invoke(null, userMap);
             }
         });
+    }
+
+    public void noUserCallback(final Callback callback) {
+        WritableMap message = Arguments.createMap();
+
+        message.putString("errorMessage", "no_user");
+        message.putString("eventName", "no_user");
+        message.putBoolean("authenticated", false);
+
+        callback.invoke(null, message);
+    }
+
+    public void userErrorCallback(Task<AuthResult> task, final Callback onFail) {
+        WritableMap error = Arguments.createMap();
+        error.putInt("errorCode", task.getException().hashCode());
+        error.putString("errorMessage", task.getException().getMessage());
+        error.putString("allErrorMessage", task.getException().toString());
+
+        onFail.invoke(error);
     }
 
     private WritableMap getUserMap() {
@@ -277,25 +380,6 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
         mReactContext
             .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
             .emit(eventName, params);
-    }
-
-    public void noUserCallback(final Callback callback) {
-        WritableMap message = Arguments.createMap();
-
-        message.putString("errorMessage", "no_user");
-        message.putString("eventName", "no_user");
-        message.putBoolean("authenticated", false);
-
-        callback.invoke(message);
-    }
-
-    public void userErrorCallback(Task<AuthResult> task, final Callback onFail) {
-        WritableMap error = Arguments.createMap();
-        error.putInt("errorCode", task.getException().hashCode());
-        error.putString("errorMessage", task.getException().getMessage());
-        error.putString("allErrorMessage", task.getException().toString());
-
-        onFail.invoke(error);
     }
 
     @Override

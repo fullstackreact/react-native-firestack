@@ -2,6 +2,6 @@
  * @providesModule Firestack
  * @flow
  */
-export { Firestack } from './lib/firestack'
+import Firestack from './lib/firestack'
 
 export default Firestack
