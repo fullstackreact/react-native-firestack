@@ -315,6 +315,7 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     public void todoNote(final String name, final Callback callback) {
       Log.e(TAG, "The method " + name + " has not yet been implemented.")
       Log.e(TAG, "Feel free to contribute to finish the method in the source.")
+      
       WritableMap errorMap = Arguments.createMap();
       errorMap.putString("error", "unimplemented");
       callback.invoke(errorMap);
