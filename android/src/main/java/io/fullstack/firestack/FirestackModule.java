@@ -277,7 +277,7 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             user = task.getResult().getUser();
-                            userCallback(onSuccess);
+                            userCallback(user, callback);
                         }else{
                             userErrorCallback(task, onFail);
                         }
@@ -286,7 +286,7 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     }
 
     @ReactMethod
-    public void facebookLogin(String Token, final Callback onSuccess, final Callback onFail) {
+    public void facebookLogin(String Token, final Callback callback) {
         mAuth = FirebaseAuth.getInstance();
 
         AuthCredential credential = FacebookAuthProvider.getCredential(Token);
@@ -296,7 +296,7 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             user = task.getResult().getUser();
-                            userCallback(onSuccess);
+                            userCallback(user, callback);
                         }else{
                             userErrorCallback(task, onFail);
                         }
@@ -311,11 +311,13 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
       todoNote("uploadFile", callback);
     }
 
+    // Internal helpers
+
     // TODO NOTE
     public void todoNote(final String name, final Callback callback) {
       Log.e(TAG, "The method " + name + " has not yet been implemented.")
       Log.e(TAG, "Feel free to contribute to finish the method in the source.")
-      
+
       WritableMap errorMap = Arguments.createMap();
       errorMap.putString("error", "unimplemented");
       callback.invoke(errorMap);
