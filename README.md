@@ -22,7 +22,11 @@ To use Firestack, we'll need to have a development environment that includes the
 
 Regardless of which linking you choose to run with, it is _very_ important to "embed" the framework `libFirestack.a` in your application. Until we can find an automated way of handling this, *this needs to be done manually*.
 
+#### iOS will _not_ be able to find `libFirestack.a` if you forget this step.
+
 Find your application tab in Xcode, click on `Build Phases`. In there, find the build phase of `Embed Frameworks` and click the `+` button and add `libFirestack.a` to the list. Make sure the `Code Sign on Copy` checkbox is ticked on and the destination is Frameworks with an empty subpath.
+
+> If you do not see an `Embed Frameworks` build phase, do not fret! Click on the plus button on the build phases menu and select `New Copy Files Phase`. Make sure the destination is set to `Frameworks` and it'll be the same thing as the `Embed Frameworks` phase.
 
 ![Embed frameworks](http://d.pr/i/1aZq5.png)
 
