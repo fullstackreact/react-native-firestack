@@ -546,9 +546,11 @@ npm install
 
 The following is left to be done:
 
-- [ ] Complete FirebaseModule functionality
+- [x] Complete FirebaseModule functionality
 - [ ] Document FirebaseModule
 - [ ] Add Android support
-- [ ] Add Cloud Messaging
+  - [ ] initial Android support integrated
+- [x] Add Cloud Messaging
+  - [ ] Add JS api
 - [ ] Move to use swift (cleaner syntax)
 - [ ] TODO: Finish Facebook integration
