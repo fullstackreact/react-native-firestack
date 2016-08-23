@@ -19,16 +19,18 @@ export class Firestack {
   constructor(options) {
     this.options = options || {};
 
-    this._remoteConfig = options.remoteConfig || {};
+    this._remoteConfig = this.options.remoteConfig || {};
     delete options.remoteConfig;
 
-    this.configured = false;
+    this.configured = this.options.configured || false;
     this._debug = options.debug || false;
     this.auth = null;
 
     this.eventHandlers = {};
 
-    this.configure(options);
+    if (!this.configured) {
+      this.configure(options);
+    }
   }
 
   configure(opts) {
