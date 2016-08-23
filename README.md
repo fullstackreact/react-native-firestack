@@ -125,7 +125,9 @@ Once you download the configuration file, make sure you place it in the root of 
 
 ### Android
 
-Coming soon
+There are several ways to setup Firebase on Android. The _easiest_ way is to pass the configuration settings in JavaScript. In that way, there is no setup for the native platform. 
+
+If you prefer to include the default settings in the source of your app, download the `google-services.json` file provided by Firebase in the _Add Firebase to Android_ platform menu in your Firebase configuration console.
 
 ## Usage
 
