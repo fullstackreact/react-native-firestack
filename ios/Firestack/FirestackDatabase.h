@@ -16,6 +16,7 @@
 
 }
 
+@property (nonatomic) NSArray *_DBHandles;
 @property (nonatomic, weak) FIRDatabaseReference *ref;
 
 @end
