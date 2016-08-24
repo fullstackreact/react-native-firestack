@@ -8,10 +8,13 @@
 #import "Firebase.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
+#import "RCTEventEmitter.h"
 
-@interface Firestack : NSObject <RCTBridgeModule> {
+@interface Firestack : RCTEventEmitter <RCTBridgeModule> {
     FIRAuthStateDidChangeListenerHandle authListenerHandle;
 }
+
++ (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
 
 @property (nonatomic) BOOL debug;
 @property (atomic) BOOL configured;
