@@ -98,8 +98,9 @@ RCT_EXPORT_METHOD(signOut:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(listenForAuth)
 {
-    self->authListenerHandle = [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth,
-                                                                               FIRUser *_Nullable user) {
+    self->authListenerHandle =
+    [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth,
+                                                    FIRUser *_Nullable user) {
         
         if (user != nil) {
             // User is signed in.
@@ -457,8 +458,13 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 - (void) sendJSEvent:(NSString *)title
                props:(NSDictionary *)props
 {
-    [self sendEventWithName:title
-                       body:props];
+    @try {
+        [self sendEventWithName:title
+                           body:props];
+    }
+    @catch (NSException *err) {
+        NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
+    }
 }
 
 

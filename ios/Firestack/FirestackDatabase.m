@@ -87,8 +87,6 @@ RCT_EXPORT_METHOD(on:(NSString *) path
                                            withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
                                                NSDictionary *props =
                                                [self snapshotToDict:snapshot];
-                                               
-                                               NSLog(@"props: %@", props);
                                                [self
                                                 sendJSEvent:name
                                                 props: @{
@@ -260,7 +258,8 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
              DATABASE_CHILD_ADDED_EVENT,
              DATABASE_CHILD_MODIFIED_EVENT,
              DATABASE_CHILD_MOVED_EVENT,
-             DATABASE_CHILD_REMOVED_EVENT
+             DATABASE_CHILD_REMOVED_EVENT,
+             DATABASE_ERROR_EVENT
              ];
 }
 

@@ -557,4 +557,5 @@ The following is left to be done:
 - [x] Add Cloud Messaging
   - [ ] Add JS api
 - [ ] Move to use swift (cleaner syntax)
+- [ ] Finish module breaking
 - [ ] TODO: Finish Facebook integration

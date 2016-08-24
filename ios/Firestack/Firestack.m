@@ -32,6 +32,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
     } else {
         bundleID = [[NSBundle mainBundle] bundleIdentifier];
     }
+    
     // Prefer the user configuration options over the default options
     NSArray *keyOptions = @[@"APIKey", @"clientID", @"trackingID",
                             @"GCMSenderID", @"androidClientID",
@@ -54,6 +55,11 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
             // Uh oh?
             NSLog(@"An error occurred: %@", err);
         }
+    }
+    
+    // If the apiKey is lowercase
+    if ([opts valueForKey:@"apiKey"]) {
+        [props setValue:[opts valueForKey:@"apiKey"] forKey:@"APIKey"];
     }
     
     @try {
