@@ -22,7 +22,11 @@ To use Firestack, we'll need to have a development environment that includes the
 
 Regardless of which linking you choose to run with, it is _very_ important to "embed" the framework `libFirestack.a` in your application. Until we can find an automated way of handling this, *this needs to be done manually*.
 
+#### iOS will _not_ be able to find `libFirestack.a` if you forget this step.
+
 Find your application tab in Xcode, click on `Build Phases`. In there, find the build phase of `Embed Frameworks` and click the `+` button and add `libFirestack.a` to the list. Make sure the `Code Sign on Copy` checkbox is ticked on and the destination is Frameworks with an empty subpath.
+
+> If you do not see an `Embed Frameworks` build phase, do not fret! Click on the plus button on the build phases menu and select `New Copy Files Phase`. Make sure the destination is set to `Frameworks` and it'll be the same thing as the `Embed Frameworks` phase.
 
 ![Embed frameworks](http://d.pr/i/1aZq5.png)
 
@@ -125,7 +129,9 @@ Once you download the configuration file, make sure you place it in the root of 
 
 ### Android
 
-Coming soon
+There are several ways to setup Firebase on Android. The _easiest_ way is to pass the configuration settings in JavaScript. In that way, there is no setup for the native platform. 
+
+If you prefer to include the default settings in the source of your app, download the `google-services.json` file provided by Firebase in the _Add Firebase to Android_ platform menu in your Firebase configuration console.
 
 ## Usage
 
@@ -544,9 +550,11 @@ npm install
 
 The following is left to be done:
 
-- [ ] Complete FirebaseModule functionality
+- [x] Complete FirebaseModule functionality
 - [ ] Document FirebaseModule
 - [ ] Add Android support
-- [ ] Add Cloud Messaging
+  - [ ] initial Android support integrated
+- [x] Add Cloud Messaging
+  - [ ] Add JS api
 - [ ] Move to use swift (cleaner syntax)
 - [ ] TODO: Finish Facebook integration
