@@ -19,6 +19,78 @@ RCT_EXPORT_METHOD(onDBEvent:(NSString *) path
                   name:(NSString *) name
                   callback:(RCTResponseSenderBlock) callback)
 {
+    
+    int eventType = [self eventTypeFromName:name];
+    NSLog(@"Calling observeEventType: at path: %@ %@", path, name);
+    
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    
+    [ref observeEventType:eventType
+                withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+                    callback(@[[NSNull null], [self snapshotToDict:snapshot]]);
+                }
+          withCancelBlock:^(NSError * _Nonnull error) {
+              NSLog(@"Error onDBEvent: %@", [error debugDescription]);
+              callback(@[@{
+                             @"error": @"onceError",
+                             @"msg": [error debugDescription]
+                             }]);
+          }];
+}
+
+RCT_EXPORT_METHOD(onDBEventOnce:(NSString *) path
+                  name:(NSString *) name
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    int eventType = [self eventTypeFromName:name];
+    
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    [ref observeSingleEventOfType:eventType
+                        withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
+                            callback(@[[NSNull null], [self snapshotToDict:snapshot]]);
+                        }
+                  withCancelBlock:^(NSError * _Nonnull error) {
+                      NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
+                      callback(@[@{
+                                     @"error": @"onceError",
+                                     @"msg": [error debugDescription]
+                                     }]);
+                  }];
+}
+
+// Helpers
+- (FIRDatabaseReference *) getRef
+{
+    if (self.ref == nil) {
+        FIRDatabaseReference *rootRef = [[FIRDatabase database] reference];
+        self.ref = rootRef;
+    }
+    return self.ref;
+}
+
+- (FIRDatabaseReference *) getRefAtPath:(NSString *) str
+{
+    FIRDatabaseReference *rootRef = [[FIRDatabase database] reference];
+    return [rootRef child:str];
+}
+
+- (NSDictionary *) snapshotToDict:(FIRDataSnapshot *) snapshot
+{
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    [dict setValue:snapshot.key forKey:@"key"];
+    NSDictionary *val = snapshot.value;
+    [dict setObject:val forKey:@"value"];
+    
+    [dict setValue:@(snapshot.hasChildren) forKey:@"hasChildren"];
+    [dict setValue:@(snapshot.exists) forKey:@"exists"];
+    [dict setValue:@(snapshot.childrenCount) forKey:@"childrenCount"];
+    [dict setValue:snapshot.priority forKey:@"priority"];
+    
+    return dict;
+}
+
+- (int) eventTypeFromName:(NSString *)name
+{
     int eventType = FIRDataEventTypeValue;
     
     if ([name isEqualToString:@"value"]) {
@@ -32,23 +104,7 @@ RCT_EXPORT_METHOD(onDBEvent:(NSString *) path
     } else if ([name isEqualToString:@"child_moved"]) {
         eventType = FIRDataEventTypeChildMoved;
     }
-    
-    FIRDatabaseReference *ref = [self getRef];
-    [ref observeEventType:eventType
-                withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-                    NSDictionary *valueDict = snapshot.value;
-                    NSLog(@"Got a value dic: %@", valueDict);
-                }];
-}
-
-// Helpers
-- (FIRDatabaseReference *) getRef
-{
-    if (self.ref == nil) {
-        FIRDatabaseReference *rootRef= [[FIRDatabase database] reference];
-        self.ref = rootRef;
-    }
-    return self.ref;
+    return eventType;
 }
 
 // Not sure how to get away from this... yet
@@ -61,15 +117,8 @@ RCT_EXPORT_METHOD(onDBEvent:(NSString *) path
 - (void) sendJSEvent:(NSString *)title
                props:(NSDictionary *)props
 {
-    NSError *err;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:props
-                                                       options:0
-                                                         error:&err];
-    NSString *jsonStr = [[NSString alloc] initWithData:jsonData
-                                              encoding:NSUTF8StringEncoding];
-    
     [self sendEventWithName:title
-                       body:jsonStr];
+                       body:props];
 }
 
 @end

@@ -457,15 +457,8 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 - (void) sendJSEvent:(NSString *)title
                props:(NSDictionary *)props
 {
-    NSError *err;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:props
-                                                        options:0
-                                                          error:&err];
-    NSString *jsonStr = [[NSString alloc] initWithData:jsonData
-                                              encoding:NSUTF8StringEncoding];
-
     [self sendEventWithName:title
-                       body:jsonStr];
+                       body:props];
 }
 
 

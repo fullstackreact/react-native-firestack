@@ -309,11 +309,11 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
               msg:(NSString *)msg
 {
     if (self.debug) {
-        [self sendJSEvent:DEBUG_EVENT
-                    props:@{
-                            @"name": title,
-                            @"message": msg
-                            }];
+//        [self sendJSEvent:DEBUG_EVENT
+//                    props:@{
+//                            @"name": title,
+//                            @"message": msg
+//                            }];
     }
 }
 
@@ -325,15 +325,13 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
 - (void) sendJSEvent:(NSString *)title
                props:(NSDictionary *)props
 {
-    NSError *err;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:props
-                                                       options:0
-                                                         error:&err];
-    NSString *jsonStr = [[NSString alloc] initWithData:jsonData
-                                              encoding:NSUTF8StringEncoding];
-    
-    [self sendEventWithName:title
-                       body:jsonStr];
+    @try {
+        [self sendEventWithName:title
+                           body:props];
+    }
+    @catch (NSException *err) {
+        NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
+    }
 }
 
 @end
