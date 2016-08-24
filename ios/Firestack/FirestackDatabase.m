@@ -15,6 +15,64 @@
 
 RCT_EXPORT_MODULE(FirestackDatabase);
 
+RCT_EXPORT_METHOD(set:(NSString *) path
+                  value:(NSDictionary *)value
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    
+    [ref setValue:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        if (error != nil) {
+            // Error handling
+            NSDictionary *evt = [self getAndSendDatabaseError:error];
+            callback(@[evt]);
+        } else {
+            callback(@[[NSNull null], @{
+                           @"result": @"success"
+                           }]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(update:(NSString *) path
+                  value:(NSDictionary *)value
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    
+    [ref updateChildValues:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        if (error != nil) {
+            // Error handling
+            NSDictionary *evt = [self getAndSendDatabaseError:error];
+            callback(@[evt]);
+        } else {
+            callback(@[[NSNull null], @{
+                           @"result": @"success"
+                           }]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(remove:(NSString *) path
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    [ref removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        if (error != nil) {
+            // Error handling
+            NSDictionary *evt = [self getAndSendDatabaseError:error];
+            callback(@[evt]);
+        } else {
+            callback(@[[NSNull null], @{
+                           @"result": @"success"
+                           }]);
+        }
+    }];
+}
+
+
+
+
 RCT_EXPORT_METHOD(on:(NSString *) path
                   name:(NSString *) name
                   callback:(RCTResponseSenderBlock) callback)
@@ -30,7 +88,7 @@ RCT_EXPORT_METHOD(on:(NSString *) path
                                                NSDictionary *props =
                                                [self snapshotToDict:snapshot];
                                                
-                               NSLog(@"props: %@", props);
+                                               NSLog(@"props: %@", props);
                                                [self
                                                 sendJSEvent:name
                                                 props: @{
@@ -40,19 +98,14 @@ RCT_EXPORT_METHOD(on:(NSString *) path
                                            }
                                      withCancelBlock:^(NSError * _Nonnull error) {
                                          NSLog(@"Error onDBEvent: %@", [error debugDescription]);
-                                         [self
-                                          sendJSEvent:DATABASE_ERROR_EVENT
-                                          props: @{
-                                                   @"eventName": DATABASE_ERROR_EVENT,
-                                                   @"msg": [error debugDescription]
-                                                   }];
+                                         [self getAndSendDatabaseError:error];
                                      }];
     
-    int idx = [self storeDBHandle:handle];
+    NSString *idx = [self storeDBHandle:handle];
     
     callback(@[[NSNull null], @{
                    @"result": @"success",
-                   @"handle": @(idx)
+                   @"handle": idx
                    }]);
 }
 
@@ -77,16 +130,16 @@ RCT_EXPORT_METHOD(onOnce:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(off:(NSString *)path
-                  handleNumber:(NSInteger) handleNumber
+                  handleNumber:(NSString *) handleNumber
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [self getRefAtPath:path];
     
-    if (handleNumber == -1) {
+    if ([handleNumber isEqualToString:@"-1"]) {
         [ref removeAllObservers];
     } else {
-        FIRDatabaseHandle handle = [[self storedDBHandles] objectAtIndex:handleNumber];
-        if (handle != nil) {
+        FIRDatabaseHandle handle = (FIRDatabaseHandle)[[self storedDBHandles] objectForKey:handleNumber];
+        if (handle) {
             [ref removeObserverWithHandle:handle];
             [self removeDBHandle:handleNumber];
         } else {
@@ -121,35 +174,37 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
 }
 
 // Handles
-- (NSArray *) storedDBHandles
+- (NSDictionary *) storedDBHandles
 {
     if (self._DBHandles == nil) {
-        self._DBHandles = [[NSMutableArray alloc] init];
+        self._DBHandles = [[NSDictionary alloc] init];
     }
     return self._DBHandles;
 }
 
-- (int) storeDBHandle:(FIRDatabaseHandle) handle
+- (NSString *) storeDBHandle:(FIRDatabaseHandle) handle
 {
-    NSMutableArray *stored = [[self storedDBHandles] mutableCopy];
+    NSMutableDictionary *stored = [[self storedDBHandles] mutableCopy];
     
     NSNumber *handleNum = [NSNumber numberWithUnsignedLong:handle];
+    NSString *strNum = [NSString stringWithFormat:@"%@", handleNum];
     
-    [stored addObject:handleNum];
-    self._DBHandles = stored;
+    if ([stored objectForKey:strNum] == nil) {
+        [stored setValue:@(handle) forKey:strNum];
+        self._DBHandles = [stored copy];
+    }
     
-    int handleIdx = [stored indexOfObject:handleNum];
-    return handleIdx;
+    return strNum;
 }
 
-- (int) removeDBHandle:(int) idx
+- (void) removeDBHandle:(NSString *) idxStr
 {
-    NSMutableArray *stored = [[self storedDBHandles] mutableCopy];
-    if ([stored objectAtIndex:idx]) {
-        [stored removeObjectAtIndex:idx];
-        self._DBHandles = stored;
+    NSMutableDictionary *stored = [[self storedDBHandles] mutableCopy];
+    
+    if ([stored objectForKey:idxStr]) {
+        [stored removeObjectForKey:idxStr];
+        self._DBHandles = [stored copy];
     }
-    return idx;
 }
 
 - (NSDictionary *) snapshotToDict:(FIRDataSnapshot *) snapshot
@@ -185,7 +240,19 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
     return eventType;
 }
 
-// Not sure how to get away from this... yet
+- (NSDictionary *) getAndSendDatabaseError:(NSError *) error
+{
+    NSDictionary *evt = @{
+                          @"eventName": DATABASE_ERROR_EVENT,
+                          @"msg": [error debugDescription]
+                          };
+    [self
+     sendJSEvent:DATABASE_ERROR_EVENT
+     props: evt];
+    
+    return evt;
+}
+
 // Not sure how to get away from this... yet
 - (NSArray<NSString *> *)supportedEvents {
     return @[
