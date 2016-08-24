@@ -14,6 +14,7 @@
     FIRAuthStateDidChangeListenerHandle authListenerHandle;
 }
 
++ (Firestack *) getInstance;
 + (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
 
 @property (nonatomic) BOOL debug;

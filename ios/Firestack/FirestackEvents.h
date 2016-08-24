@@ -16,3 +16,8 @@ static NSString *const DATABASE_CHILD_MODIFIED_EVENT = @"child_changed";
 static NSString *const DATABASE_CHILD_REMOVED_EVENT = @"child_removed";
 static NSString *const DATABASE_CHILD_MOVED_EVENT = @"child_moved";
 static NSString *const DATABASE_ERROR_EVENT = @"database_error";
+
+// Storage
+static NSString *const STORAGE_UPLOAD_PROGRESS = @"upload_progress";
+static NSString *const STORAGE_UPLOAD_PAUSED = @"upload_paused";
+static NSString *const STORAGE_UPLOAD_RESUMED = @"upload_resumed";
