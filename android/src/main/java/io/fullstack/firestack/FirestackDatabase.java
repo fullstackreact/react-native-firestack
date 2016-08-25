@@ -134,6 +134,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
       ref.addChildEventListener(listener);
     }
 
+    // TODO: Store handles in the mDBListeners hashmap
     // Store the key of the listener... somehow
     String key = "listener_" + path + "_" + name;
     // Integer code = listener.hashCode();

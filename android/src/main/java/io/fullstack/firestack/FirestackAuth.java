@@ -68,10 +68,10 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             msgMap.putBoolean("authenticated", true);
             msgMap.putMap("user", userMap);
 
-            sendEvent("listenForAuth", msgMap);
+            FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
         } else {
             msgMap.putBoolean("authenticated", false);
-            sendEvent("listenForAuth", msgMap);
+            FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
         }
         }
       };
@@ -96,7 +96,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void signInWithEmail(final String email, final String password, final Callback onSuccess, final Callback onFail) {
+    public void signInWithEmail(final String email, final String password, final Callback callback) {
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.signInWithEmailAndPassword(email, password)
@@ -105,9 +105,9 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             user = task.getResult().getUser();
-                            userCallback(user, onSuccess);
+                            userCallback(user, callback);
                         } else {
-                            userErrorCallback(task, onFail);
+                            userErrorCallback(task, callback);
                         }
                     }
                 });
@@ -304,14 +304,5 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         return userMap;
     }
 
-    /**
-    * send a JS event
-    **/
-    private void sendEvent(String eventName,
-                       WritableMap params) {
-        mReactContext
-            .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-            .emit(eventName, params);
-    }
 
 }

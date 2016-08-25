@@ -19,7 +19,7 @@ public class FirestackUtils {
 
     WritableMap errorMap = Arguments.createMap();
     errorMap.putString("error", "unimplemented");
-    callback.invoke(errorMap);
+    callback.invoke(null, errorMap);
   }
 
   /**
