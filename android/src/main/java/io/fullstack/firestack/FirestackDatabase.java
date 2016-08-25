@@ -75,15 +75,14 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     // FirestackUtils.todoNote(TAG, "on", callback);
     Log.d(TAG, "Setting a listener on event: " + name + " for path " + path);
     DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    final FirestackDatabaseModule self = this;
 
-    if (name == "value") {
+    if (name.equals("value")) {
       ValueEventListener listener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            // This method is called once with the initial value and again
-            // whenever data at this location is updated.
-            String value = dataSnapshot.getValue(String.class);
-            Log.d(TAG, "Value is: " + value);
+            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
+            FirestackUtils.sendEvent(mReactContext, name, data);
         }
 
         @Override
@@ -97,22 +96,34 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
       ChildEventListener listener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-          Log.d(TAG, "onChildAdded:" + dataSnapshot.getKey());
+          if (name.equals("child_added")) {
+            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
+            FirestackUtils.sendEvent(mReactContext, name, data);
+          }
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-          Log.d(TAG, "onChildChanged:" + dataSnapshot.getKey());
+          if (name.equals("child_changed")) {
+            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
+            FirestackUtils.sendEvent(mReactContext, name, data);
+          }
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-          Log.d(TAG, "onChildRemoved:" + dataSnapshot.getKey());
+          if (name.equals("child_removed")) {
+            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
+            FirestackUtils.sendEvent(mReactContext, name, data);
+          }
         }
 
         @Override
         public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-          Log.d(TAG, "onChildMoved:" + dataSnapshot.getKey());
+          if (name.equals("child_moved")) {
+            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
+            FirestackUtils.sendEvent(mReactContext, name, data);
+          }
         }
 
         @Override
@@ -130,6 +141,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
     // mDBListeners.put(key, code);
 
+    Log.d(TAG, "Added listener " + key);
     WritableMap resp = Arguments.createMap();
     resp.putString("handle", key);
     callback.invoke(null, resp);
@@ -156,5 +168,72 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   private DatabaseReference getDatabaseReferenceAtPath(final String path) {
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(path);
     return mDatabase;
+  }
+
+  private WritableMap dataSnapshotToMap(String name, DataSnapshot dataSnapshot) {
+    WritableMap data = Arguments.createMap();
+
+    data.putString("key", dataSnapshot.getKey());
+    data.putBoolean("exists", dataSnapshot.exists());
+    data.putBoolean("hasChildren", dataSnapshot.hasChildren());
+
+    data.putDouble("childrenCount", dataSnapshot.getChildrenCount());
+
+    WritableMap valueMap = this.castSnapshotValue(dataSnapshot);
+    data.putMap("value", valueMap);
+
+    Object priority = dataSnapshot.getPriority();
+    if (priority == null) {
+      data.putString("priority", "null");
+    } else {
+      data.putString("priority", priority.toString());
+    }
+
+    WritableMap eventMap = Arguments.createMap();
+    eventMap.putString("eventName", name);
+    eventMap.putMap("snapshot", data);
+    return eventMap;
+  }
+
+  private <Any> Any castSnapshotValue(DataSnapshot snapshot) {
+      if (snapshot.hasChildren()) {
+        WritableMap data = Arguments.createMap();
+        for (DataSnapshot child : snapshot.getChildren()) {
+            Any castedChild = castSnapshotValue(child);
+            switch (castedChild.getClass().getName()) {
+                case "java.lang.Boolean":
+                    data.putBoolean(child.getKey(), (Boolean) castedChild);
+                    break;
+                case "java.lang.Integer":
+                    data.putInt(child.getKey(), (Integer) castedChild);
+                    break;
+                case "java.lang.Double":
+                    data.putDouble(child.getKey(), (Double) castedChild);
+                    break;
+                case "java.lang.String":
+                    data.putString(child.getKey(), (String) castedChild);
+                    break;
+                case "com.facebook.react.bridge.WritableNativeMap":
+                    data.putMap(child.getKey(), (WritableMap) castedChild);
+                    break;
+            }
+        }
+        return (Any) data;
+    } else {
+        String type = snapshot.getValue().getClass().getName();
+        switch (type) {
+            case "java.lang.Boolean":
+                return (Any)((Boolean) snapshot.getValue());
+            case "java.lang.Long":
+                // TODO check range errors
+                return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
+            case "java.lang.Double":
+                return (Any)((Double) snapshot.getValue());
+            case "java.lang.String":
+                return (Any)((String) snapshot.getValue());
+            default:
+                return (Any) null;
+        }
+    }
   }
 }
