@@ -172,7 +172,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   private WritableMap dataSnapshotToMap(String name, DataSnapshot dataSnapshot) {
-    WritableMap data = Arguments.createMap();
+    WritableMap data = Arguments.cregateMap();
 
     data.putString("key", dataSnapshot.getKey());
     data.putBoolean("exists", dataSnapshot.exists());
