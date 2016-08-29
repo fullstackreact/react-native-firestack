@@ -15,12 +15,6 @@
 
 RCT_EXPORT_MODULE(FirestackStorage);
 
-- (void) setStorageUrl:(NSString *)storageBucket
-{
-    NSString *storageUrl = [NSString stringWithFormat:@"gs://%@", storageBucket];
-    self._storageUrl = storageUrl;
-}
-
 //- (NSString *) getStorageUrl
 //{
 //    NSDictionary *cfg = [self getConfig];
@@ -28,13 +22,12 @@ RCT_EXPORT_MODULE(FirestackStorage);
 //    return storageUrl;
 //}
 
-RCT_EXPORT_METHOD(uploadFile:(NSString *) name
+RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
+                  name: (NSString *) name
                   path:(NSString *)path
                   metadata:(NSDictionary *)metadata
                   callback:(RCTResponseSenderBlock) callback)
 {
-    NSString *urlStr = self._storageUrl;
-    
     if (urlStr == nil) {
         NSError *err = [[NSError alloc] init];
         [err setValue:@"Storage configuration error" forKey:@"name"];

@@ -42,14 +42,9 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
     return TAG;
   }
 
-  @ReactMethod
-  public void setStorageUrl(final String storageBucket, final Callback callback) {
-    FirestackUtils.todoNote(TAG, "setStorageUrl", callback);
-  }
-
   // STORAGE
   @ReactMethod
-  public void uploadFile(final String name, final String filepath, final ReadableMap metadata, final Callback callback) {
+  public void uploadFile(final String urlStr, final String name, final String filepath, final ReadableMap metadata, final Callback callback) {
     // TODO
     FirestackUtils.todoNote(TAG, "uploadFile", callback);
   }
