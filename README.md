@@ -525,20 +525,6 @@ takePicture() {
 }
 ```
 
-#### storage attribute
-
-To retrieve a stored file, we can get the url to download it from using the `storage` attribute. This method allows us to call right through to the native JavaScript object provided by the Firebase library:
-
-```javascript
-firestack.storage.ref(photo.fullPath)
-.getDownloadURL()
-  .then(url => {
-    // url contains the download url
-  }).catch(err => {
-    console.error('Error downloading photo', err);
-  })
-```
-
 ### Realtime Database
 
 #### database attribute
