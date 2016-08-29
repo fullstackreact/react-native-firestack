@@ -66,7 +66,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         WritableMap msgMap = Arguments.createMap();
         msgMap.putString("eventName", "listenForAuth");
 
-        FirebaseUser user = firebaseAuth.getCurrentUser();
         if (user != null) {
             WritableMap userMap = getUserMap();
 
@@ -80,6 +79,21 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         }
         }
       };
+
+      mAuth = FirebaseAuth.getInstance();
+      mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @ReactMethod
+    public void unlistenForAuth(final Callback callback) {
+      if (mAuthListener != null) {
+        mAuth.removeAuthStateListener(mAuthListener);
+
+        WritableMap resp = Arguments.createMap();
+        resp.putString("status", "complete");
+
+        callback.invoke(null, resp);
+      }
     }
 
     @ReactMethod
@@ -105,17 +119,17 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            user = task.getResult().getUser();
-                            userCallback(user, callback);
-                        } else {
-                            userErrorCallback(task, callback);
-                        }
-                    }
-                });
+          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+              @Override
+              public void onComplete(@NonNull Task<AuthResult> task) {
+                  if (task.isSuccessful()) {
+                      user = task.getResult().getUser();
+                      userCallback(user, callback);
+                  } else {
+                      userErrorCallback(task, callback);
+                  }
+              }
+          });
     }
 
     @ReactMethod
@@ -415,6 +429,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     private WritableMap getUserMap() {
         WritableMap userMap = Arguments.createMap();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         userMap.putString("email", user.getEmail());
         userMap.putString("uid", user.getUid());

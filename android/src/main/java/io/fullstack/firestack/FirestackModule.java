@@ -28,9 +28,9 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
   private ReactContext mReactContext;
   private FirebaseApp app;
 
-  public FirestackModule(ReactApplicationContext reactContext) {
+  public FirestackModule(ReactApplicationContext reactContext, Context context) {
     super(reactContext);
-    this.context = reactContext;
+    this.context = context;
     mReactContext = reactContext;
 
     Log.d(TAG, "New instance");
@@ -86,7 +86,7 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     try {
         Log.i(TAG, "Configuring app");
         if (app == null) {
-          app = FirebaseApp.initializeApp(mReactContext, builder.build());
+          app = FirebaseApp.initializeApp(this.context, builder.build());
         }
         Log.i(TAG, "Configured");
 

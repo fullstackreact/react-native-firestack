@@ -34,7 +34,9 @@
     "ios": {
       "project": "ios/Firestack.xcodeproj"
     },
-    "android": {}
+    "android": {
+      "packageInstance": "new FirestackPackage(getApplicationContext())"
+    }
   },
   "devDependencies": {
     "babel-jest": "^14.1.0",
