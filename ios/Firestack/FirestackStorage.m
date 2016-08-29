@@ -15,13 +15,6 @@
 
 RCT_EXPORT_MODULE(FirestackStorage);
 
-//- (NSString *) getStorageUrl
-//{
-//    NSDictionary *cfg = [self getConfig];
-//    NSString *storageUrl = [NSString stringWithFormat:@"gs://%@", [cfg valueForKey:@"storageBucket"]];
-//    return storageUrl;
-//}
-
 RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
                   name: (NSString *) name
                   path:(NSString *)path
