@@ -76,27 +76,28 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
     
     [uploadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
         if (snapshot.error != nil) {
-            NSError *err = [[NSError alloc] init];
+            NSDictionary *errProps = [[NSMutableDictionary alloc] init];
+            
             switch (snapshot.error.code) {
                 case FIRStorageErrorCodeObjectNotFound:
                     // File doesn't exist
-                    [err setValue:@"File does not exist" forKey:@"description"];
+                    [errProps setValue:@"File does not exist" forKey:@"description"];
                     break;
                 case FIRStorageErrorCodeUnauthorized:
                     // User doesn't have permission to access file
-                    [err setValue:@"You do not have permissions" forKey:@"description"];
+                    [errProps setValue:@"You do not have permissions" forKey:@"description"];
                     break;
                 case FIRStorageErrorCodeCancelled:
                     // User canceled the upload
-                    [err setValue:@"Upload cancelled" forKey:@"description"];
+                    [errProps setValue:@"Upload cancelled" forKey:@"description"];
                     break;
                 case FIRStorageErrorCodeUnknown:
                     // Unknown error occurred, inspect the server response
-                    [err setValue:@"Unknown error" forKey:@"description"];
+                    [errProps setValue:@"Unknown error" forKey:@"description"];
                     break;
             }
             
-            callback(@[err]);
+            callback(@[errProps]);
         }}];
 }
 

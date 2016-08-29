@@ -272,6 +272,7 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
     }
     @catch (NSException *err) {
         NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
+        NSLog(@"Tried to send: %@ with %@", title, props);
     }
 }
 
