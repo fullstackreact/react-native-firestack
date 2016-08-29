@@ -479,6 +479,52 @@ this.camera.capture()
 .catch(err => console.error(err));
 ```
 
+To combine the `react-native-camera` plugin with firestack, we recommend setting the `captureTarget` to the `temp` storage path, like so:
+
+```javascript
+<Camera
+  ref={(cam) => {
+    this.camera = cam;
+  }}
+  captureTarget={Camera.constants.CaptureTarget.temp}
+  style={styles.preview}
+  aspect={Camera.constants.Aspect.fill}>
+    <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
+</Camera>
+```
+
+Firestack also gives you the ability to listen for database events on upload. The final parameter the `uploadFile()` function accepts is a callback that will be called anytime a storage event is fired.
+
+The following events are supported:
+
+* upload_progress
+* upload_paused
+* upload_resumed
+
+For example, the `takePicture` function from the example above might look something similar to:
+
+```javascript
+takePicture() {
+  this.camera.capture()
+    .then(({path}) => {
+      const filename = 'photo.jpg'
+      firestack.uploadFile(`photos/${filename}`, path, {
+        contentType: 'image/jpeg',
+        contentEncoding: 'base64',
+      }, (evt) => {
+        console.log('Got an event in JS', evt);
+      })
+      .then((res) => {
+        console.log('result from upload file: ', res);
+      })
+      .catch((err) => {
+        console.log('error happened with uploadFile', err);
+      })
+    })
+    .catch(err => console.error(err));
+}
+```
+
 #### storage attribute
 
 To retrieve a stored file, we can get the url to download it from using the `storage` attribute. This method allows us to call right through to the native JavaScript object provided by the Firebase library:

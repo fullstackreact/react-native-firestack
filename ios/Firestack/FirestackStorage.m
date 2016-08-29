@@ -41,27 +41,32 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
     [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload resumed, also fires when the upload starts
         [self sendJSEvent:STORAGE_UPLOAD_RESUMED props:@{
-                                                   @"ref": snapshot.reference.bucket
-                                                   }];
+                                                         @"eventName": STORAGE_UPLOAD_RESUMED,
+                                                         @"ref": snapshot.reference.bucket
+                                                         }];
     }];
     
     [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload paused
         [self sendJSEvent:STORAGE_UPLOAD_PAUSED props:@{
-                                                  @"ref": snapshot.reference.bucket
-                                                  }];
+                                                        @"eventName": STORAGE_UPLOAD_PAUSED,
+                                                        @"ref": snapshot.reference.bucket
+                                                        }];
     }];
     [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload reported progress
         double percentComplete = 100.0 * (snapshot.progress.completedUnitCount) / (snapshot.progress.totalUnitCount);
         
         [self sendJSEvent:STORAGE_UPLOAD_PROGRESS props:@{
-                                                    @"progress": @(percentComplete || 0.0)
-                                                    }];
+                                                          @"eventName": STORAGE_UPLOAD_PROGRESS,
+                                                          @"progress": @(percentComplete || 0.0)
+                                                          }];
         
     }];
     
     [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
+        [uploadTask removeAllObservers];
+        
         // Upload completed successfully
         FIRStorageReference *ref = snapshot.reference;
         NSDictionary *props = @{
