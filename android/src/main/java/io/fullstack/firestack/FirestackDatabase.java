@@ -129,8 +129,6 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void on(final String path, final String name, final Callback callback) {
-    // TODO
-    // FirestackUtils.todoNote(TAG, "on", callback);
     Log.d(TAG, "Setting a listener on event: " + name + " for path " + path);
     DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
     final FirestackDatabaseModule self = this;
@@ -146,7 +144,12 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
         @Override
         public void onCancelled(DatabaseError error) {
             // Failed to read value
-            Log.w(TAG, "Failed to read value.", error.toException());
+          Log.w(TAG, "Failed to read value.", error.toException());
+          WritableMap err = Arguments.createMap();
+          err.putInt("errorCode", error.getCode());
+          err.putString("errorDetails", error.getDetails());
+          err.putString("description", error.getMessage());
+          callback.invoke(err);
         }
       };
       ref.addValueEventListener(listener);
@@ -185,8 +188,12 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
         }
 
         @Override
-        public void onCancelled(DatabaseError databaseError) {
-          Log.w(TAG, "onCancelled", databaseError.toException());
+        public void onCancelled(DatabaseError error) {
+          WritableMap err = Arguments.createMap();
+          err.putInt("errorCode", error.getCode());
+          err.putString("errorDetails", error.getDetails());
+          err.putString("description", error.getMessage());
+          FirestackUtils.sendEvent(mReactContext, "error", err);
         }
       };
       ref.addChildEventListener(listener);
@@ -209,7 +216,29 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void onOnce(final String path, final String name, final Callback callback) {
     // TODO
-    FirestackUtils.todoNote(TAG, "onOnce", callback);
+    // FirestackUtils.todoNote(TAG, "onOnce", callback);
+    Log.d(TAG, "Setting one-time listener on event: " + name + " for path " + path);
+    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    final FirestackDatabaseModule self = this;
+
+    ValueEventListener listener = new ValueEventListener() {
+      @Override
+      public void onDataChange(DataSnapshot dataSnapshot) {
+        WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
+        callback.invoke(null, data);
+      }
+
+      @Override
+      public void onCancelled(DatabaseError error) {
+        WritableMap err = Arguments.createMap();
+        err.putInt("errorCode", error.getCode());
+        err.putString("errorDetails", error.getDetails());
+        err.putString("description", error.getMessage());
+        callback.invoke(err);
+      }
+    };
+
+    ref.addListenerForSingleValueEvent(listener);
   }
 
   @ReactMethod
