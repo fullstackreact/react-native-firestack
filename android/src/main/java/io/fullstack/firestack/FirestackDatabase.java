@@ -53,8 +53,27 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void set(final String path, final ReadableMap props, final Callback callback) {
-    // TODO
-    FirestackUtils.todoNote(TAG, "set", callback);
+    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    final FirestackDatabaseModule self = this;
+    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError error, DatabaseReference ref) {
+        if (error != null) {
+          WritableMap err = Arguments.createMap();
+          err.putInt("errorCode", error.getCode());
+          err.putString("errorDetails", error.getDetails());
+          err.putString("description", error.getMessage());
+          callback.invoke(err);
+        } else {
+          WritableMap res = Arguments.createMap();
+          res.putString("status", "success");
+          callback.invoke(null, res);
+        }
+      }
+    };
+
+    ref.setValue(m, listener);
   }
 
   @ReactMethod
