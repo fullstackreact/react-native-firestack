@@ -534,7 +534,6 @@ The native Firebase JavaScript library provides a featureful realtime database t
 ```javascript
 firestack.database
       .ref(LIST_KEY)
-      .orderByChild('timestamp')
       .on('value', snapshot => {
         if (snapshot.val()) {
           console.log('The list was updated');
