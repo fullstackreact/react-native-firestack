@@ -35,6 +35,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 class FirestackAuthModule extends ReactContextBaseJavaModule {
   private final int NO_CURRENT_USER = 100;
+  private final int ERROR_FETCHING_TOKEN = 101;
+
   private static final String TAG = "FirestackAuth";
 
   private Context context;
@@ -272,8 +274,26 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void getToken(final Callback callback) {
-      // TODO
-      FirestackUtils.todoNote(TAG, "getToken", callback);
+      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+      user.getToken(true)
+        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+          @Override
+          public void onComplete(@NonNull Task<GetTokenResult> task) {
+            if (task.isSuccessful()) {
+              String token = task.getResult().getToken();
+              WritableMap resp = Arguments.createMap();
+              resp.putString("status", "complete");
+              resp.putString("token", token);
+              callback.invoke(null, resp);
+            } else {
+              WritableMap err = Arguments.createMap();
+              err.putInt("errorCode", ERROR_FETCHING_TOKEN);
+              err.putString("errorMessage", task.getException().getMessage());
+              callback.invoke(err);
+            }
+          }
+        });
     }
 
     @ReactMethod
