@@ -62,17 +62,25 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
         [props setValue:[opts valueForKey:@"apiKey"] forKey:@"APIKey"];
     }
     
+    // if the app id is lowercase
+    if ([opts valueForKey:@"googleAppId"]) {
+        [props setValue:[opts valueForKey:@"googleAppId"] forKey:@"googleAppID"];
+    } else if ([opts valueForKey:@"appId"]) {
+        [props setValue:[opts valueForKey:@"appId"] forKey:@"googleAppID"];
+    }
+    
     @try {
-        FIROptions *finalOptions = [[FIROptions alloc] initWithGoogleAppID:[props valueForKey:@"googleAppID"]
-                                                                  bundleID:bundleID
-                                                               GCMSenderID:[props valueForKey:@"GCMSenderID"]
-                                                                    APIKey:[props valueForKey:@"APIKey"]
-                                                                  clientID:[props valueForKey:@"clientID"]
-                                                                trackingID:[props valueForKey:@"trackingID"]
-                                                           androidClientID:[props valueForKey:@"androidClientID"]
-                                                               databaseURL:[props valueForKey:@"databaseURL"]
-                                                             storageBucket:[props valueForKey:@"storageBucket"]
-                                                         deepLinkURLScheme:[props valueForKey:@"deepLinkURLScheme"]];
+        FIROptions *finalOptions = [[FIROptions alloc]
+                                    initWithGoogleAppID:[props valueForKey:@"googleAppID"]
+                                    bundleID:bundleID
+                                    GCMSenderID:[props valueForKey:@"GCMSenderID"]
+                                    APIKey:[props valueForKey:@"APIKey"]
+                                    clientID:[props valueForKey:@"clientID"]
+                                    trackingID:[props valueForKey:@"trackingID"]
+                                    androidClientID:[props valueForKey:@"androidClientID"]
+                                    databaseURL:[props valueForKey:@"databaseURL"]
+                                    storageBucket:[props valueForKey:@"storageBucket"]
+                                    deepLinkURLScheme:[props valueForKey:@"deepLinkURLScheme"]];
         
         for (NSString *key in props) {
             [self debugLog:key msg:[finalOptions valueForKey:key]];

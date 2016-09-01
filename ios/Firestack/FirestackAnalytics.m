@@ -18,6 +18,7 @@ RCT_EXPORT_METHOD(logEventWithName:(NSString *)name
                   props:(NSDictionary *)props
                   callback:(RCTResponseSenderBlock) callback)
 {
+    NSLog(@"logEventWithName called: %@ and %@", name, props);
     [FIRAnalytics logEventWithName:name parameters:props];
     callback(@[[NSNull null], @YES]);
 }
