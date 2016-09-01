@@ -12,6 +12,15 @@ Firebase is awesome and it's combination with the Google Cloud Platform makes it
 
 ## Installing
 
+Getting `react-native-firestack` up and running in your app should be a 2 step process + 1 for each platform.
+
+1. Install the `npm` package
+2. Link the project with `react-native link react-native-firestack`
+3. Modify the _Build Phases_ for iOS like it says below.
+4. To ensure Android is setup, check your `MainApplication.java` for the `FirestackPackage()` line.
+
+Those steps in more detail:
+
 Install the `npm` package with:
 
 ```bash
