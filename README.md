@@ -6,6 +6,16 @@ Firestack makes using the latest [Firebase](http://firebase.com) straight-forwar
 
 Firestack is a _light-weight_ layer sitting atop the native Firebase libraries for iOS and Android (coming soon), deferring to as much of the JavaScript library as possible. For parts of the api that are natively supported by the Firebase JavaScript api, this library acts as a thin proxy to the JS objects, while it provides a native shim to those that are not covered.
 
+## Features
+
+* Nearly automatic, rapid setup on Firebase
+* Covers lots of awesome features of Firebase, such as authentication and storage handling
+* Redux support built-in (but not required)
+* Android and iOS support
+* Community supported and professionally backed
+* Intended on being as drop-dead simple as possible
+* And so much more
+
 ## Why?
 
 Firebase is awesome and it's combination with the Google Cloud Platform makes it super awesome. Sadly, the latest version of Firebase requires the `window` object. That's where Firestack comes in! Firestack provides a really thin layer that sits on top of the native Firebase SDKs and attempts to use the JavaScript library as much as possible rather than reinventing the wheel.
