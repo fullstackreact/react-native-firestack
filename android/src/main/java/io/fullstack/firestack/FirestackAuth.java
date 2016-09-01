@@ -162,14 +162,13 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void reauthenticateWithCredentialForProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
       // TODO:
-      // FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
-      AuthCredential credential;
-      Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
+      FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
+      // AuthCredential credential;
+      // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
     }
 
     @ReactMethod
     public void updateUserEmail(final String email, final Callback callback) {
-      // FirestackUtils.todoNote(TAG, "updateUserEmail", callback);
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
       if (user != null) {
@@ -196,8 +195,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void updateUserPassword(final String newPassword, final Callback callback) {
-      // TODO
-      // FirestackUtils.todoNote(TAG, "updateUserPassword", callback);
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
       if (user != null) {
@@ -244,8 +241,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void deleteUser(final Callback callback) {
-      // TODO
-      // FirestackUtils.todoNote(TAG, "deleteUser", callback);
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
       if (user != null) {
@@ -298,8 +293,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void updateUserProfile(ReadableMap props, final Callback callback) {
-      // TODO
-      // FirestackUtils.todoNote(TAG, "updateUserProfile", callback);
       FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
       UserProfileChangeRequest.Builder profileBuilder = new UserProfileChangeRequest.Builder();
@@ -336,8 +329,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void signOut(final Callback callback) {
-      // TODO
-      FirestackUtils.todoNote(TAG, "signOut", callback);
       FirebaseAuth.getInstance().signOut();
 
       WritableMap resp = Arguments.createMap();

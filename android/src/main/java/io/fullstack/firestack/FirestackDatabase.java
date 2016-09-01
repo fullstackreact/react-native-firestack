@@ -215,8 +215,6 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void onOnce(final String path, final String name, final Callback callback) {
-    // TODO
-    // FirestackUtils.todoNote(TAG, "onOnce", callback);
     Log.d(TAG, "Setting one-time listener on event: " + name + " for path " + path);
     DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
     final FirestackDatabaseModule self = this;
@@ -313,7 +311,6 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
             case "java.lang.Boolean":
                 return (Any)((Boolean) snapshot.getValue());
             case "java.lang.Long":
-                // TODO check range errors
                 return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
             case "java.lang.Double":
                 return (Any)((Double) snapshot.getValue());

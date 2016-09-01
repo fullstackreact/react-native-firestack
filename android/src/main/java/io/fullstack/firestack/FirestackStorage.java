@@ -61,10 +61,8 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
   // STORAGE
   @ReactMethod
   public void uploadFile(final String urlStr, final String name, final String filepath, final ReadableMap metadata, final Callback callback) {
-    // TODO
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
-    // FirestackUtils.todoNote(TAG, "uploadFile", callback);
     StorageReference storageRef = storage.getReferenceFromUrl(urlStr);
     StorageReference fileRef = storageRef.child(name);
 
