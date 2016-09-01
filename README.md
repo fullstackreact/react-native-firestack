@@ -121,11 +121,13 @@ Each platform uses a different setup method after creating the project.
 
 ### iOS
 
-After creating a Firebase project, click on the [Add Firebase to your iOS app](http://d.pr/i/3sEL.png) and follow the steps from there.
+After creating a Firebase project, click on the [Add Firebase to your iOS app](http://d.pr/i/3sEL.png) and follow the steps from there to add the configuration file. You do _not_ need to set up a cocoapods project (this is already done through firestack). Make sure not to forget the `Copy Files` phase in iOS. 
 
 **[IMPORTANT: Download the config file](https://support.google.com/firebase/answer/7015592)**
 
 Once you download the configuration file, make sure you place it in the root of your Xcode project. Every different Bundle ID (aka, even different project variants needs their own configuration file).
+
+Lastly, due to some dependencies requirements, Firestack supports iOS versions 8.0 and up. Make sure to update the minimum version of your iOS app to `8.0`. 
 
 ### Android
 
