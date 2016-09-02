@@ -6,6 +6,8 @@ Firestack makes using the latest [Firebase](http://firebase.com) straight-forwar
 
 Firestack is a _light-weight_ layer sitting atop the native Firebase libraries for iOS and Android (coming soon), deferring to as much of the JavaScript library as possible. For parts of the api that are natively supported by the Firebase JavaScript api, this library acts as a thin proxy to the JS objects, while it provides a native shim to those that are not covered.
 
+For a detailed discussion of how Firestack works, check out our [contribution guide](https://github.com/fullstackreact/react-native-firestack/blob/master/Contributing.md).
+
 ## Features
 
 * Nearly automatic, rapid setup on Firebase
