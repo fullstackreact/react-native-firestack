@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.Log;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import android.net.Uri;
 
@@ -18,6 +20,7 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReactContext;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -28,6 +31,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -54,8 +58,12 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void set(final String path, final ReadableMap props, final Callback callback) {
+  public void set(
+          final String path,
+          final ReadableMap props,
+          final Callback callback) {
     DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+
     final FirestackDatabaseModule self = this;
     Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
 
@@ -80,7 +88,9 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void update(final String path, final ReadableMap props, final Callback callback) {
+  public void update(final String path,
+                     final ReadableMap props,
+                     final Callback callback) {
     DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
     final FirestackDatabaseModule self = this;
     Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
@@ -106,7 +116,8 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void remove(final String path, final Callback callback) {
+  public void remove(final String path,
+                     final Callback callback) {
     DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
     final FirestackDatabaseModule self = this;
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
@@ -130,7 +141,10 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void push(final String path, final ReadableMap props, final Callback callback) {
+  public void push(final String path,
+                   final ReadableMap props,
+                   final Callback callback) {
+
     Log.d(TAG, "Called push with " + path);
     DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
     DatabaseReference newRef = ref.push();
@@ -174,9 +188,12 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void on(final String path, final String name, final Callback callback) {
+  public void on(final String path,
+                 final ReadableArray modifiers,
+                 final String name,
+                 final Callback callback) {
     Log.d(TAG, "Setting a listener on event: " + name + " for path " + path);
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    Query ref = this.getDatabaseQueryAtPathAndModifiers(path, modifiers);
     final FirestackDatabaseModule self = this;
 
     if (name.equals("value")) {
@@ -260,9 +277,11 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void onOnce(final String path, final String name, final Callback callback) {
+  public void onOnce(final String path,
+                     final ReadableArray modifiers,
+                     final String name, final Callback callback) {
     Log.d(TAG, "Setting one-time listener on event: " + name + " for path " + path);
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    Query ref = this.getDatabaseQueryAtPathAndModifiers(path, modifiers);
     final FirestackDatabaseModule self = this;
 
     ValueEventListener listener = new ValueEventListener() {
@@ -297,9 +316,68 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     FirestackUtils.todoNote(TAG, "on", callback);
   }
 
+  // Private helpers
   private DatabaseReference getDatabaseReferenceAtPath(final String path) {
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(path);
     return mDatabase;
+  }
+
+  private Query getDatabaseQueryAtPathAndModifiers(
+          final String path,
+          final ReadableArray modifiers) {
+    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+
+    List<Object> strModifiers = FirestackUtils.recursivelyDeconstructReadableArray(modifiers);
+    ListIterator<Object> it = strModifiers.listIterator();
+    Query query = ref.orderByKey();
+
+    while(it.hasNext()) {
+      String str = (String) it.next();
+
+      Log.d(TAG, "getReference with modifiers: " + str);
+      String[] strArr = str.split(":");
+      String methStr = strArr[0];
+
+      if (methStr.equalsIgnoreCase("orderByKey")) {
+        query = ref.orderByKey();
+      } else if (methStr.equalsIgnoreCase("orderByValue")) {
+        query = ref.orderByValue();
+      } else if (methStr.equalsIgnoreCase("orderByPriority")) {
+        query = ref.orderByPriority();
+      } else if (methStr.contains("orderByChild")) {
+        String key = strArr[1];
+        Log.d(TAG, "orderByChild: " + key);
+        query = ref.orderByChild(key);
+      } else if (methStr.contains("limitToLast")) {
+        String key = strArr[1];
+        int limit = Integer.parseInt(key);
+        Log.d(TAG, "limitToLast: " + limit);
+        query = query.limitToLast(limit);
+      } else if (methStr.contains("limitToFirst")) {
+        String key = strArr[1];
+        int limit = Integer.parseInt(key);
+        Log.d(TAG, "limitToFirst: " + limit);
+        query = query.limitToFirst(limit);
+      } else if (methStr.contains("equalTo")) {
+        String value = strArr[1];
+        String key = strArr[2];
+        if (key == null) {
+          query = query.equalTo(value);
+        } else {
+          query = query.equalTo(value, key);
+        }
+      } else if (methStr.contains("endAt")) {
+        String value = strArr[1];
+        String key = strArr[2];
+        if (key == null) {
+          query = query.equalTo(value);
+        } else {
+          query = query.equalTo(value, key);
+        }
+      }
+    }
+
+    return query;
   }
 
   private WritableMap dataSnapshotToMap(String name, DataSnapshot dataSnapshot) {
@@ -316,7 +394,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
     Object priority = dataSnapshot.getPriority();
     if (priority == null) {
-      data.putString("priority", "null");
+      data.putString("priority", null);
     } else {
       data.putString("priority", priority.toString());
     }

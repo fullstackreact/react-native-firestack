@@ -16,12 +16,10 @@
 RCT_EXPORT_MODULE(FirestackDatabase);
 
 RCT_EXPORT_METHOD(set:(NSString *) path
-                  modifiers:(NSArray *) modifiers
                   value:(NSDictionary *)value
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [self getRefAtPathWithModifiers:path
-                                                      modifiers:modifiers];
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
     
     [ref setValue:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         if (error != nil) {
@@ -37,12 +35,10 @@ RCT_EXPORT_METHOD(set:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(update:(NSString *) path
-                  modifiers:(NSArray *) modifiers
                   value:(NSDictionary *)value
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [self getRefAtPathWithModifiers:path
-                                                      modifiers:modifiers];
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
     
     [ref updateChildValues:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         if (error != nil) {
@@ -58,11 +54,9 @@ RCT_EXPORT_METHOD(update:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(remove:(NSString *) path
-                  modifiers:(NSArray *) modifiers
                   callback:(RCTResponseSenderBlock) callback)
 {
-        FIRDatabaseReference *ref = [self getRefAtPathWithModifiers:path
-                                  modifiers: modifiers];
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
     [ref removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         if (error != nil) {
             // Error handling
@@ -117,7 +111,7 @@ RCT_EXPORT_METHOD(on:(NSString *) path
     int eventType = [self eventTypeFromName:name];
     NSLog(@"Calling observeEventType: at path: %@ %@", path, name);
     
-    FIRDatabaseReference *ref = [self getRefAtPathWithModifiers:path
+    FIRDatabaseQuery *ref = [self getQueryAtPathWithModifiers:path
                                   modifiers: modifiers];
     
     FIRDatabaseHandle handle = [ref observeEventType:eventType
@@ -151,10 +145,14 @@ RCT_EXPORT_METHOD(onOnce:(NSString *) path
 {
     int eventType = [self eventTypeFromName:name];
     
-    FIRDatabaseReference *ref = [self getRefAtPathWithModifiers:path modifiers:modifiers];
+    FIRDatabaseQuery *ref = [self getQueryAtPathWithModifiers:path modifiers:modifiers];
     [ref observeSingleEventOfType:eventType
                         withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-                            callback(@[[NSNull null], [self snapshotToDict:snapshot]]);
+                          NSDictionary *props = [self snapshotToDict:snapshot];
+                            callback(@[[NSNull null], @{
+                                                         @"eventName": name,
+                                                         @"snapshot": props
+                                                         }]);
                         }
                   withCancelBlock:^(NSError * _Nonnull error) {
                       NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
@@ -209,12 +207,13 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
     return [rootRef child:str];
 }
 
-- (FIRDatabaseReference *) getRefAtPathWithModifiers:(NSString *) str
+- (FIRDatabaseQuery *) getQueryAtPathWithModifiers:(NSString *) str
                                            modifiers:(NSArray *) modifiers
 {
     FIRDatabaseReference *rootRef = [[[FIRDatabase database] reference] child:str];
     
-    FIRDatabaseQuery *query;
+    FIRDatabaseQuery *query = [rootRef queryOrderedByKey];
+    
     for (NSString *str in modifiers) {
         if ([str isEqualToString:@"orderByKey"]) {
             query = [rootRef queryOrderedByKey];
@@ -241,22 +240,28 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
             NSArray *args = [str componentsSeparatedByString:@":"];
             NSString *value = args[1];
             NSString *key = args[2];
-            query = [query queryEqualToValue:value
+            
+            if (key == nil) {
+                query = [query queryEqualToValue:value];
+            } else {
+                query = [query queryEqualToValue:value
                                     childKey:key];
+            }
         } else if ([str containsString:@"endAt"]) {
             NSArray *args = [str componentsSeparatedByString:@":"];
             NSString *value = args[1];
             NSString *key = args[2];
-            query = [query queryEndingAtValue:value
+
+            if (key == nil) {
+                query = [query queryEndingAtValue:value];
+            } else {
+                query = [query queryEndingAtValue:value
                                      childKey:key];
+            }
         }
     }
     
-    if (query == nil) {
-        return rootRef;
-    } else {
-        return query.ref;
-    }
+    return query;
 }
 
 // Handles
