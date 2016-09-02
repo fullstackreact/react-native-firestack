@@ -5,6 +5,7 @@ import android.util.Log;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import android.net.Uri;
 
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +17,7 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReactContext;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -125,6 +127,50 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     };
 
     ref.removeValue(listener);
+  }
+
+  @ReactMethod
+  public void push(final String path, final ReadableMap props, final Callback callback) {
+    Log.d(TAG, "Called push with " + path);
+    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    DatabaseReference newRef = ref.push();
+
+    final Uri url = Uri.parse(newRef.toString());
+    final String newPath = url.getPath();
+
+    ReadableMapKeySetIterator iterator = props.keySetIterator();
+    if (iterator.hasNextKey()) {
+      Log.d(TAG, "Passed value to push");
+      // lame way to check if the `props` are empty
+      final FirestackDatabaseModule self = this;
+      Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+
+      DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+        @Override
+        public void onComplete(DatabaseError error, DatabaseReference ref) {
+          if (error != null) {
+            WritableMap err = Arguments.createMap();
+            err.putInt("errorCode", error.getCode());
+            err.putString("errorDetails", error.getDetails());
+            err.putString("description", error.getMessage());
+            callback.invoke(err);
+          } else {
+            WritableMap res = Arguments.createMap();
+            res.putString("status", "success");
+            res.putString("ref", newPath);
+            callback.invoke(null, res);
+          }
+        }
+      };
+
+      newRef.setValue(m, listener);
+    } else {
+      Log.d(TAG, "No value passed to push: " + newPath);
+      WritableMap res = Arguments.createMap();
+      res.putString("result", "success");
+      res.putString("ref", newPath);
+      callback.invoke(null, res);
+    }
   }
 
   @ReactMethod
@@ -306,18 +352,22 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
         }
         return (Any) data;
     } else {
-        String type = snapshot.getValue().getClass().getName();
-        switch (type) {
-            case "java.lang.Boolean":
-                return (Any)((Boolean) snapshot.getValue());
-            case "java.lang.Long":
-                return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
-            case "java.lang.Double":
-                return (Any)((Double) snapshot.getValue());
-            case "java.lang.String":
-                return (Any)((String) snapshot.getValue());
-            default:
-                return (Any) null;
+      if (snapshot.getValue() != null) {
+          String type = snapshot.getValue().getClass().getName();
+          switch (type) {
+              case "java.lang.Boolean":
+                  return (Any)((Boolean) snapshot.getValue());
+              case "java.lang.Long":
+                  return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
+              case "java.lang.Double":
+                  return (Any)((Double) snapshot.getValue());
+              case "java.lang.String":
+                  return (Any)((String) snapshot.getValue());
+              default:
+                  return (Any) null;
+          }
+        } else {
+          return (Any) null;
         }
     }
   }

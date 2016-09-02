@@ -70,6 +70,35 @@ RCT_EXPORT_METHOD(remove:(NSString *) path
     }];
 }
 
+RCT_EXPORT_METHOD(push:(NSString *) path
+                  props:(NSDictionary *) props
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [[self getRefAtPath:path] childByAutoId];
+
+    NSURL *url = [NSURL URLWithString:ref.URL];
+    NSString *newPath = [url path];
+    
+    if ([props count] > 0) {
+        [ref setValue:props withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+            if (error != nil) {
+                // Error handling
+                NSDictionary *evt = [self getAndSendDatabaseError:error];
+                callback(@[evt]);
+            } else {
+                callback(@[[NSNull null], @{
+                               @"result": @"success",
+                               @"ref": newPath
+                               }]);
+            }
+        }];
+    } else {
+        callback(@[[NSNull null], @{
+                       @"result": @"success",
+                       @"ref": newPath
+                       }]);
+    }
+}
 
 
 
