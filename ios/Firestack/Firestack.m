@@ -68,6 +68,11 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
     } else if ([opts valueForKey:@"appId"]) {
         [props setValue:[opts valueForKey:@"appId"] forKey:@"googleAppID"];
     }
+
+    // If we have an app id but no tracking id
+    if (![opts valueForKey:@"trackingID"] && [opts valueForKey:@"googleAppID"]) {
+        [props setValue:[opts valueForKey:@"googleAppID"] forKey:@"trackingID"];
+    }
     
     @try {
         FIROptions *finalOptions = [[FIROptions alloc]
@@ -91,10 +96,10 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
         NSDictionary *cfg = [self getConfig];
         [cfg setValuesForKeysWithDictionary:props];
         
-        if (!self.configured) {
+        // if (!self.configured) {
             [FIRApp configureWithOptions:finalOptions];
-            self->_configured = YES;
-        }
+        //     self->_configured = YES;
+        // }
         callback(@[[NSNull null]]);
     }
     @catch (NSException *exception) {

@@ -564,6 +564,12 @@ firestack.database
       });
 ```
 
+#### DatabaseRef
+
+Firestack attempts to provide the same API as the JS Firebase library for both Android and iOS platforms.
+
+// TODO: Finish documenting
+
 ### ServerValue
 
 Firebase provides some static values based upon the server. We can use the `ServerValue` constant to retrieve these. For instance, to grab the TIMESTAMP on the server, use the `TIMESTAMP` value:
@@ -589,6 +595,11 @@ To unsubscribe to events fired by Firebase, we can call the `off()` method with 
 ```javascript
 firestack.off('listenForAuth');
 ```
+
+## FirestackModule
+
+Firestack provides a built-in way to connect your Redux app using the `FirestackModule` export from Firestack.
+
 
 ## Contributing
 
