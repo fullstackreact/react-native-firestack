@@ -73,6 +73,10 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
     if (![opts valueForKey:@"trackingID"] && [opts valueForKey:@"googleAppID"]) {
         [props setValue:[opts valueForKey:@"googleAppID"] forKey:@"trackingID"];
     }
+
+    if (![opts valueForKey:@"androidClientID"] && [opts valueForKey:@"clientID"]) {
+        [props setValue[opts valueForKey:@"clientID"] forKey:@"androidClientID"];
+    }
     
     @try {
         FIROptions *finalOptions = [[FIROptions alloc]
