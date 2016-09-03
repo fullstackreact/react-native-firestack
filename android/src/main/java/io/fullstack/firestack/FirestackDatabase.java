@@ -31,6 +31,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -70,17 +71,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
       @Override
       public void onComplete(DatabaseError error, DatabaseReference ref) {
-        if (error != null) {
-          WritableMap err = Arguments.createMap();
-          err.putInt("errorCode", error.getCode());
-          err.putString("errorDetails", error.getDetails());
-          err.putString("description", error.getMessage());
-          callback.invoke(err);
-        } else {
-          WritableMap res = Arguments.createMap();
-          res.putString("status", "success");
-          callback.invoke(null, res);
-        }
+        handleCallback("set", callback, error, ref);
       }
     };
 
@@ -98,17 +89,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
       @Override
       public void onComplete(DatabaseError error, DatabaseReference ref) {
-        if (error != null) {
-          WritableMap err = Arguments.createMap();
-          err.putInt("errorCode", error.getCode());
-          err.putString("errorDetails", error.getDetails());
-          err.putString("description", error.getMessage());
-          callback.invoke(err);
-        } else {
-          WritableMap res = Arguments.createMap();
-          res.putString("status", "success");
-          callback.invoke(null, res);
-        }
+        handleCallback("update", callback, error, ref);
       }
     };
 
@@ -123,17 +104,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
       @Override
       public void onComplete(DatabaseError error, DatabaseReference ref) {
-        if (error != null) {
-          WritableMap err = Arguments.createMap();
-          err.putInt("errorCode", error.getCode());
-          err.putString("errorDetails", error.getDetails());
-          err.putString("description", error.getMessage());
-          callback.invoke(err);
-        } else {
-          WritableMap res = Arguments.createMap();
-          res.putString("status", "success");
-          callback.invoke(null, res);
-        }
+        handleCallback("remove", callback, error, ref);
       }
     };
 
@@ -200,13 +171,13 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
       ValueEventListener listener = new ValueEventListener() {
         @Override
         public void onDataChange(DataSnapshot dataSnapshot) {
-            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
-            FirestackUtils.sendEvent(mReactContext, name, data);
+          WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
+          FirestackUtils.sendEvent(mReactContext, name, data);
         }
 
         @Override
         public void onCancelled(DatabaseError error) {
-            // Failed to read value
+          // Failed to read value
           Log.w(TAG, "Failed to read value.", error.toException());
           WritableMap err = Arguments.createMap();
           err.putInt("errorCode", error.getCode());
@@ -316,7 +287,79 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     FirestackUtils.todoNote(TAG, "on", callback);
   }
 
+  // On Disconnect
+  @ReactMethod
+  public void onDisconnectSetObject(final String path, final ReadableMap props, final Callback callback) {
+    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+
+    OnDisconnect od = ref.onDisconnect();
+    od.setValue(m, new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        handleCallback("onDisconnectSetObject", callback, databaseError, databaseReference);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void onDisconnectSetString(final String path, final String value, final Callback callback) {
+    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+
+    OnDisconnect od = ref.onDisconnect();
+    od.setValue(value, new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        handleCallback("onDisconnectSetString", callback, databaseError, databaseReference);
+      }
+    });
+  }
+
+  @ReactMethod
+  public void onDisconnectRemove(final String path, final Callback callback) {
+    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+
+    OnDisconnect od = ref.onDisconnect();
+    od.removeValue(new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        handleCallback("onDisconnectRemove", callback, databaseError, databaseReference);
+      }
+    });
+  }
+  @ReactMethod
+  public void onDisconnectCancel(final String path, final Callback callback) {
+    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+
+    OnDisconnect od = ref.onDisconnect();
+    od.cancel(new DatabaseReference.CompletionListener() {
+      @Override
+      public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+        handleCallback("onDisconnectCancel", callback, databaseError, databaseReference);
+      }
+    });
+  }
+
   // Private helpers
+  private void handleCallback(
+          final String methodName,
+          final Callback callback,
+          final DatabaseError databaseError,
+          final DatabaseReference databaseReference) {
+    if (databaseError != null) {
+      WritableMap err = Arguments.createMap();
+      err.putInt("errorCode", databaseError.getCode());
+      err.putString("errorDetails", databaseError.getDetails());
+      err.putString("description", databaseError.getMessage());
+      callback.invoke(err);
+    } else {
+      WritableMap res = Arguments.createMap();
+      res.putString("status", "success");
+      res.putString("method", methodName);
+      callback.invoke(null, res);
+    }
+  }
+
   private DatabaseReference getDatabaseReferenceAtPath(final String path) {
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(path);
     return mDatabase;
@@ -370,9 +413,17 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
         String value = strArr[1];
         String key = strArr[2];
         if (key == null) {
-          query = query.equalTo(value);
+          query = query.endAt(value);
         } else {
-          query = query.equalTo(value, key);
+          query = query.endAt(value, key);
+        }
+      } else if (methStr.contains("startAt")) {
+        String value = strArr[1];
+        String key = strArr[2];
+        if (key == null) {
+          query = query.startAt(value);
+        } else {
+          query = query.startAt(value, key);
         }
       }
     }
@@ -406,47 +457,47 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   private <Any> Any castSnapshotValue(DataSnapshot snapshot) {
-      if (snapshot.hasChildren()) {
-        WritableMap data = Arguments.createMap();
-        for (DataSnapshot child : snapshot.getChildren()) {
-            Any castedChild = castSnapshotValue(child);
-            switch (castedChild.getClass().getName()) {
-                case "java.lang.Boolean":
-                    data.putBoolean(child.getKey(), (Boolean) castedChild);
-                    break;
-                case "java.lang.Integer":
-                    data.putInt(child.getKey(), (Integer) castedChild);
-                    break;
-                case "java.lang.Double":
-                    data.putDouble(child.getKey(), (Double) castedChild);
-                    break;
-                case "java.lang.String":
-                    data.putString(child.getKey(), (String) castedChild);
-                    break;
-                case "com.facebook.react.bridge.WritableNativeMap":
-                    data.putMap(child.getKey(), (WritableMap) castedChild);
-                    break;
-            }
+    if (snapshot.hasChildren()) {
+      WritableMap data = Arguments.createMap();
+      for (DataSnapshot child : snapshot.getChildren()) {
+        Any castedChild = castSnapshotValue(child);
+        switch (castedChild.getClass().getName()) {
+          case "java.lang.Boolean":
+            data.putBoolean(child.getKey(), (Boolean) castedChild);
+            break;
+          case "java.lang.Integer":
+            data.putInt(child.getKey(), (Integer) castedChild);
+            break;
+          case "java.lang.Double":
+            data.putDouble(child.getKey(), (Double) castedChild);
+            break;
+          case "java.lang.String":
+            data.putString(child.getKey(), (String) castedChild);
+            break;
+          case "com.facebook.react.bridge.WritableNativeMap":
+            data.putMap(child.getKey(), (WritableMap) castedChild);
+            break;
         }
-        return (Any) data;
+      }
+      return (Any) data;
     } else {
       if (snapshot.getValue() != null) {
-          String type = snapshot.getValue().getClass().getName();
-          switch (type) {
-              case "java.lang.Boolean":
-                  return (Any)((Boolean) snapshot.getValue());
-              case "java.lang.Long":
-                  return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
-              case "java.lang.Double":
-                  return (Any)((Double) snapshot.getValue());
-              case "java.lang.String":
-                  return (Any)((String) snapshot.getValue());
-              default:
-                  return (Any) null;
-          }
-        } else {
-          return (Any) null;
+        String type = snapshot.getValue().getClass().getName();
+        switch (type) {
+          case "java.lang.Boolean":
+            return (Any)((Boolean) snapshot.getValue());
+          case "java.lang.Long":
+            return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
+          case "java.lang.Double":
+            return (Any)((Double) snapshot.getValue());
+          case "java.lang.String":
+            return (Any)((String) snapshot.getValue());
+          default:
+            return (Any) null;
         }
+      } else {
+        return (Any) null;
+      }
     }
   }
 }

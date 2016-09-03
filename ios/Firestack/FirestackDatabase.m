@@ -75,7 +75,7 @@ RCT_EXPORT_METHOD(push:(NSString *) path
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [[self getRefAtPath:path] childByAutoId];
-
+    
     NSURL *url = [NSURL URLWithString:ref.URL];
     NSString *newPath = [url path];
     
@@ -112,7 +112,7 @@ RCT_EXPORT_METHOD(on:(NSString *) path
     NSLog(@"Calling observeEventType: at path: %@ %@", path, name);
     
     FIRDatabaseQuery *ref = [self getQueryAtPathWithModifiers:path
-                                  modifiers: modifiers];
+                                                    modifiers: modifiers];
     
     FIRDatabaseHandle handle = [ref observeEventType:eventType
                                            withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -148,11 +148,11 @@ RCT_EXPORT_METHOD(onOnce:(NSString *) path
     FIRDatabaseQuery *ref = [self getQueryAtPathWithModifiers:path modifiers:modifiers];
     [ref observeSingleEventOfType:eventType
                         withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
-                          NSDictionary *props = [self snapshotToDict:snapshot];
+                            NSDictionary *props = [self snapshotToDict:snapshot];
                             callback(@[[NSNull null], @{
-                                                         @"eventName": name,
-                                                         @"snapshot": props
-                                                         }]);
+                                           @"eventName": name,
+                                           @"snapshot": props
+                                           }]);
                         }
                   withCancelBlock:^(NSError * _Nonnull error) {
                       NSLog(@"Error onDBEventOnce: %@", [error debugDescription]);
@@ -174,8 +174,8 @@ RCT_EXPORT_METHOD(off:(NSString *)path
     } else {
         FIRDatabaseHandle handle = (FIRDatabaseHandle)[[self storedDBHandles] objectForKey:handleNumber];
         if (handle) {
-            [ref removeObserverWithHandle:handle];
             [self removeDBHandle:handleNumber];
+            [ref removeObserverWithHandle:handle];
         } else {
             [ref removeAllObservers];
         }
@@ -190,6 +190,86 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
     [ref removeAllObservers];
     callback(@[[NSNull null], @(true)]);
 }
+
+
+// On disconnect
+RCT_EXPORT_METHOD(onDisconnectSetObject:(NSString *) path
+                  props:(NSDictionary *) props
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    
+    [ref onDisconnectSetValue:props
+          withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+              if (error != nil) {
+                  // Error handling
+                  NSDictionary *evt = [self getAndSendDatabaseError:error];
+                  callback(@[evt]);
+              } else {
+                  callback(@[[NSNull null], @{
+                                 @"result": @"success"
+                                 }]);
+              }
+          }];
+}
+
+RCT_EXPORT_METHOD(onDisconnectSetString:(NSString *) path
+                  val:(NSString *) val
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    [ref onDisconnectSetValue:val
+          withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+              if (error != nil) {
+                  // Error handling
+                  NSDictionary *evt = [self getAndSendDatabaseError:error];
+                  callback(@[evt]);
+              } else {
+                  callback(@[[NSNull null], @{
+                                 @"result": @"success"
+                                 }]);
+              }
+          }];
+}
+
+RCT_EXPORT_METHOD(onDisconnectRemove:(NSString *) path
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    [ref onDisconnectRemoveValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        if (error != nil) {
+            // Error handling
+            NSDictionary *evt = [self getAndSendDatabaseError:error];
+            callback(@[evt]);
+        } else {
+            callback(@[[NSNull null], @{
+                           @"result": @"success"
+                           }]);
+        }
+    }];
+}
+
+
+
+RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [self getRefAtPath:path];
+    [ref cancelDisconnectOperationsWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        if (error != nil) {
+            // Error handling
+            NSDictionary *evt = [self getAndSendDatabaseError:error];
+            callback(@[evt]);
+        } else {
+            callback(@[[NSNull null], @{
+                           @"result": @"success"
+                           }]);
+        }
+    }];
+}
+
+
+
 
 // Helpers
 - (FIRDatabaseReference *) getRef
@@ -208,7 +288,7 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
 }
 
 - (FIRDatabaseQuery *) getQueryAtPathWithModifiers:(NSString *) str
-                                           modifiers:(NSArray *) modifiers
+                                         modifiers:(NSArray *) modifiers
 {
     FIRDatabaseReference *rootRef = [[[FIRDatabase database] reference] child:str];
     
@@ -245,18 +325,29 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
                 query = [query queryEqualToValue:value];
             } else {
                 query = [query queryEqualToValue:value
-                                    childKey:key];
+                                        childKey:key];
             }
         } else if ([str containsString:@"endAt"]) {
             NSArray *args = [str componentsSeparatedByString:@":"];
             NSString *value = args[1];
             NSString *key = args[2];
-
+            
             if (key == nil) {
                 query = [query queryEndingAtValue:value];
             } else {
                 query = [query queryEndingAtValue:value
-                                     childKey:key];
+                                         childKey:key];
+            }
+        } else if ([str containsString:@"startAt"]) {
+            NSArray *args = [str componentsSeparatedByString:@":"];
+            NSString *value = args[1];
+            NSString *key = args[2];
+            
+            if (key == nil) {
+                query = [query queryStartingAtValue:value];
+            } else {
+                query = [query queryStartingAtValue:value
+                                           childKey:key];
             }
         }
     }
@@ -281,7 +372,7 @@ RCT_EXPORT_METHOD(removeListeners:(NSString *) path
     NSString *strNum = [NSString stringWithFormat:@"%@", handleNum];
     
     if ([stored objectForKey:strNum] == nil) {
-        [stored setValue:@(handle) forKey:strNum];
+        [stored setObject:handleNum forKey:strNum];
         self._DBHandles = [stored copy];
     }
     
