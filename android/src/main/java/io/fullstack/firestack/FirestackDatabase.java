@@ -370,9 +370,17 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
         String value = strArr[1];
         String key = strArr[2];
         if (key == null) {
-          query = query.equalTo(value);
+          query = query.endAt(value);
         } else {
-          query = query.equalTo(value, key);
+          query = query.endAt(value, key);
+        }
+      } else if (methStr.contains("startAt")) {
+        String value = strArr[1];
+        String key = strArr[2];
+        if (key == null) {
+          query = query.startAt(value);
+        } else {
+          query = query.startAt(value, key);
         }
       }
     }
