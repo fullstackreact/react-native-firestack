@@ -75,7 +75,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
     }
 
     if (![opts valueForKey:@"androidClientID"] && [opts valueForKey:@"clientID"]) {
-        [props setValue[opts valueForKey:@"clientID"] forKey:@"androidClientID"];
+        [props setValue:[opts valueForKey:@"clientID"] forKey:@"androidClientID"];
     }
     
     @try {
