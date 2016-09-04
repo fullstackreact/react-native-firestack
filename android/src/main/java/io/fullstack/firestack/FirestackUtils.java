@@ -17,6 +17,7 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
+import com.google.firebase.database.DataSnapshot;
 
 public class FirestackUtils {
   private static final String TAG = "FirestackUtils";
@@ -40,6 +41,77 @@ public class FirestackUtils {
       context
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
+  }
+
+  // snapshot
+  public static WritableMap dataSnapshotToMap(String name, DataSnapshot dataSnapshot) {
+    WritableMap data = Arguments.createMap();
+
+    data.putString("key", dataSnapshot.getKey());
+    data.putBoolean("exists", dataSnapshot.exists());
+    data.putBoolean("hasChildren", dataSnapshot.hasChildren());
+
+    data.putDouble("childrenCount", dataSnapshot.getChildrenCount());
+
+    WritableMap valueMap = FirestackUtils.castSnapshotValue(dataSnapshot);
+    data.putMap("value", valueMap);
+
+    Object priority = dataSnapshot.getPriority();
+    if (priority == null) {
+      data.putString("priority", null);
+    } else {
+      data.putString("priority", priority.toString());
+    }
+
+    WritableMap eventMap = Arguments.createMap();
+    eventMap.putString("eventName", name);
+    eventMap.putMap("snapshot", data);
+    return eventMap;
+  }
+
+  public static <Any> Any castSnapshotValue(DataSnapshot snapshot) {
+    if (snapshot.hasChildren()) {
+      WritableMap data = Arguments.createMap();
+      for (DataSnapshot child : snapshot.getChildren()) {
+        Any castedChild = castSnapshotValue(child);
+        switch (castedChild.getClass().getName()) {
+          case "java.lang.Boolean":
+            data.putBoolean(child.getKey(), (Boolean) castedChild);
+            break;
+          case "java.lang.Integer":
+            data.putInt(child.getKey(), (Integer) castedChild);
+            break;
+          case "java.lang.Double":
+            data.putDouble(child.getKey(), (Double) castedChild);
+            break;
+          case "java.lang.String":
+            data.putString(child.getKey(), (String) castedChild);
+            break;
+          case "com.facebook.react.bridge.WritableNativeMap":
+            data.putMap(child.getKey(), (WritableMap) castedChild);
+            break;
+        }
+      }
+      return (Any) data;
+    } else {
+      if (snapshot.getValue() != null) {
+        String type = snapshot.getValue().getClass().getName();
+        switch (type) {
+          case "java.lang.Boolean":
+            return (Any)((Boolean) snapshot.getValue());
+          case "java.lang.Long":
+            return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
+          case "java.lang.Double":
+            return (Any)((Double) snapshot.getValue());
+          case "java.lang.String":
+            return (Any)((String) snapshot.getValue());
+          default:
+            return (Any) null;
+        }
+      } else {
+        return (Any) null;
+      }
+    }
   }
 
   public static Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
