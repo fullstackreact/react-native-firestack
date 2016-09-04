@@ -191,43 +191,27 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
       ChildEventListener listener = new ChildEventListener() {
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-          if (name.equals("child_added")) {
-            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
-            FirestackUtils.sendEvent(mReactContext, name, data);
-          }
+          self.handleDatabaseEvent(name, dataSnapshot);
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-          if (name.equals("child_changed")) {
-            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
-            FirestackUtils.sendEvent(mReactContext, name, data);
-          }
+          self.handleDatabaseEvent(name, dataSnapshot);
         }
 
         @Override
         public void onChildRemoved(DataSnapshot dataSnapshot) {
-          if (name.equals("child_removed")) {
-            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
-            FirestackUtils.sendEvent(mReactContext, name, data);
-          }
+          self.handleDatabaseEvent(name, dataSnapshot);
         }
 
         @Override
         public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-          if (name.equals("child_moved")) {
-            WritableMap data = self.dataSnapshotToMap(name, dataSnapshot);
-            FirestackUtils.sendEvent(mReactContext, name, data);
-          }
+          self.handleDatabaseEvent(name, dataSnapshot);
         }
 
         @Override
         public void onCancelled(DatabaseError error) {
-          WritableMap err = Arguments.createMap();
-          err.putInt("errorCode", error.getCode());
-          err.putString("errorDetails", error.getDetails());
-          err.putString("description", error.getMessage());
-          FirestackUtils.sendEvent(mReactContext, "error", err);
+          self.handleDatabaseError(name, error);
         }
       };
       ref.addChildEventListener(listener);
@@ -341,6 +325,26 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   }
 
   // Private helpers
+  private void handleDatabaseEvent(final String name, final DataSnapshot dataSnapshot) {
+    WritableMap data = this.dataSnapshotToMap(name, dataSnapshot);
+    WritableMap evt  = Arguments.createMap();
+    evt.putString("eventName", name);
+    evt.putMap("body", data);
+    FirestackUtils.sendEvent(mReactContext, "database_event", evt);
+  }
+
+  private void handleDatabaseError(final String name, final DatabaseError error) {
+    WritableMap err = Arguments.createMap();
+    err.putInt("errorCode", error.getCode());
+    err.putString("errorDetails", error.getDetails());
+    err.putString("description", error.getMessage());
+
+    WritableMap evt  = Arguments.createMap();
+    evt.putString("eventName", name);
+    evt.putMap("body", err);
+    FirestackUtils.sendEvent(mReactContext, "database_error", evt);
+  }
+
   private void handleCallback(
           final String methodName,
           final Callback callback,
