@@ -404,15 +404,6 @@ RCT_EXPORT_METHOD(off:(NSString *)path
                    }]);
 }
 
-RCT_EXPORT_METHOD(removeListeners:(NSString *) path
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    FIRDatabaseReference *ref = [self getRefAtPath:path];
-    [ref removeAllObservers];
-    callback(@[[NSNull null], @(true)]);
-}
-
-
 // On disconnect
 RCT_EXPORT_METHOD(onDisconnectSetObject:(NSString *) path
                   props:(NSDictionary *) props
