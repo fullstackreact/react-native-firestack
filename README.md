@@ -168,11 +168,9 @@ We need to tell the Firebase library we want to _configure_ the project. Firesta
 
 ```javascript
 const firestack = new Firestack();
-firestack.configure()
-  .then(() => console.log("Project configured and ready to boot"));
 ```
 
-We can pass _custom_ options with the `configure()` method by passing an object with configuration options. The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. That is, all of the following key/value pairs are optional if the native configuration is set.
+We can pass _custom_ options by passing an object with configuration options. The configuration object will be generated first by the native configuration object, if set and then will be overridden if passed in JS. That is, all of the following key/value pairs are optional if the native configuration is set.
 
 | option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
 |----------------|----------|-------------------------|----------------------------------------|
@@ -191,11 +189,11 @@ We can pass _custom_ options with the `configure()` method by passing an object 
 For instance:
 
 ```javascript
-firestack.configure({
+const configurationOptions = {
   debug: true,
   googleAppID: 'sticker-me'
-})
-.then(() => console.log("Project configured and ready to boot"));
+};
+const firestack = new Firestack(configurationOptions);
 firestack.on('debug', msg => console.log('Received debug message', msg))
 ```
 
