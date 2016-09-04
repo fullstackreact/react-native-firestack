@@ -13,6 +13,18 @@
 
 @implementation Firestack
 
+- (void)dealloc
+{
+    NSLog(@"Dealloc called on Firestack");
+    [[FIRApp defaultApp] deleteApp:^(BOOL success) {
+        if (success) {
+            NSLog(@"Successfully removed app");
+        } else {
+            NSLog(@"Unsuccessfully cleaned up all");
+        }
+    }];
+}
+
 typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 
 RCT_EXPORT_MODULE(Firestack);
@@ -20,11 +32,74 @@ RCT_EXPORT_MODULE(Firestack);
 RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                   callback:(RCTResponseSenderBlock)callback)
 {
-    
     // Are we debugging, yo?
     self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
+    NSLog(@"options passed into configureWithOptions: %@", [opts valueForKey:@"debug"]);
     
-    FIROptions *firestackOptions = [FIROptions defaultOptions];
+    NSDictionary *keyMapping = @{
+                                      @"GOOGLE_APP_ID": @[
+                                              @"appId",
+                                              @"googleAppId",
+                                              @"applicationId"
+                                              ],
+                                      @"BUNDLE_ID": @[
+                                              @"bundleId",
+                                              @"bundleID"
+                                              ],
+                                      @"GCM_SENDER_ID": @[
+                                              @"gcmSenderID",
+                                              @"GCMSenderID"
+                                              ],
+                                      @"API_KEY": @[
+                                              @"apiKey"
+                                              ],
+                                      @"CLIENT_ID": @[
+                                              @"clientId",
+                                              @"clientID"
+                                              ],
+                                      @"TRACKING_ID": @[
+                                              @"trackingID",
+                                              @"trackingId"
+                                              ],
+                                      @"ANDROID_CLIENT_ID": @[
+                                              @"applicationId",
+                                              @"clientId",
+                                              @"clientID",
+                                              @"androidClientID",
+                                              @"androidClientId"
+                                              ],
+                                      @"DATABASE_URL": @[
+                                              @"databaseUrl",
+                                              @"databaseURL"
+                                              ],
+                                      @"STORAGE_BUCKET": @[
+                                              @"storageBucket"
+                                              ],
+                                      @"PROJECT_ID": @[
+                                              @"projectId",
+                                              @"projectID"
+                                              ],
+                                      @"TRACKING_ID": @[
+                                              @"trackingID",
+                                              @"trackingId"
+                                              ],
+                                      @"DEEP_LINK_SCHEME": @[
+                                              @"deepLinkScheme"
+                                              ]
+                                      };
+    NSArray *optionKeys = [keyMapping allKeys];
+    
+    NSMutableDictionary *props;
+    
+    NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
+        // If the Firebase plist is included
+        props = [NSMutableDictionary dictionaryWithContentsOfFile:plistPath];
+    } else {
+        props = [[NSMutableDictionary alloc] initWithCapacity:[optionKeys count]];
+    }
+
     // Bundle ID either from options OR from the main bundle
     NSString *bundleID;
     if ([opts valueForKey:@"bundleID"]) {
@@ -32,23 +107,27 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
     } else {
         bundleID = [[NSBundle mainBundle] bundleIdentifier];
     }
+    [props setValue:bundleID forKey:@"BUNDLE_ID"];
     
     // Prefer the user configuration options over the default options
-    NSArray *keyOptions = @[@"APIKey", @"clientID", @"trackingID",
-                            @"GCMSenderID", @"androidClientID",
-                            @"googleAppID", @"databaseURL",
-                            @"deepLinkURLScheme", @"storageBucket"];
-    
-    NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithCapacity:[keyOptions count]];
-    for (int i=0; i < [keyOptions count]; i++) {
+    for (int i=0; i < [optionKeys count]; i++) {
         // Traditional for loop here
         @try {
-            NSString *key = [keyOptions objectAtIndex:i];
-            NSString *value = [opts valueForKey:key];
-            if (value != nil) {
-                [props setObject:value forKey:key];
-            } else if ([firestackOptions valueForKey:key] != nil) {
-                [props setObject:[firestackOptions valueForKey:key] forKey:key];
+            NSString *key = [optionKeys objectAtIndex:i];
+            // If the name is capitalized
+            if ([opts valueForKey:key] != nil) {
+                NSString *value = [opts valueForKey:key];
+                [props setValue:value forKey:key];
+            }
+            
+            NSArray *possibleNames = [keyMapping objectForKey:key];
+            
+            for (NSString *name in possibleNames) {
+                if ([opts valueForKey:name] != nil) {
+                    // The user passed this option in
+                    NSString *value = [opts valueForKey:name];
+                    [props setValue:value forKey:key];
+                }
             }
         }
         @catch (NSException *err) {
@@ -57,51 +136,40 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
         }
     }
     
-    // If the apiKey is lowercase
-    if ([opts valueForKey:@"apiKey"]) {
-        [props setValue:[opts valueForKey:@"apiKey"] forKey:@"APIKey"];
-    }
-    
-    // if the app id is lowercase
-    if ([opts valueForKey:@"googleAppId"]) {
-        [props setValue:[opts valueForKey:@"googleAppId"] forKey:@"googleAppID"];
-    } else if ([opts valueForKey:@"appId"]) {
-        [props setValue:[opts valueForKey:@"appId"] forKey:@"googleAppID"];
-    }
-
-    // If we have an app id but no tracking id
-    if (![opts valueForKey:@"trackingID"] && [opts valueForKey:@"googleAppID"]) {
-        [props setValue:[opts valueForKey:@"googleAppID"] forKey:@"trackingID"];
-    }
-
-    if (![opts valueForKey:@"androidClientID"] && [opts valueForKey:@"clientID"]) {
-        [props setValue:[opts valueForKey:@"clientID"] forKey:@"androidClientID"];
-    }
-    
     @try {
-        FIROptions *finalOptions = [[FIROptions alloc]
-                                    initWithGoogleAppID:[props valueForKey:@"googleAppID"]
-                                    bundleID:bundleID
-                                    GCMSenderID:[props valueForKey:@"GCMSenderID"]
-                                    APIKey:[props valueForKey:@"APIKey"]
-                                    clientID:[props valueForKey:@"clientID"]
-                                    trackingID:[props valueForKey:@"trackingID"]
-                                    androidClientID:[props valueForKey:@"androidClientID"]
-                                    databaseURL:[props valueForKey:@"databaseURL"]
-                                    storageBucket:[props valueForKey:@"storageBucket"]
-                                    deepLinkURLScheme:[props valueForKey:@"deepLinkURLScheme"]];
-        
-        for (NSString *key in props) {
-            [self debugLog:key msg:[finalOptions valueForKey:key]];
+        if (self.debug) {
+            NSLog(@"props ->: %@", props);
+            NSLog(@"GOOGLE_APP_ID: %@", [props valueForKey:@"GOOGLE_APP_ID"]);
+            NSLog(@"BUNDLE_ID: %@", [props valueForKey:@"BUNDLE_ID"]);
+            NSLog(@"GCM_SENDER_ID: %@", [props valueForKey:@"GCM_SENDER_ID"]);
+            NSLog(@"API_KEY: %@", [props valueForKey:@"API_KEY"]);
+            NSLog(@"CLIENT_ID: %@", [props valueForKey:@"CLIENT_ID"]);
+            NSLog(@"TRACKING_ID: %@", [props valueForKey:@"TRACKING_ID"]);
+            NSLog(@"ANDROID_CLIENT_ID: %@", [props valueForKey:@"ANDROID_CLIENT_ID"]);
+            NSLog(@"DATABASE_URL: %@", [props valueForKey:@"DATABASE_URL"]);
+            NSLog(@"STORAGE_BUCKET: %@", [props valueForKey:@"STORAGE_BUCKET"]);
+            NSLog(@"DEEP_LINK_SCHEME: %@", [props valueForKey:@"DEEP_LINK_SCHEME"]);
         }
-        [self debugLog:@"bundleID" msg:bundleID];
+        
+        FIROptions *finalOptions = [[FIROptions alloc]
+                                    initWithGoogleAppID:[props valueForKey:@"GOOGLE_APP_ID"]
+                                    bundleID:[props valueForKey:@"BUNDLE_ID"]
+                                    GCMSenderID:[props valueForKey:@"GCM_SENDER_ID"]
+                                    APIKey:[props valueForKey:@"API_KEY"]
+                                    clientID:[props valueForKey:@"CLIENT_ID"]
+                                    trackingID:[props valueForKey:@"TRACKING_ID"]
+                                    androidClientID:[props valueForKey:@"ANDROID_CLIENT_ID"]
+                                    databaseURL:[props valueForKey:@"DATABASE_URL"]
+                                    storageBucket:[props valueForKey:@"STORAGE_BUCKET"]
+                                    deepLinkURLScheme:[props valueForKey:@"DEEP_LINK_SCHEME"]];
         
         // Save configuration option
-        NSDictionary *cfg = [self getConfig];
-        [cfg setValuesForKeysWithDictionary:props];
+//        NSDictionary *cfg = [self getConfig];
+//        [cfg setValuesForKeysWithDictionary:props];
         
         // if (!self.configured) {
-            [FIRApp configureWithOptions:finalOptions];
+           [FIRApp configureWithOptions:finalOptions];
+
         //     self->_configured = YES;
         // }
         callback(@[[NSNull null]]);
@@ -240,6 +308,7 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
               msg:(NSString *)msg
 {
     if (self.debug) {
+        NSLog(@"%@: %@", title, msg);
 //        [self sendJSEvent:DEBUG_EVENT
 //                    props:@{
 //                            @"name": title,
