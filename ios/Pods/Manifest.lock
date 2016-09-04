@@ -1,21 +1,21 @@
 PODS:
-  - Firebase/Analytics (3.4.0):
+  - Firebase/Analytics (3.5.2):
     - FirebaseAnalytics (~> 3.3)
-  - Firebase/Auth (3.4.0):
+  - Firebase/Auth (3.5.2):
     - Firebase/Analytics
     - FirebaseAuth (= 3.0.4)
-  - Firebase/Core (3.4.0):
+  - Firebase/Core (3.5.2):
     - Firebase/Analytics
-  - Firebase/Database (3.4.0):
+  - Firebase/Database (3.5.2):
     - Firebase/Analytics
     - FirebaseDatabase (= 3.0.2)
-  - Firebase/RemoteConfig (3.4.0):
+  - Firebase/RemoteConfig (3.5.2):
     - Firebase/Analytics
     - FirebaseRemoteConfig (= 1.2.0)
-  - Firebase/Storage (3.4.0):
+  - Firebase/Storage (3.5.2):
     - Firebase/Analytics
-    - FirebaseStorage (= 1.0.2)
-  - FirebaseAnalytics (3.3.0):
+    - FirebaseStorage (= 1.0.3)
+  - FirebaseAnalytics (3.3.1):
     - FirebaseInstanceID (~> 1.0)
     - GoogleInterchangeUtilities (~> 1.2)
     - GoogleSymbolUtilities (~> 1.1)
@@ -35,8 +35,8 @@ PODS:
     - GoogleIPhoneUtilities (~> 1.2)
     - GoogleSymbolUtilities (~> 1.1)
     - GoogleUtilities (~> 1.2)
-  - FirebaseStorage (1.0.2):
-    - FirebaseAnalytics (~> 3.2)
+  - FirebaseStorage (1.0.3):
+    - FirebaseAnalytics (~> 3.3)
     - GoogleNetworkingUtilities (~> 1.2)
   - GoogleInterchangeUtilities (1.2.1):
     - GoogleSymbolUtilities (~> 1.0)
@@ -60,13 +60,13 @@ DEPENDENCIES:
   - Firebase/Storage
 
 SPEC CHECKSUMS:
-  Firebase: 754562547af419cc2f4b15247fee419081924bc2
-  FirebaseAnalytics: 228be2991cb28efb96cdafc4d62f64680e615c69
+  Firebase: 94e63112efcad75226c0356a8f3032397b8547c9
+  FirebaseAnalytics: d968d4d5f6aeb795cd64144337bcd233e530efc6
   FirebaseAuth: 26fd291c3b552fc9658420b867520d5ae080421c
   FirebaseDatabase: 59bea2e7dfd81b3b8b2f8e396caf1a52c2ced6f7
   FirebaseInstanceID: ba1e640935235e5fac39dfa816fe7660e72e1a8a
   FirebaseRemoteConfig: c5378e689c1edb54ff62061b8f6a908263dd80ae
-  FirebaseStorage: fa2a87dee81f682f553af6839daa37a750e65f6a
+  FirebaseStorage: 3992817bf405f5c1a4f8349678d22724cd0ef509
   GoogleInterchangeUtilities: def8415a862effc67d549d5b5b0b9c7a2f97d4de
   GoogleIPhoneUtilities: 63f25e93a3ddcb66884d182aab3a660d98f1479b
   GoogleNetworkingUtilities: 3e83269048cfb498dc7ec83ab36813360965c74f

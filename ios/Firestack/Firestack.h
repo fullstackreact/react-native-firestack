@@ -19,6 +19,5 @@
 @property (nonatomic) BOOL debug;
 @property (atomic) BOOL configured;
 @property (nonatomic, strong) NSDictionary *configuration;
-@property (nonatomic, strong) FIRRemoteConfig *remoteConfigInstance;
 
 @end

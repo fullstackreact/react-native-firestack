@@ -62,7 +62,7 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Copyright 2016 Google Inc.</string>
+			<string>Copyright 2016 Google</string>
 			<key>Title</key>
 			<string>FirebaseStorage</string>
 			<key>Type</key>
