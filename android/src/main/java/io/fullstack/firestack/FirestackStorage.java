@@ -25,12 +25,13 @@ import com.facebook.react.bridge.ReactContext;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.OnPausedListener;
 
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
+
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.UploadTask;
 
@@ -56,6 +57,38 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return TAG;
+  }
+
+  @ReactMethod
+  public void downloadUrl(final String storageUrl,
+                          final String path,
+                          final Callback callback) {
+      FirebaseStorage storage = FirebaseStorage.getInstance();
+      StorageReference storageRef = storage.getReferenceFromUrl(storageUrl);
+    StorageReference fileRef = storageRef.child(path);
+
+      Task<Uri> downloadTask = storageRef.getDownloadUrl();
+      downloadTask.addOnSuccessListener(new OnSuccessListener<Uri>() {
+        @Override
+        public void onSuccess(Uri uri) {
+          WritableMap res = Arguments.createMap();
+          res.putString("status", "success");
+          res.putString("path", uri.getPath());
+          res.putString("url", uri.toString());
+          callback.invoke(null, res);
+        }
+      }).addOnFailureListener(new OnFailureListener() {
+        @Override
+        public void onFailure(@NonNull Exception ex) {
+          Log.e(TAG, "Failed to download file " + exception.getMessage());
+
+          WritableMap err = Arguments.createMap();
+          err.putString("status", "error");
+          err.putString("description", exception.getLocalizedMessage());
+
+          callback.invoke(err);
+        }
+      })
   }
 
   // STORAGE

@@ -15,11 +15,13 @@
 
 RCT_EXPORT_MODULE(FirestackStorage);
 
-RCT_EXPORT_METHOD(downloadUrl: (NSString *) path
+RCT_EXPORT_METHOD(downloadUrl: (NSString *) storageUrl
+                  path:(NSString *) path
     callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *storageRef = [[FIRStorage storage] referenceWithPath:path];
-    [storageRef downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
+    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:storageUrl];
+    FIRStorageReference *fileRef = [storageRef child:path];
+    [fileRef downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
         if (error != nil) {
             NSDictionary *evt = @{
                                   @"status": @"error",
@@ -30,8 +32,8 @@ RCT_EXPORT_METHOD(downloadUrl: (NSString *) path
         } else {
             NSDictionary *resp = @{
                                    @"status": @"success",
-                                   @"path": path,
-                                   @"url": URL
+                                   @"url": [URL absoluteString],
+                                   @"path": [URL path]
                                    };
             callback(@[[NSNull null], resp]);
         }

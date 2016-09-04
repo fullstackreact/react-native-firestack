@@ -172,7 +172,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
 
         //     self->_configured = YES;
         // }
-        callback(@[[NSNull null]]);
+        callback(@[[NSNull null], props]);
     }
     @catch (NSException *exception) {
         NSLog(@"Exception occurred while configuring: %@", exception);
