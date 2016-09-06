@@ -581,11 +581,51 @@ Firestack attempts to provide the same API as the JS Firebase library for both A
 
 // TODO: Finish documenting
 
-#### onDisconnect()
+### Presence
 
-Firebase provides a nice platform for defining presence. Firestack allows us to handle this as well using the `onDisconnect()` event. 
+Firestack comes in with a built-in method for handling user connections. We just need to set the presence ref url and tell Firestack to keep track of the user by their child path.
 
+```javascript
+firestack.presence          // the presence api
+  .on('users/connections')  // set the users/connections as the
+                            // root for presence handling
+  .setOnlineFor('auser')    // Set the child of auser as online
+```
 
+While the _device_ is online (the connection), the value of the child object at `users/connections/auser` will be:
+
+```javascript
+{
+  online: true,
+  lastOnline: TIMESTAMP
+}
+```
+
+When the device is offline, the value will be updated with `online: false`:
+
+```javascript
+{
+  online: false,
+  lastOnline: TIMESTAMP
+}
+```
+
+To set up your own handlers on the presence object, you can call `onConnect()` and pass a callback. The method will be called with the `connectedDevice` database reference and you can set up your own handlers:
+
+```javascript
+const presence = firestack.presence
+                          .on('users/connections');
+presence.onConnect((ref) => {
+  ref.onDisconnect().remove(); // Remove the entry
+  // or
+  ref.set({
+    location: someLocation
+  });
+  // or whatever you want as it's called with the database
+  // reference. All methods on the DatabaseRef object are
+  // available here on the `ref`
+})
+```
 
 ### ServerValue
 
