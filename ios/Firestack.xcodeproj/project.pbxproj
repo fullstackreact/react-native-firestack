@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		59F628FCB5C2B2900F31879C /* libPods-Firestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58A186F11042C569425E5D5F /* libPods-Firestack.a */; };
 		D950369E1D19C77400F7094D /* Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* Firestack.m */; };
 		D962903F1D6D15B00099A3EC /* FirestackErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = D962903E1D6D15B00099A3EC /* FirestackErrors.m */; };
 		D96290451D6D16100099A3EC /* FirestackAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = D96290441D6D16100099A3EC /* FirestackAnalytics.m */; };
@@ -30,6 +29,7 @@
 		D97261C51D551BF0000F703F /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C41D551BF0000F703F /* libicucore.tbd */; };
 		D97261C71D551BF5000F703F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C61D551BF5000F703F /* CFNetwork.framework */; };
 		D97261C91D551BFF000F703F /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C81D551BFF000F703F /* AddressBook.framework */; };
+		D9A8C7A41D7E54C900142F94 /* libPods-Firestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D95036B81D19C90300F7094D /* libPods-Firestack.a */; };
 		D9D62E7C1D6D86FD003D826D /* FirestackStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D62E7B1D6D86FD003D826D /* FirestackStorage.m */; };
 		D9D62E801D6D8717003D826D /* FirestackAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D62E7F1D6D8717003D826D /* FirestackAuth.m */; };
 /* End PBXBuildFile section */
@@ -109,6 +109,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9A8C7A41D7E54C900142F94 /* libPods-Firestack.a in Frameworks */,
 				D97261C91D551BFF000F703F /* AddressBook.framework in Frameworks */,
 				D97261C71D551BF5000F703F /* CFNetwork.framework in Frameworks */,
 				D97261C51D551BF0000F703F /* libicucore.tbd in Frameworks */,
@@ -126,7 +127,6 @@
 				D972616D1D550D0B000F703F /* GoogleParsingUtilities.framework in Frameworks */,
 				D972616F1D550D0F000F703F /* GoogleSymbolUtilities.framework in Frameworks */,
 				D97261711D550D13000F703F /* GoogleUtilities.framework in Frameworks */,
-				59F628FCB5C2B2900F31879C /* libPods-Firestack.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
