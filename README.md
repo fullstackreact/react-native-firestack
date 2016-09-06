@@ -479,7 +479,7 @@ If the `storageBucket` key is passed as a configuration option, this method is a
 We can upload a file using the `uploadFile()` method. Using the `uploadFile()` method, we can set the name of the destination file, the path where we want to store it, as well as any metadata along with the file.
 
 ```javascript
-firestack.uploadFile(`photos/${auth.user.uid}/${filename}`, path, {
+firestack.storage.uploadFile(`photos/${auth.user.uid}/${filename}`, path, {
   contentType: 'image/jpeg',
   contentEncoding: 'base64',
 })
@@ -546,6 +546,19 @@ takePicture() {
 }
 ```
 
+#### downloadUrl()
+
+The `downloadUrl()` method allows us to fetch the URL from the storage obejct in Firebase. It's defined on the `storageRef` object and can be used like so:
+
+```javascript
+const storageRef = data.firestack.storage.ref('photos/photo.jpg');
+storageRef.downloadUrl()
+.then(res => {
+  // res is an object that contains
+  // the `url` as well as the path to the file in `path`
+})
+```
+
 ### Realtime Database
 
 #### database attribute
@@ -567,6 +580,12 @@ firestack.database
 Firestack attempts to provide the same API as the JS Firebase library for both Android and iOS platforms.
 
 // TODO: Finish documenting
+
+#### onDisconnect()
+
+Firebase provides a nice platform for defining presence. Firestack allows us to handle this as well using the `onDisconnect()` event. 
+
+
 
 ### ServerValue
 
