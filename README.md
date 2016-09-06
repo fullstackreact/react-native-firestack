@@ -12,17 +12,17 @@ For a detailed discussion of how Firestack works, check out our [contribution gu
 
 * Nearly automatic, rapid setup on Firebase
 * Covers lots of awesome features of Firebase:
-  [x] authentication
-    [x] username and password
-    [ ] social auth (implemented, but need to add providers)
-  [x] storage handling
-    [x] upload files
-    [x] download urls
-    [ ] download files
-  [x] real-time database
-  [x] presence out-of-the-box
-  [x] analytics
-  [ ] Remote configuration
+  * authentication
+    * username and password
+    * social auth (implemented, but need to add providers)
+  * storage handling
+    * upload files
+    * download urls
+    * download files
+  * real-time database
+  * presence out-of-the-box
+  * analytics
+  * Remote configuration
 * Redux support built-in (but not required)
 * Android and iOS support
 * Community supported and professionally backed
