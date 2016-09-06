@@ -483,7 +483,7 @@ firestack.setStorageUrl(`gs://${config.firebase.storageBucket}`)
 .catch(() => console.error('This is weird: something happened...'))
 ```
 
-If the `storageBucket` key is passed as a configuration option, this method is automatically called for us by default.
+If the `storageBucket` key is passed as a configuration option, this method is automatically called by default.
 
 #### uploadFile()
 

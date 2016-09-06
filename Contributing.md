@@ -36,6 +36,8 @@ When the user accessess a Firebase ref, the `Database` instance creates a new in
 const ref = db.ref('/events');
 ```
 
+The `DatabaseRef` class is the wrapper that maps to Firebase database points. For efficiency, the `paths` are stored as an array so we can walk up and down the firebase database using the `parent()` and `child()` methods on a database ref.
+
 Calling `getAt()` on the `ref` (an instance of the `DatabaseRef` class) will make a call to the **native** SDK using a method called `promisify()`
 
 ```javascript
