@@ -210,6 +210,8 @@ firestack.on('debug', msg => console.log('Received debug message', msg))
 
 In _most_ cases, you shouldn't need to overwrite these configuration options, but they are available to you if necessary.
 
+**Options passed to the `Firestack` constructor take precedence over the native configuration to allow the JS to define custom variables on a per-platform basis**
+
 ## API documentation
 
 Firestack is broken up into multiple parts, based upon the different API features that Firebase provides.
