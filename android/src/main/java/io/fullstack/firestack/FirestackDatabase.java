@@ -391,7 +391,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void onOnce(final String path,
                      final ReadableArray modifiers,
-                     final String name, 
+                     final String name,
                      final Callback callback) {
     Log.d(TAG, "Setting one-time listener on event: " + name + " for path " + path);
     FirestackDBReference ref = this.getDBHandle(path);
@@ -518,7 +518,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     return mDBListeners.get(path);
   }
 
-  private void saveDBHandle(final String path, 
+  private void saveDBHandle(final String path,
                             final FirestackDBReference dbRef) {
     this.removeDBHandle(path);
     mDBListeners.put(path, dbRef);
