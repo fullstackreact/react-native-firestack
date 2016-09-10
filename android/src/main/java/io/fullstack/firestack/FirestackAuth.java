@@ -136,6 +136,9 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void signInWithProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
+      if (provider.equals("facebook")) {
+           this.facebookLogin(authToken,callback);
+      } else
       // TODO
       FirestackUtils.todoNote(TAG, "signInWithProvider", callback);
     }
@@ -403,16 +406,22 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
                 WritableMap userMap = Arguments.createMap();
-
+                final String name = user.getDisplayName();
                 final String token = task.getResult().getToken();
                 final String email = user.getEmail();
                 final String uid   = user.getUid();
                 final String provider = user.getProviderId();
+                final Uri photoUrl = user.getPhotoUrl();
 
+                userMap.putString("name", name);
                 userMap.putString("token", token);
                 userMap.putString("email", email);
                 userMap.putString("uid", uid);
                 userMap.putString("provider", provider);
+
+                if (photoUrl!=null) {
+                  userMap.putString("photoUrl",photoUrl.toString());
+                }
 
                 onComplete.invoke(null, userMap);
             }

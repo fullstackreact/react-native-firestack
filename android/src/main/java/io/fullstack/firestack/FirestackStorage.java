@@ -79,7 +79,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
         }
       }).addOnFailureListener(new OnFailureListener() {
         @Override
-        public void onFailure(@NonNull Exception ex) {
+        public void onFailure(@NonNull Exception exception) {
           Log.e(TAG, "Failed to download file " + exception.getMessage());
 
           WritableMap err = Arguments.createMap();
@@ -88,7 +88,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
 
           callback.invoke(err);
         }
-      })
+      });
   }
 
   // STORAGE
@@ -157,7 +157,7 @@ Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
           double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
           System.out.println("Upload is " + progress + "% done");
-          
+
           WritableMap data = Arguments.createMap();
           data.putString("eventName", "upload_progress");
           data.putDouble("progress", progress);
