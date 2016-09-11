@@ -80,11 +80,16 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
     }];
     [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload reported progress
-        double percentComplete = 100.0 * (snapshot.progress.completedUnitCount) / (snapshot.progress.totalUnitCount);
+        float percentComplete;
+        if (snapshot.progress.totalUnitCount == 0) {
+            percentComplete = 0.0;
+        } else {
+            percentComplete = 100.0 * (snapshot.progress.completedUnitCount) / (snapshot.progress.totalUnitCount);
+        }
         
         [self sendJSEvent:STORAGE_UPLOAD_PROGRESS props:@{
                                                           @"eventName": STORAGE_UPLOAD_PROGRESS,
-                                                          @"progress": @(percentComplete || 0.0)
+                                                          @"progress": @(percentComplete)
                                                           }];
         
     }];
