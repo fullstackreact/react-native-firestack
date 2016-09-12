@@ -22,6 +22,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 
+interface KeySetterFn {
+  String setKeyOrDefault(String a, String b);
+}
+
 class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "Firestack";
   private Context context;
@@ -42,46 +46,108 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
   }
 
   @ReactMethod
-  public void configureWithOptions(ReadableMap params, @Nullable final Callback onComplete) {
+  public void configureWithOptions(final ReadableMap params, @Nullable final Callback onComplete) {
     Log.i(TAG, "configureWithOptions");
 
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
+    FirebaseOptions defaultOptions = FirebaseOptions.fromResource(this.context);
 
-    if (params.hasKey("applicationId")) {
-      final String applicationId = params.getString("applicationId");
-      Log.d(TAG, "Setting applicationId from params " + applicationId);
-      builder.setApplicationId(applicationId);
+    KeySetterFn fn = new KeySetterFn() {
+      public String setKeyOrDefault(
+        final String key,
+        final String defaultValue) {
+        if (params.hasKey(key)) {
+          // User-set key
+          final String val = params.getString(key);
+          Log.d(TAG, "Setting " + key + " from params to: " + val);
+          return val;
+        } else if (defaultValue != null && defaultValue != "") {
+          Log.d(TAG, "Setting " + key + " from params to: " + defaultValue);
+          return defaultValue;
+        } else {
+          return null;
+        }
+      }
+    };
+
+    String val = fn.setKeyOrDefault("applicationId", 
+                    defaultOptions.getApplicationId());
+    if (val != null) {
+      builder.setApplicationId(val);
     }
-    if (params.hasKey("apiKey")) {
-      final String apiKey = params.getString("apiKey");
-      Log.d(TAG, "Setting API key from params " + apiKey);
-      builder.setApiKey(apiKey);
+
+    val = fn.setKeyOrDefault("apiKey", 
+                    defaultOptions.getApiKey());
+    if (val != null) {
+      builder.setApiKey(val);
     }
-    if (params.hasKey("APIKey")) {
-      final String apiKey = params.getString("APIKey");
-      Log.d(TAG, "Setting API key from params " + apiKey);
-      builder.setApiKey(apiKey);
+
+    val = fn.setKeyOrDefault("gcmSenderID", 
+                    defaultOptions.getGcmSenderId());
+    if (val != null) {
+      builder.setGcmSenderId(val);
     }
-    if (params.hasKey("gcmSenderID")) {
-      final String gcmSenderID = params.getString("gcmSenderID");
-      Log.d(TAG, "Setting gcmSenderID from params " + gcmSenderID );
-      builder.setGcmSenderId(gcmSenderID);
+
+    val = fn.setKeyOrDefault("storageBucket", 
+                    defaultOptions.getStorageBucket());
+    if (val != null) {
+      builder.setStorageBucket(val);
     }
-    if (params.hasKey("storageBucket")) {
-      final String storageBucket = params.getString("storageBucket");
-      Log.d(TAG, "Setting storageBucket from params " + storageBucket);
-      builder.setStorageBucket(storageBucket);
+
+    val = fn.setKeyOrDefault("databaseURL", 
+                    defaultOptions.getDatabaseUrl());
+    if (val != null) {
+      builder.setDatabaseUrl(val);
     }
-    if (params.hasKey("databaseURL")) {
-      final String databaseURL = params.getString("databaseURL");
-      Log.d(TAG, "Setting databaseURL from params " + databaseURL);
-      builder.setDatabaseUrl(databaseURL);
+
+    val = fn.setKeyOrDefault("databaseUrl", 
+                    defaultOptions.getDatabaseUrl());
+    if (val != null) {
+      builder.setDatabaseUrl(val);
     }
-    if (params.hasKey("clientID")) {
-      final String clientID = params.getString("clientID");
-      Log.d(TAG, "Setting clientID from params " + clientID);
-      builder.setApplicationId(clientID);
+
+    val = fn.setKeyOrDefault("clientId", 
+                    defaultOptions.getApplicationId());
+    if (val != null) {
+      builder.setApplicationId(val);
     }
+
+
+    // if (params.hasKey("applicationId")) {
+    //   final String applicationId = params.getString("applicationId");
+    //   Log.d(TAG, "Setting applicationId from params " + applicationId);
+    //   builder.setApplicationId(applicationId);
+    // }
+    // if (params.hasKey("apiKey")) {
+    //   final String apiKey = params.getString("apiKey");
+    //   Log.d(TAG, "Setting API key from params " + apiKey);
+    //   builder.setApiKey(apiKey);
+    // }
+    // if (params.hasKey("APIKey")) {
+    //   final String apiKey = params.getString("APIKey");
+    //   Log.d(TAG, "Setting API key from params " + apiKey);
+    //   builder.setApiKey(apiKey);
+    // }
+    // if (params.hasKey("gcmSenderID")) {
+    //   final String gcmSenderID = params.getString("gcmSenderID");
+    //   Log.d(TAG, "Setting gcmSenderID from params " + gcmSenderID );
+    //   builder.setGcmSenderId(gcmSenderID);
+    // }
+    // if (params.hasKey("storageBucket")) {
+    //   final String storageBucket = params.getString("storageBucket");
+    //   Log.d(TAG, "Setting storageBucket from params " + storageBucket);
+    //   builder.setStorageBucket(storageBucket);
+    // }
+    // if (params.hasKey("databaseURL")) {
+    //   final String databaseURL = params.getString("databaseURL");
+    //   Log.d(TAG, "Setting databaseURL from params " + databaseURL);
+    //   builder.setDatabaseUrl(databaseURL);
+    // }
+    // if (params.hasKey("clientID")) {
+    //   final String clientID = params.getString("clientID");
+    //   Log.d(TAG, "Setting clientID from params " + clientID);
+    //   builder.setApplicationId(clientID);
+    // }
 
     try {
         Log.i(TAG, "Configuring app");

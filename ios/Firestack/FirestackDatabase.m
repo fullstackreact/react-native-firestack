@@ -235,6 +235,27 @@
 
 RCT_EXPORT_MODULE(FirestackDatabase);
 
+RCT_EXPORT_METHOD(enablePersistence:(BOOL) enable
+  callback:(RCTResponseSenderBlock) callback)
+{
+  [FIRDatabase database].persistenceEnabled = enable;
+  callback(@[[NSNull null], @{
+    @"result": @"success"
+  }]);
+}
+
+RCT_EXPORT_METHOD(keepSynced:(NSString *) path
+  withEnable:(BOOL) enable
+  callback:(RCTResponseSenderBlock) callback)
+{
+  FIRDatabaseReference *ref = [self getRefAtPath:path];
+  [ref keepSynced:enable];
+  callback(@[[NSNull null], @{
+                           @"result": @"success",
+                           @"path": path
+                           }]);
+}
+
 RCT_EXPORT_METHOD(set:(NSString *) path
                   value:(NSDictionary *)value
                   callback:(RCTResponseSenderBlock) callback)

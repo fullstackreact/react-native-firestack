@@ -265,6 +265,34 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     return TAG;
   }
 
+  // Persistence
+  @ReactMethod
+  public void enablePersistence(
+    final Boolean enable,
+    final Callback callback) {
+      FirebaseDatabase.getInstance()
+          .setPersistenceEnabled(enable);
+
+      WritableMap res = Arguments.createMap();
+      res.putString("status", "success");
+      callback.invoke(null, res);
+  }
+
+  @ReactMethod
+  public void keepSynced(
+    final String path,
+    final Boolean enable,
+    final Callback callback) {
+      DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+      ref.keepSynced(enable);
+
+      WritableMap res = Arguments.createMap();
+      res.putString("status", "success");
+      res.putString("path", path);
+      callback.invoke(null, res);
+  }
+
+  // Database
   @ReactMethod
   public void set(
           final String path,
