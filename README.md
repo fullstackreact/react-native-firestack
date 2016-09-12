@@ -594,6 +594,23 @@ Firestack attempts to provide the same API as the JS Firebase library for both A
 
 // TODO: Finish documenting
 
+#### Offline data persistence
+
+For handling offline operations, you can enable persistence by using the `setPersistence()` command. You can turn it on and off by passing the boolean of `true` or `false`.
+
+```javascript
+firestack.database.setPersistence(true);
+```
+
+The database refs has a `keepSynced()` function to tell the firestack library to keep the data at the `ref` in sync. 
+
+```javascript
+const ref = firestack.database
+            .ref('chat-messages')
+            .child('roomId');
+ref.keepSynced(true);
+```
+
 ### Presence
 
 Firestack comes in with a built-in method for handling user connections. We just need to set the presence ref url and tell Firestack to keep track of the user by their child path.
