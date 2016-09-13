@@ -35,7 +35,7 @@ public class FirestackUtils {
   /**
   * send a JS event
   **/
-  public static void sendEvent(final ReactContext context, 
+  public static void sendEvent(final ReactContext context,
     String eventName,
     WritableMap params) {
       context
@@ -52,9 +52,28 @@ public class FirestackUtils {
     data.putBoolean("hasChildren", dataSnapshot.hasChildren());
 
     data.putDouble("childrenCount", dataSnapshot.getChildrenCount());
-
-    WritableMap valueMap = FirestackUtils.castSnapshotValue(dataSnapshot);
-    data.putMap("value", valueMap);
+    if (!dataSnapshot.hasChildren() && dataSnapshot.getValue() != null) {
+      String type = dataSnapshot.getValue().getClass().getName();
+      switch (type) {
+        case "java.lang.Boolean":
+          data.putBoolean("value", (Boolean) dataSnapshot.getValue());
+          break;
+        case "java.lang.Long":
+          data.putInt("value",(Integer)(((Long) dataSnapshot.getValue()).intValue()));
+          break;
+        case "java.lang.Double":
+          data.putDouble("value",(Double) dataSnapshot.getValue());
+          break;
+        case "java.lang.String":
+          data.putString("value",(String) dataSnapshot.getValue());
+          break;
+        default:
+          data.putString("value", null);
+      }
+    }else{
+      WritableMap valueMap = FirestackUtils.castSnapshotValue(dataSnapshot);
+      data.putMap("value", valueMap);
+    }
 
     Object priority = dataSnapshot.getPriority();
     if (priority == null) {
