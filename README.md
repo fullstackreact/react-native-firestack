@@ -2,6 +2,8 @@
 
 Firestack makes using the latest [Firebase](http://firebase.com) straight-forward.
 
+[![Gitter](https://badges.gitter.im/fullstackreact/react-native-firestack.svg)](https://gitter.im/fullstackreact/react-native-firestack?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+
 ## What
 
 Firestack is a _light-weight_ layer sitting atop the native Firebase libraries for iOS and Android and mirrors the React Native JS api as closely as possible.
