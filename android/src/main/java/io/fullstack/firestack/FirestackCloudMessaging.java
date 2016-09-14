@@ -119,6 +119,7 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
     }
 
     private void initMessageHandler() {
+        Log.d(TAG, "Firestack initMessageHandler called");
         getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -154,10 +155,10 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void send(String senderId, Integer messageId, String messageType, ReadableMap params) {
+    public void send(String senderId, String messageId, String messageType, ReadableMap params, final Callback callback) {
         FirebaseMessaging fm = FirebaseMessaging.getInstance();
         RemoteMessage.Builder remoteMessage = new RemoteMessage.Builder(senderId);
-        remoteMessage.setMessageId(messageId.toString());
+        remoteMessage.setMessageId(messageId);
         remoteMessage.setMessageType(messageType);
         ReadableMapKeySetIterator iterator = params.keySetIterator();
         while (iterator.hasNextKey()) {
@@ -169,7 +170,18 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                 Log.d(TAG, "Firebase send: " + params.getString(key));
             }
         }
-        fm.send(remoteMessage.build());
+        try {
+            fm.send(remoteMessage.build());
+            WritableMap res = Arguments.createMap();
+            res.putString("status", "success");
+            callback.invoke(null, res);
+        } catch(Exception e) {
+            Log.e(TAG, "Error sending message", e);
+            WritableMap error = Arguments.createMap();
+            error.putString("code", e.toString());
+            error.putString("message", e.toString());
+            callback.invoke(error);
+        }
     }
 
     private void initSendHandler() {
