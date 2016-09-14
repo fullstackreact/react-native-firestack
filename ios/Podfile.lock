@@ -9,6 +9,9 @@ PODS:
   - Firebase/Database (3.5.2):
     - Firebase/Analytics
     - FirebaseDatabase (= 3.0.2)
+  - Firebase/Messaging (3.5.2):
+    - Firebase/Analytics
+    - FirebaseMessaging (= 1.1.1)
   - Firebase/RemoteConfig (3.5.2):
     - Firebase/Analytics
     - FirebaseRemoteConfig (= 1.2.0)
@@ -28,6 +31,12 @@ PODS:
   - FirebaseDatabase (3.0.2):
     - FirebaseAnalytics (~> 3.2)
   - FirebaseInstanceID (1.0.8)
+  - FirebaseMessaging (1.1.1):
+    - FirebaseAnalytics (~> 3.3)
+    - FirebaseInstanceID (~> 1.0)
+    - GoogleInterchangeUtilities (~> 1.2)
+    - GoogleIPhoneUtilities (~> 1.2)
+    - GoogleSymbolUtilities (~> 1.1)
   - FirebaseRemoteConfig (1.2.0):
     - FirebaseAnalytics (~> 3.3)
     - FirebaseInstanceID (~> 1.0)
@@ -56,6 +65,7 @@ DEPENDENCIES:
   - Firebase/Auth
   - Firebase/Core
   - Firebase/Database
+  - Firebase/Messaging
   - Firebase/RemoteConfig
   - Firebase/Storage
 
@@ -65,6 +75,7 @@ SPEC CHECKSUMS:
   FirebaseAuth: 26fd291c3b552fc9658420b867520d5ae080421c
   FirebaseDatabase: 59bea2e7dfd81b3b8b2f8e396caf1a52c2ced6f7
   FirebaseInstanceID: ba1e640935235e5fac39dfa816fe7660e72e1a8a
+  FirebaseMessaging: 6bc7cd2ecb875c1a9c0f8b94956398aa3145bbb8
   FirebaseRemoteConfig: c5378e689c1edb54ff62061b8f6a908263dd80ae
   FirebaseStorage: 3992817bf405f5c1a4f8349678d22724cd0ef509
   GoogleInterchangeUtilities: def8415a862effc67d549d5b5b0b9c7a2f97d4de
@@ -74,6 +85,6 @@ SPEC CHECKSUMS:
   GoogleSymbolUtilities: 33117db1b5f290c6fbf259585e4885b4c84b98d7
   GoogleUtilities: 56c5ac05b7aa5dc417a1bb85221a9516e04d7032
 
-PODFILE CHECKSUM: c2d665248a3ec1df2a0cd99268306bb5f529bce3
+PODFILE CHECKSUM: 5d5f8420a09165006b0ea75e2e7cf13a52b1ea7c
 
 COCOAPODS: 1.0.1

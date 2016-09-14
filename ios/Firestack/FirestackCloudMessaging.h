@@ -12,6 +12,6 @@
     
 }
 
-// + (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
++ (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
 
 @end

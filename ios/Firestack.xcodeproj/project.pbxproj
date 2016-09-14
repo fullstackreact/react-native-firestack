@@ -7,10 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0A4200BEE17F6884883BB2E7 /* libPods-Firestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58A186F11042C569425E5D5F /* libPods-Firestack.a */; };
+		D90882D61D89C18C00FB6742 /* FirestackCloudMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = D90882D51D89C18C00FB6742 /* FirestackCloudMessaging.m */; };
+		D90883031D89C4FC00FB6742 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D90883021D89C4FC00FB6742 /* FirebaseMessaging.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		D950369E1D19C77400F7094D /* Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* Firestack.m */; };
 		D962903F1D6D15B00099A3EC /* FirestackErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = D962903E1D6D15B00099A3EC /* FirestackErrors.m */; };
 		D96290451D6D16100099A3EC /* FirestackAnalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = D96290441D6D16100099A3EC /* FirestackAnalytics.m */; };
-		D96290491D6D1D8C0099A3EC /* FirestackMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = D96290481D6D1D8C0099A3EC /* FirestackMessaging.m */; };
 		D96290851D6D28B80099A3EC /* FirestackDatabase.m in Sources */ = {isa = PBXBuildFile; fileRef = D96290841D6D28B80099A3EC /* FirestackDatabase.m */; };
 		D97261661D550CF5000F703F /* GoogleInterchangeUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261651D550CF5000F703F /* GoogleInterchangeUtilities.framework */; };
 		D97261691D550D03000F703F /* GoogleIPhoneUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261681D550D03000F703F /* GoogleIPhoneUtilities.framework */; };
@@ -67,6 +69,9 @@
 		134814201AA4EA6300B7C361 /* libFirestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFirestack.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58A186F11042C569425E5D5F /* libPods-Firestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Firestack.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61152A448EBF126366D048D6 /* Pods-Firestack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Firestack.release.xcconfig"; path = "Pods/Target Support Files/Pods-Firestack/Pods-Firestack.release.xcconfig"; sourceTree = "<group>"; };
+		D90882D41D89C18C00FB6742 /* FirestackCloudMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackCloudMessaging.h; path = Firestack/FirestackCloudMessaging.h; sourceTree = "<group>"; };
+		D90882D51D89C18C00FB6742 /* FirestackCloudMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackCloudMessaging.m; path = Firestack/FirestackCloudMessaging.m; sourceTree = "<group>"; };
+		D90883021D89C4FC00FB6742 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Pods/FirebaseMessaging/Frameworks/frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };
 		D950369C1D19C77400F7094D /* Firestack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Firestack.h; path = Firestack/Firestack.h; sourceTree = "<group>"; };
 		D950369D1D19C77400F7094D /* Firestack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Firestack.m; path = Firestack/Firestack.m; sourceTree = "<group>"; };
 		D95036B31D19C90300F7094D /* Pods.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Pods.xcodeproj; path = Pods/Pods.xcodeproj; sourceTree = "<group>"; };
@@ -75,8 +80,6 @@
 		D962903E1D6D15B00099A3EC /* FirestackErrors.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackErrors.m; path = Firestack/FirestackErrors.m; sourceTree = "<group>"; };
 		D96290431D6D16100099A3EC /* FirestackAnalytics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackAnalytics.h; path = Firestack/FirestackAnalytics.h; sourceTree = "<group>"; };
 		D96290441D6D16100099A3EC /* FirestackAnalytics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackAnalytics.m; path = Firestack/FirestackAnalytics.m; sourceTree = "<group>"; };
-		D96290471D6D1D8C0099A3EC /* FirestackMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackMessaging.h; path = Firestack/FirestackMessaging.h; sourceTree = "<group>"; };
-		D96290481D6D1D8C0099A3EC /* FirestackMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackMessaging.m; path = Firestack/FirestackMessaging.m; sourceTree = "<group>"; };
 		D96290831D6D28B80099A3EC /* FirestackDatabase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackDatabase.h; path = Firestack/FirestackDatabase.h; sourceTree = "<group>"; };
 		D96290841D6D28B80099A3EC /* FirestackDatabase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackDatabase.m; path = Firestack/FirestackDatabase.m; sourceTree = "<group>"; };
 		D97261651D550CF5000F703F /* GoogleInterchangeUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleInterchangeUtilities.framework; path = Pods/GoogleInterchangeUtilities/Frameworks/GoogleInterchangeUtilities.framework; sourceTree = "<group>"; };
@@ -109,6 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D90883031D89C4FC00FB6742 /* FirebaseMessaging.framework in Frameworks */,
 				D9A8C7A41D7E54C900142F94 /* libPods-Firestack.a in Frameworks */,
 				D97261C91D551BFF000F703F /* AddressBook.framework in Frameworks */,
 				D97261C71D551BF5000F703F /* CFNetwork.framework in Frameworks */,
@@ -127,6 +131,7 @@
 				D972616D1D550D0B000F703F /* GoogleParsingUtilities.framework in Frameworks */,
 				D972616F1D550D0F000F703F /* GoogleSymbolUtilities.framework in Frameworks */,
 				D97261711D550D13000F703F /* GoogleUtilities.framework in Frameworks */,
+				0A4200BEE17F6884883BB2E7 /* libPods-Firestack.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -144,6 +149,7 @@
 		4C361DE13748C14BF1F87624 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D90883021D89C4FC00FB6742 /* FirebaseMessaging.framework */,
 				D97261C81D551BFF000F703F /* AddressBook.framework */,
 				D97261C61D551BF5000F703F /* CFNetwork.framework */,
 				D97261C41D551BF0000F703F /* libicucore.tbd */,
@@ -200,6 +206,8 @@
 		D96290351D6D145F0099A3EC /* Modules */ = {
 			isa = PBXGroup;
 			children = (
+				D90882D41D89C18C00FB6742 /* FirestackCloudMessaging.h */,
+				D90882D51D89C18C00FB6742 /* FirestackCloudMessaging.m */,
 				D9D62E7E1D6D8717003D826D /* FirestackAuth.h */,
 				D9D62E7F1D6D8717003D826D /* FirestackAuth.m */,
 				D96290391D6D152A0099A3EC /* FirestackEvents.h */,
@@ -207,8 +215,6 @@
 				D962903E1D6D15B00099A3EC /* FirestackErrors.m */,
 				D96290431D6D16100099A3EC /* FirestackAnalytics.h */,
 				D96290441D6D16100099A3EC /* FirestackAnalytics.m */,
-				D96290471D6D1D8C0099A3EC /* FirestackMessaging.h */,
-				D96290481D6D1D8C0099A3EC /* FirestackMessaging.m */,
 				D96290831D6D28B80099A3EC /* FirestackDatabase.h */,
 				D96290841D6D28B80099A3EC /* FirestackDatabase.m */,
 				D9D62E7A1D6D86FD003D826D /* FirestackStorage.h */,
@@ -330,7 +336,7 @@
 				D9D62E7C1D6D86FD003D826D /* FirestackStorage.m in Sources */,
 				D962903F1D6D15B00099A3EC /* FirestackErrors.m in Sources */,
 				D950369E1D19C77400F7094D /* Firestack.m in Sources */,
-				D96290491D6D1D8C0099A3EC /* FirestackMessaging.m in Sources */,
+				D90882D61D89C18C00FB6742 /* FirestackCloudMessaging.m in Sources */,
 				D96290851D6D28B80099A3EC /* FirestackDatabase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -445,6 +451,7 @@
 					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks/frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks/frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseRemoteConfig/Frameworks/frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks/frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -490,6 +497,7 @@
 					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks/frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks/frameworks",
 					"$(PROJECT_DIR)/Pods/FirebaseRemoteConfig/Frameworks/frameworks",
+					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks/frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

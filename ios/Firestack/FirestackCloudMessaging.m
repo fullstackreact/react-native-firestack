@@ -7,11 +7,26 @@
 //
 
 #import "FirestackCloudMessaging.h"
+#import <NotificationCenter/NotificationCenter.h>
 
 @import FirebaseInstanceID;
-//@import FirebaseMessaging;
+@import FirebaseMessaging;
 
-@implementation FirestackMessaging
+@implementation FirestackCloudMessaging
+
++ (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken
+{
+  UIUserNotificationType allNotificationTypes =
+  (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+  UIUserNotificationSettings *settings =
+  [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+  [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+  [[UIApplication sharedApplication] registerForRemoteNotifications];
+    
+    [[FIRMessaging messaging] connectWithCompletion:^(NSError * _Nullable error) {
+        NSLog(@"Connected: %@", [error debugDescription]);
+    }];
+}
 
 RCT_EXPORT_MODULE(FirestackCloudMessaging);
 

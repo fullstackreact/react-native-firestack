@@ -1,58 +1,52 @@
 //
-//  FirestackMessaging.m
+//  FirestackAnalytics.m
 //  Firestack
 //
 //  Created by Ari Lerner on 8/23/16.
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
-#import "FirestackCloudMessaging.h"
+#import "FirestackAnalytics.h"
 
-@import FirebaseInstanceID;
-//@import FirebaseMessaging;
+@import FirebaseAnalytics;
 
-@implementation FirestackMessaging
+@implementation FirestackAnalytics
 
-RCT_EXPORT_MODULE(FirestackCloudMessaging);
+RCT_EXPORT_MODULE(FirestackAnalytics);
 
-+ (void) getToken:(NSString *) typeStr andToken:(NSData *)deviceToken
+- (void)dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback) {
+RCT_EXPORT_METHOD(logEventWithName:(NSString *)name
+                  props:(NSDictionary *)props
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    NSLog(@"logEventWithName called: %@ and %@", name, props);
+    [FIRAnalytics logEventWithName:name parameters:props];
+    callback(@[[NSNull null], @YES]);
 }
 
-RCT_EXPORT_METHOD(send:(NSString *) senderId
-  messageId:(NSString *) messageId
-  messageType:(NSString *) messageType
-  msg: (NSString *) msg
-  callback:(RCTResponseSenderBlock)callback)
-{}
+RCT_EXPORT_METHOD(setEnabled:(BOOL) enabled
+  callback:(RCTResponseSenderBlock) callback)
+{
+  [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
+  callback(@[[NSNull null], @YES]);
+}
 
-RCT_EXPORT_METHOD(listenForTokenRefresh:(RCTResponseSenderBlock)callback)
-{}
+RCT_EXPORT_METHOD(setUser: (NSString *) id
+  props:(NSDictionary *) props
+  callback:(RCTResponseSenderBlock) callback)
+{
+  [FIRAnalytics setUserID:id];
+  NSMutableArray *allKeys = [[props allKeys] mutableCopy];
+  for (NSString *key in allKeys) {
+    NSString *val = [props valueForKey:key];
+    [FIRAnalytics setUserPropertyString:val forName:key];
+  }
 
-RCT_EXPORT_METHOD(unlistenForTokenRefresh:(RCTResponseSenderBlock)callback)
-{}
-
-RCT_EXPORT_METHOD(subscribeToTopic:(NSString *) topic
-  callback:(RCTResponseSenderBlock)callback)
-{}
-
-RCT_EXPORT_METHOD(unsubscribeFromTopic:(NSString *) topic
-  callback: (RCTResponseSenderBlock)callback)
-{}
-
-RCT_EXPORT_METHOD(listenForReceiveNotification:(RCTResponseSenderBlock)callback)
-{}
-
-RCT_EXPORT_METHOD(unlistenForReceiveNotification:(RCTResponseSenderBlock)callback)
-{}
-
-RCT_EXPORT_METHOD(listenForReceiveUpstreamSend:(RCTResponseSenderBlock)callback)
-{}
-
-RCT_EXPORT_METHOD(unlistenForReceiveUpstreamSend:(RCTResponseSenderBlock)callback)
-{}
+  callback(@[[NSNull null], @YES]);
+}
 
 @end
