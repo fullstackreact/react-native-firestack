@@ -15,7 +15,11 @@
     "url": "https://github.com/fullstackreact/react-native-firestack.git"
   },
   "jest": {
-    "preset": "jest-react-native"
+    "preset": "jest-react-native",
+    "unmockedModulePathPatterns": [
+      "react-native",
+      "firestack"
+    ]
   },
   "license": "ISC",
   "keywords": [
