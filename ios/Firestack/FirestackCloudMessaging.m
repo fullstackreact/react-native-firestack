@@ -19,8 +19,8 @@ RCT_EXPORT_MODULE(FirestackCloudMessaging);
 {
 }
 
-RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback) {
-}
+RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock)callback)
+{}
 
 RCT_EXPORT_METHOD(send:(NSString *) senderId
   messageId:(NSString *) messageId

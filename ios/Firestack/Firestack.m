@@ -7,7 +7,7 @@
 #import "Firestack.h"
 #import "FirestackErrors.h"
 #import "FirestackEvents.h"
-#import "FirestackMessaging.h"
+#import "FirestackCloudMessaging.h"
 
 @import Firebase;
 
@@ -85,7 +85,11 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                                               ],
                                       @"DEEP_LINK_SCHEME": @[
                                               @"deepLinkScheme"
-                                              ]
+                                              ],
+                                      @"MESSAGING_SENDER_ID": @[
+                                          @"messagingSenderId",
+                                          @"messagingSenderID"
+                                        ]
                                       };
     NSArray *optionKeys = [keyMapping allKeys];
     

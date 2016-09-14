@@ -8,10 +8,10 @@
 
 #import "RCTBridgeModule.h"
 
-@interface FirestackMessaging : NSObject <RCTBridgeModule> {
+@interface FirestackCloudMessaging : NSObject <RCTBridgeModule> {
     
 }
 
-+ (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
+// + (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
 
 @end
