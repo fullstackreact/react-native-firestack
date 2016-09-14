@@ -127,7 +127,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
-            new FirestackPackage()
+            new FirestackPackage(getApplicationContext())
       );
     }
   };
@@ -141,6 +141,22 @@ We'll also need to list it in our `android/app/build.gradle` file as a dependenc
 dependencies {
   compile project(':react-native-firestack')
 }
+```
+
+Add to `AndroidManifest.xml` file
+```diff
+  <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" />
++   <service android:name="io.fullstack.firestack.FirestackMessagingService">
++     <intent-filter>
++       <action android:name="com.google.firebase.MESSAGING_EVENT"/>
++     </intent-filter>
++   </service>
+
++   <service android:name="io.fullstack.firestack.FirestackInstanceIdService" android:exported="false">
++     <intent-filter>
++       <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
++     </intent-filter>
++   </service>
 ```
 
 ## Firebase setup
@@ -665,6 +681,58 @@ Firebase provides some static values based upon the server. We can use the `Serv
 
 ```javascript
 const timestamp = firestack.ServerValue.TIMESTAMP
+```
+
+### Cloud Messaging
+
+Access the device registration token
+
+```javascript
+  firestack.cloudMessaging.getToken().then(function (token) {
+    console.log('device token', token);
+  });
+```
+
+Monitor token generation
+
+```javascript
+  // add listener
+  firestack.cloudMessaging.listenForTokenRefresh(function (token) {
+    console.log('refresh device token', token);
+  });
+  
+  // remove listener
+  firestack.cloudMessaging.unlistenForTokenRefresh();
+```
+
+Subscribe to topic
+
+```javascript
+  firestack.cloudMessaging.subscribeToTopic("topic_name").then(function (topic) {
+      console.log('Subscribe:'+topic);
+  }).catch(function(err){
+       console.error(err);
+  });
+```
+
+Unsubscribe from topic
+
+```javascript
+  firestack.cloudMessaging.unsubscribeFromTopic("topic_name").then(function (topic) {
+      console.log('unsubscribe:'+topic);
+  }).catch(function(err){
+       console.error(err);
+  });
+```
+
+Receive Messages
+
+```javascript
+  firestack.cloudMessaging.listenForReceiveNotification((msg) =>{
+    console.log('Receive Messages:'+msg.data);
+    console.log('Receive Messages:'+msg.notification);
+
+  });
 ```
 
 ### Events
