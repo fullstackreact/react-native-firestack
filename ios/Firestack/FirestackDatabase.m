@@ -170,19 +170,20 @@
 {
     NSMutableDictionary *listeners = [_listeners mutableCopy];
     [listeners setValue:@(handle) forKey:name];
-    self.listeners = listeners;
+    _listeners = listeners;
 }
 
 - (void) unsetListeningOn:(NSString *) name
 {
     NSMutableDictionary *listeners = [_listeners mutableCopy];
     [listeners removeObjectForKey:name];
-    self.listeners = listeners;
+    _listeners = listeners;
 }
 
 - (BOOL) isListeningTo:(NSString *) name
 {
-    return [_listeners valueForKey:name] != nil;
+  id listener = [_listeners valueForKey:name];
+  return listener != nil;
 }
 
 - (BOOL) hasListeners
@@ -350,7 +351,7 @@ RCT_EXPORT_METHOD(on:(NSString *) path
 {
     FirestackDBReference *r = [self getDBHandle:path];
     FIRDatabaseQuery *query = [r getQueryWithModifiers:modifiers];
-    
+
     if (![r isListeningTo:eventName]) {
         id withBlock = ^(FIRDataSnapshot * _Nonnull snapshot) {
             NSDictionary *props =
@@ -375,12 +376,19 @@ RCT_EXPORT_METHOD(on:(NSString *) path
                                          withCancelBlock:errorBlock];
         [r setEventHandler:handle
                    forName:eventName];
-    }
-    
-    callback(@[[NSNull null], @{
+
+        [self saveDBHandle:path dbRef:r];
+
+        callback(@[[NSNull null], @{
                    @"result": @"success",
-                   @"handle": path
+                   @"handle": @(handle)
                    }]);
+    } else {
+      callback(@{
+                   @"result": @"exists",
+                   @"msg": @"Listener already exists"
+                   });
+    }
 }
 
 RCT_EXPORT_METHOD(onOnce:(NSString *) path
@@ -397,6 +405,7 @@ RCT_EXPORT_METHOD(onOnce:(NSString *) path
                             NSDictionary *props = [self snapshotToDict:snapshot];
                             callback(@[[NSNull null], @{
                                            @"eventName": name,
+                                           @"path": path,
                                            @"snapshot": props
                                            }]);
                         }
@@ -414,17 +423,16 @@ RCT_EXPORT_METHOD(off:(NSString *)path
                   callback:(RCTResponseSenderBlock) callback)
 {
     FirestackDBReference *r = [self getDBHandle:path];
-    
     if (eventName == nil || [eventName isEqualToString:@""]) {
         [r cleanup];
     } else {
-        if ([r isListeningTo:eventName]) {
-            [r removeEventHandler:eventName];
-        }
+        [r removeEventHandler:eventName];
         if (![r hasListeners]) {
             [self removeDBHandle:path];
         }
     }
+
+    [self saveDBHandle:path dbRef:r];
     
     callback(@[[NSNull null], @{
                    @"result": @"success",

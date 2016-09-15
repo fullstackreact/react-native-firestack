@@ -53,7 +53,6 @@ public class FirestackUtils {
     DataSnapshot dataSnapshot) {
       WritableMap data = Arguments.createMap();
 
-      data.putString("path", path);
       data.putString("key", dataSnapshot.getKey());
       data.putBoolean("exists", dataSnapshot.exists());
       data.putBoolean("hasChildren", dataSnapshot.hasChildren());
@@ -92,6 +91,7 @@ public class FirestackUtils {
       WritableMap eventMap = Arguments.createMap();
       eventMap.putString("eventName", name);
       eventMap.putMap("snapshot", data);
+      eventMap.putString("path", path);
       return eventMap;
   }
 
