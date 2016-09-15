@@ -97,11 +97,13 @@ class FirestackDBReference {
     mValueListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
+        Log.d(TAG, "onDataChange called for " + name);
         self.handleDatabaseEvent("value", dataSnapshot);
       }
 
       @Override
       public void onCancelled(DatabaseError error) {
+        Log.d(TAG, "onDataChange onCancelled called");
         self.handleDatabaseError("value", error);
       }
     };
@@ -157,14 +159,17 @@ class FirestackDBReference {
   }
 
   private void handleDatabaseEvent(final String name, final DataSnapshot dataSnapshot) {
+    Log.d(TAG, "handleDatabaseEvent called: " + name);
     WritableMap data = FirestackUtils.dataSnapshotToMap(name, dataSnapshot);
     WritableMap evt  = Arguments.createMap();
     evt.putString("eventName", name);
     evt.putMap("body", data);
+    
     FirestackUtils.sendEvent(mReactContext, "database_event", evt);
   }
 
   private void handleDatabaseError(final String name, final DatabaseError error) {
+    Log.d(TAG, "handleDatabaseError called: " + name);
     WritableMap err = Arguments.createMap();
     err.putInt("errorCode", error.getCode());
     err.putString("errorDetails", error.getDetails());
@@ -173,6 +178,7 @@ class FirestackDBReference {
     WritableMap evt  = Arguments.createMap();
     evt.putString("eventName", name);
     evt.putMap("body", err);
+
     FirestackUtils.sendEvent(mReactContext, "database_error", evt);
   }
 
@@ -540,7 +546,8 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
   private FirestackDBReference getDBHandle(final String path) {
     if (!mDBListeners.containsKey(path)) {
-      mDBListeners.put(path, new FirestackDBReference(mReactContext, path));
+      ReactContext ctx = getReactApplicationContext();
+      mDBListeners.put(path, new FirestackDBReference(ctx, path));
     }
 
     return mDBListeners.get(path);

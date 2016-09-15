@@ -36,11 +36,16 @@ public class FirestackUtils {
   * send a JS event
   **/
   public static void sendEvent(final ReactContext context,
-    String eventName,
-    WritableMap params) {
+    final String eventName,
+    final WritableMap params) {
+    if (context.hasActiveCatalystInstance()) {
+      Log.d(TAG, "Sending event " + eventName);
       context
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
+    } else {
+      Log.d(TAG, "Waiting for CatalystInstance before sending event");
+    }
   }
 
   // snapshot

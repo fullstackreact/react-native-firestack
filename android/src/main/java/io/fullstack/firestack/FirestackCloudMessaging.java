@@ -83,8 +83,9 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
             public void onReceive(Context context, Intent intent) {
                 WritableMap params = Arguments.createMap();
                 params.putString("token", intent.getStringExtra("token"));
-                FirestackUtils.sendEvent(mReactContext, EVENT_NAME_TOKEN, params);
-
+                ReactContext ctx = getReactApplicationContext();
+                Log.d(TAG, "initRefreshTokenHandler received event " + EVENT_NAME_TOKEN);
+                FirestackUtils.sendEvent(ctx, EVENT_NAME_TOKEN, params);
             }
 
             ;
@@ -149,7 +150,8 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                 } else {
                     params.putNull("notification");
                 }
-                FirestackUtils.sendEvent(mReactContext, EVENT_NAME_NOTIFICATION, params);
+                ReactContext ctx = getReactApplicationContext();
+                FirestackUtils.sendEvent(ctx, EVENT_NAME_NOTIFICATION, params);
             }
         }, mReceiveNotificationIntentFilter);
     }
@@ -197,7 +199,8 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                 } else {
                     params.putNull("err");
                 }
-                FirestackUtils.sendEvent(mReactContext, EVENT_NAME_SEND, params);
+                ReactContext ctx = getReactApplicationContext();
+                FirestackUtils.sendEvent(ctx, EVENT_NAME_SEND, params);
             }
         }, mReceiveSendIntentFilter);
     }
