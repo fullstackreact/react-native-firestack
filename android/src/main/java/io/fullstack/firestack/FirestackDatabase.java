@@ -42,7 +42,7 @@ class FirestackDBReference {
 
   private String mPath;
   private ReadableArray mModifiers;
-  private Map mListeners;
+  private HashMap<String, Boolean> mListeners = new HashMap<String, Boolean>();
   private FirestackDatabaseModule mDatabase;
   private ChildEventListener mEventListener;
   private ValueEventListener mValueListener;
@@ -64,31 +64,33 @@ class FirestackDBReference {
     mEventListener = new ChildEventListener() {
       @Override
       public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-        self.handleDatabaseEvent(name, dataSnapshot);
+        self.handleDatabaseEvent(name, mPath, dataSnapshot);
       }
 
       @Override
       public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-        self.handleDatabaseEvent(name, dataSnapshot);
+        self.handleDatabaseEvent(name, mPath, dataSnapshot);
       }
 
       @Override
       public void onChildRemoved(DataSnapshot dataSnapshot) {
-        self.handleDatabaseEvent(name, dataSnapshot);
+        self.handleDatabaseEvent(name, mPath, dataSnapshot);
       }
 
       @Override
       public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-        self.handleDatabaseEvent(name, dataSnapshot);
+        self.handleDatabaseEvent(name, mPath, dataSnapshot);
       }
 
       @Override
       public void onCancelled(DatabaseError error) {
-        self.handleDatabaseError(name, error);
+        self.handleDatabaseError(name, mPath, error);
       }
     };
+    
     Query ref = this.getDatabaseQueryAtPathAndModifiers(modifiers);
     ref.addChildEventListener(mEventListener);
+    this.setListeningTo(mPath, name);
   }
 
   public void addValueEventListener(final String name, final ReadableArray modifiers) {
@@ -97,19 +99,18 @@ class FirestackDBReference {
     mValueListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        Log.d(TAG, "onDataChange called for " + name);
-        self.handleDatabaseEvent("value", dataSnapshot);
+        self.handleDatabaseEvent("value", mPath, dataSnapshot);
       }
 
       @Override
       public void onCancelled(DatabaseError error) {
-        Log.d(TAG, "onDataChange onCancelled called");
-        self.handleDatabaseError("value", error);
+        self.handleDatabaseError("value", mPath, error);
       }
     };
 
     Query ref = this.getDatabaseQueryAtPathAndModifiers(modifiers);
     ref.addValueEventListener(mValueListener);
+    this.setListeningTo(mPath, "value");
   }
 
   public void addOnceValueEventListener(final ReadableArray modifiers,
@@ -119,7 +120,7 @@ class FirestackDBReference {
     mOnceValueListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = FirestackUtils.dataSnapshotToMap("value", dataSnapshot);
+        WritableMap data = FirestackUtils.dataSnapshotToMap("value", mPath, dataSnapshot);
         callback.invoke(null, data);
       }
 
@@ -137,7 +138,27 @@ class FirestackDBReference {
     ref.addListenerForSingleValueEvent(mOnceValueListener);
   }
 
+  public Boolean isListeningTo(final String path, final String evtName) {
+    String key = this.pathListeningKey(path, evtName);
+    return mListeners.containsKey(key);
+  }
+
+  public void setListeningTo(final String path, final String evtName) {
+    String key = this.pathListeningKey(path, evtName);
+    mListeners.put(key, true);
+  }
+
+  public void notListeningTo(final String path, final String evtName) {
+    String key = this.pathListeningKey(path, evtName);
+    mListeners.remove(key);
+  }
+
+  private String pathListeningKey(final String path, final String eventName) {
+    return "listener/" + path + "/" + eventName;
+  }
+
   public void cleanup() {
+    Log.d(TAG, "cleaning up database reference " + this);
     this.removeChildEventListener();
     this.removeValueEventListener();
   }
@@ -146,6 +167,10 @@ class FirestackDBReference {
     if (mEventListener != null) {
       DatabaseReference ref = this.getDatabaseRef();
       ref.removeEventListener(mEventListener);
+      this.notListeningTo(mPath, "child_added");
+      this.notListeningTo(mPath, "child_changed");
+      this.notListeningTo(mPath, "child_removed");
+      this.notListeningTo(mPath, "child_moved");
       mEventListener = null;
     }
   }
@@ -154,22 +179,22 @@ class FirestackDBReference {
     if (mValueListener != null) {
       DatabaseReference ref = this.getDatabaseRef();
       ref.removeEventListener(mValueListener);
+      this.notListeningTo(mPath, "value");
       mValueListener = null;
     }
   }
 
-  private void handleDatabaseEvent(final String name, final DataSnapshot dataSnapshot) {
-    Log.d(TAG, "handleDatabaseEvent called: " + name);
-    WritableMap data = FirestackUtils.dataSnapshotToMap(name, dataSnapshot);
+  private void handleDatabaseEvent(final String name, final String path, final DataSnapshot dataSnapshot) {
+    WritableMap data = FirestackUtils.dataSnapshotToMap(name, path, dataSnapshot);
     WritableMap evt  = Arguments.createMap();
     evt.putString("eventName", name);
+    evt.putString("path", path);
     evt.putMap("body", data);
     
     FirestackUtils.sendEvent(mReactContext, "database_event", evt);
   }
 
-  private void handleDatabaseError(final String name, final DatabaseError error) {
-    Log.d(TAG, "handleDatabaseError called: " + name);
+  private void handleDatabaseError(final String name, final String path, final DatabaseError error) {
     WritableMap err = Arguments.createMap();
     err.putInt("errorCode", error.getCode());
     err.putString("errorDetails", error.getDetails());
@@ -177,6 +202,7 @@ class FirestackDBReference {
 
     WritableMap evt  = Arguments.createMap();
     evt.putString("eventName", name);
+    evt.putString("path", path);
     evt.putMap("body", err);
 
     FirestackUtils.sendEvent(mReactContext, "database_error", evt);
@@ -196,7 +222,6 @@ class FirestackDBReference {
     while(it.hasNext()) {
       String str = (String) it.next();
 
-      Log.d(TAG, "getReference with modifiers: " + str);
       String[] strArr = str.split(":");
       String methStr = strArr[0];
 
@@ -404,8 +429,9 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
                  final ReadableArray modifiers,
                  final String name,
                  final Callback callback) {
-    Log.d(TAG, "Setting a listener on event: " + name + " for path " + path);
-    FirestackDBReference ref = this.getDBHandle(path);
+    FirestackDBReference ref = this.getDBHandle(path, name);
+
+    WritableMap resp = Arguments.createMap();
 
     if (name.equals("value")) {
       ref.addValueEventListener(name, modifiers);
@@ -413,12 +439,11 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
       ref.addChildEventListener(name, modifiers);
     }
 
-    this.saveDBHandle(path, ref);
-
-    Log.d(TAG, "Added listener " + name);
-    WritableMap resp = Arguments.createMap();
-    resp.putString("handle", path);
+    this.saveDBHandle(path, name, ref);
     resp.putString("result", "success");
+    Log.d(TAG, "Added listener " + name + " for " + ref);
+    
+    resp.putString("handle", path);
     callback.invoke(null, resp);
   }
 
@@ -428,14 +453,14 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
                      final String name,
                      final Callback callback) {
     Log.d(TAG, "Setting one-time listener on event: " + name + " for path " + path);
-    FirestackDBReference ref = this.getDBHandle(path);
+    FirestackDBReference ref = this.getDBHandle(path, "once");
     ref.addOnceValueEventListener(modifiers, callback);
   }
 
   @ReactMethod
   public void off(final String path, final String name, final Callback callback) {
     // TODO
-    FirestackDBReference ref = this.getDBHandle(path);
+    FirestackDBReference ref = this.getDBHandle(path, name);
 
     if (name.equals("value")) {
       ref.removeValueEventListener();
@@ -443,7 +468,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
       ref.removeChildEventListener();
     }
 
-    this.removeDBHandle(path);
+    this.removeDBHandle(path, name);
     Log.d(TAG, "Removed listener " + name);
     WritableMap resp = Arguments.createMap();
     resp.putString("handle", path);
@@ -544,26 +569,34 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private FirestackDBReference getDBHandle(final String path) {
-    if (!mDBListeners.containsKey(path)) {
+  private FirestackDBReference getDBHandle(final String path, final String eventName) {
+    String key = this.keyPath(path, eventName);
+    if (!mDBListeners.containsKey(key)) {
       ReactContext ctx = getReactApplicationContext();
-      mDBListeners.put(path, new FirestackDBReference(ctx, path));
+      mDBListeners.put(key, new FirestackDBReference(ctx, path));
     }
 
-    return mDBListeners.get(path);
+    return mDBListeners.get(key);
   }
 
   private void saveDBHandle(final String path,
+                            final String eventName,
                             final FirestackDBReference dbRef) {
-    this.removeDBHandle(path);
-    mDBListeners.put(path, dbRef);
+    String key = this.keyPath(path, eventName);
+    this.removeDBHandle(key, eventName);
+    mDBListeners.put(key, dbRef);
   }
 
-  private void removeDBHandle(final String path) {
-    if (mDBListeners.containsKey(path)) {
-      FirestackDBReference r = mDBListeners.get(path);
+  private void removeDBHandle(final String path, final String eventName) {
+    String key = this.keyPath(path, eventName);
+    if (mDBListeners.containsKey(key)) {
+      FirestackDBReference r = mDBListeners.get(key);
       r.cleanup();
     }
+  }
+
+  private String keyPath(final String path, final String eventName) {
+    return path + "-" + eventName;
   }
 
   // TODO: move to FirestackDBReference?
@@ -583,8 +616,6 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
     while(it.hasNext()) {
       String str = (String) it.next();
-
-      Log.d(TAG, "getReference with modifiers: " + str);
       String[] strArr = str.split(":");
       String methStr = strArr[0];
 
@@ -638,8 +669,8 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     return query;
   }
 
-  private WritableMap dataSnapshotToMap(String name, DataSnapshot dataSnapshot) {
-    return FirestackUtils.dataSnapshotToMap(name, dataSnapshot);
+  private WritableMap dataSnapshotToMap(String name, String path, DataSnapshot dataSnapshot) {
+    return FirestackUtils.dataSnapshotToMap(name, path, dataSnapshot);
   }
 
   private <Any> Any castSnapshotValue(DataSnapshot snapshot) {

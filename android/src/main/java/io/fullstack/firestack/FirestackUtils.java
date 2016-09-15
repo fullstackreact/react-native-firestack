@@ -39,7 +39,6 @@ public class FirestackUtils {
     final String eventName,
     final WritableMap params) {
     if (context.hasActiveCatalystInstance()) {
-      Log.d(TAG, "Sending event " + eventName);
       context
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
@@ -49,48 +48,51 @@ public class FirestackUtils {
   }
 
   // snapshot
-  public static WritableMap dataSnapshotToMap(String name, DataSnapshot dataSnapshot) {
-    WritableMap data = Arguments.createMap();
+  public static WritableMap dataSnapshotToMap(String name, 
+    String path, 
+    DataSnapshot dataSnapshot) {
+      WritableMap data = Arguments.createMap();
 
-    data.putString("key", dataSnapshot.getKey());
-    data.putBoolean("exists", dataSnapshot.exists());
-    data.putBoolean("hasChildren", dataSnapshot.hasChildren());
+      data.putString("path", path);
+      data.putString("key", dataSnapshot.getKey());
+      data.putBoolean("exists", dataSnapshot.exists());
+      data.putBoolean("hasChildren", dataSnapshot.hasChildren());
 
-    data.putDouble("childrenCount", dataSnapshot.getChildrenCount());
-    if (!dataSnapshot.hasChildren() && dataSnapshot.getValue() != null) {
-      String type = dataSnapshot.getValue().getClass().getName();
-      switch (type) {
-        case "java.lang.Boolean":
-          data.putBoolean("value", (Boolean) dataSnapshot.getValue());
-          break;
-        case "java.lang.Long":
-          data.putInt("value",(Integer)(((Long) dataSnapshot.getValue()).intValue()));
-          break;
-        case "java.lang.Double":
-          data.putDouble("value",(Double) dataSnapshot.getValue());
-          break;
-        case "java.lang.String":
-          data.putString("value",(String) dataSnapshot.getValue());
-          break;
-        default:
-          data.putString("value", null);
+      data.putDouble("childrenCount", dataSnapshot.getChildrenCount());
+      if (!dataSnapshot.hasChildren() && dataSnapshot.getValue() != null) {
+        String type = dataSnapshot.getValue().getClass().getName();
+        switch (type) {
+          case "java.lang.Boolean":
+            data.putBoolean("value", (Boolean) dataSnapshot.getValue());
+            break;
+          case "java.lang.Long":
+            data.putInt("value",(Integer)(((Long) dataSnapshot.getValue()).intValue()));
+            break;
+          case "java.lang.Double":
+            data.putDouble("value",(Double) dataSnapshot.getValue());
+            break;
+          case "java.lang.String":
+            data.putString("value",(String) dataSnapshot.getValue());
+            break;
+          default:
+            data.putString("value", null);
+        }
+      }else{
+        WritableMap valueMap = FirestackUtils.castSnapshotValue(dataSnapshot);
+        data.putMap("value", valueMap);
       }
-    }else{
-      WritableMap valueMap = FirestackUtils.castSnapshotValue(dataSnapshot);
-      data.putMap("value", valueMap);
-    }
 
-    Object priority = dataSnapshot.getPriority();
-    if (priority == null) {
-      data.putString("priority", null);
-    } else {
-      data.putString("priority", priority.toString());
-    }
+      Object priority = dataSnapshot.getPriority();
+      if (priority == null) {
+        data.putString("priority", null);
+      } else {
+        data.putString("priority", priority.toString());
+      }
 
-    WritableMap eventMap = Arguments.createMap();
-    eventMap.putString("eventName", name);
-    eventMap.putMap("snapshot", data);
-    return eventMap;
+      WritableMap eventMap = Arguments.createMap();
+      eventMap.putString("eventName", name);
+      eventMap.putMap("snapshot", data);
+      return eventMap;
   }
 
   public static <Any> Any castSnapshotValue(DataSnapshot snapshot) {
