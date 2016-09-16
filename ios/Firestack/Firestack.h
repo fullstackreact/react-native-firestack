@@ -15,6 +15,7 @@
 }
 
 + (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
++ (void) setup:(UIApplication *) application;
 
 @property (nonatomic) BOOL debug;
 @property (atomic) BOOL configured;

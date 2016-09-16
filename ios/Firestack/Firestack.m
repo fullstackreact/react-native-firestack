@@ -12,6 +12,7 @@
 @import Firebase;
 
 @implementation Firestack
+typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 
 - (void)dealloc
 {
@@ -25,7 +26,10 @@
     }];
 }
 
-typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
++ (void) setup:(UIApplication *) application
+{
+    [FirestackCloudMessaging setup:application];
+}
 
 RCT_EXPORT_MODULE(Firestack);
 
@@ -276,11 +280,6 @@ RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
 #pragma mark Database
 
 #pragma mark Messaging
-
-+ (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken
-{
-    [FirestackCloudMessaging registerForNotification:typeStr andToken:deviceToken];
-}
 
 #pragma mark Helpers
 

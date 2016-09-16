@@ -6,12 +6,17 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#import "Firebase.h"
+#import "RCTEventEmitter.h"
 #import "RCTBridgeModule.h"
+#import "RCTUtils.h"
 
-@interface FirestackCloudMessaging : NSObject <RCTBridgeModule> {
+@import FirebaseMessaging;
+
+@interface FirestackCloudMessaging : RCTEventEmitter <RCTBridgeModule> {
     
 }
 
-+ (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
++ (void) setup;
 
 @end
