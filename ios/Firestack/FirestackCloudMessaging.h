@@ -17,6 +17,6 @@
     
 }
 
-+ (void) setup;
++ (void) setup:(UIApplication *)application;
 
 @end
