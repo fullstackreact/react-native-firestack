@@ -173,7 +173,9 @@ Each platform uses a different setup method after creating the project.
 
 After creating a Firebase project, click on the [Add Firebase to your iOS app](http://d.pr/i/3sEL.png) and follow the steps from there to add the configuration file. You do _not_ need to set up a cocoapods project (this is already done through firestack). Make sure not to forget the `Copy Files` phase in iOS. 
 
-[Download the Firebase config file](https://support.google.com/firebase/answer/7015592) (this step is optional, but prevents some ugly errors in the console). 
+[Download the Firebase config file](https://support.google.com/firebase/answer/7015592) and place it in your app directory next to your app source code:
+
+![GoogleService-Info.plist](http://d.pr/i/1eGev.png)
 
 Once you download the configuration file, make sure you place it in the root of your Xcode project. Every different Bundle ID (aka, even different project variants needs their own configuration file).
 
@@ -203,32 +205,17 @@ We can pass _custom_ options by passing an object with configuration options. Th
 
 | option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
 |----------------|----------|-------------------------|----------------------------------------|
-| debug | bool | false | When set to true, Firestack will log messages to the console and fire `debug` events we can listen to in `js` |
-| bundleID | string | Default from app `[NSBundle mainBundle]` | The bundle ID for the app to be bundled with |
-| googleAppID | string | "" | The Google App ID that is used to uniquely identify an instance of an app. |
-| databaseURL | string | "" | The database root (i.e. https://my-app.firebaseio.com) |
-| deepLinkURLScheme | string | "" | URL scheme to set up durable deep link service |
-| storageBucket | string | "" | The Google Cloud storage bucket name |
-| androidClientID | string | "" | The Android client ID used in Google AppInvite when an iOS app has it's android version |
-| GCMSenderID | string | "" | The Project number from the Google Developer's console used to configure Google Cloud Messaging |
-| trackingID | string | "" | The tracking ID for Google Analytics |
-| clientID | string | "" | The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google |
-| APIKey | string | "" | The secret iOS API key used for authenticating requests from our app |
+| debug | string/bool | false | When set to true, Firestack will log messages to the console and fire `debug` events we can listen to in `js` |
 
 For instance:
 
 ```javascript
 const configurationOptions = {
-  debug: true,
-  googleAppID: 'sticker-me'
+  debug: true
 };
 const firestack = new Firestack(configurationOptions);
 firestack.on('debug', msg => console.log('Received debug message', msg))
 ```
-
-In _most_ cases, you shouldn't need to overwrite these configuration options, but they are available to you if necessary.
-
-**Options passed to the `Firestack` constructor take precedence over the native configuration to allow the JS to define custom variables on a per-platform basis**
 
 ## API documentation
 
@@ -637,7 +624,7 @@ Firestack comes in with a built-in method for handling user connections. We just
 firestack.presence          // the presence api
   .on('users/connections')  // set the users/connections as the
                             // root for presence handling
-  .setOnlineFor('auser')    // Set the child of auser as online
+  .setOnline('auser')       // Set the child of auser as online
 ```
 
 While the _device_ is online (the connection), the value of the child object at `users/connections/auser` will be:
