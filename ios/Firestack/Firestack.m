@@ -4,38 +4,84 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#import <objc/runtime.h>
+
 #import "Firestack.h"
 #import "FirestackErrors.h"
 #import "FirestackEvents.h"
-#import "FirestackCloudMessaging.h"
+#import "FirestackAnalytics.h"
+// #import "FirestackCloudMessaging.h"
 
 @import Firebase;
 
+static Firestack *_sharedInstance = nil;
+
 @implementation Firestack
+
 typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 
 - (void)dealloc
 {
-    NSLog(@"Dealloc called on Firestack");
-    [[FIRApp defaultApp] deleteApp:^(BOOL success) {
-        if (success) {
-            NSLog(@"Successfully removed app");
-        } else {
-            NSLog(@"Unsuccessfully cleaned up all");
-        }
-    }];
+    NSLog(@"Dealloc called on Firestack: %@", self);
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-+ (void) setup:(UIApplication *) application
-{
-    [FirestackCloudMessaging setup:application];
+- (instancetype) init {
+  self = [super init];
+  if (self) {
+    NSLog(@"Initializing Firestack: %@", self);
+    [Firestack initializeFirestack:self];
+  }
+  return self;
 }
+
++ (void) initializeFirestack:(Firestack *) instance
+{
+    NSLog(@"Shared instance created on Firestack: %@", instance);
+    // [FIRApp configureWithOptions:finalOptions];
+
+    _sharedInstance = instance;
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reloadFirestack)
+                                                 name:RCTReloadNotification
+                                               object:nil];
+
+    // [[NSNotificationCenter defaultCenter] 
+    //     postNotificationName:RCTReloadNotification 
+    //     object:nil 
+    //     userInfo:nil];
+
+    // [[NSNotificationCenter defaultCenter] addObserver:self
+    //     selector:@selector(firestackConfigured:)
+    //     name:kFirestackInitialized
+    //     object:instance];
+}
+
++ (instancetype) sharedInstance
+{
+    return _sharedInstance;
+}
+
++ (void) reloadFirestack
+{
+    // Reloading firestack
+    [[Firestack sharedInstance] debugLog:@"Firestack"
+                                     msg:@"Reloading firestack"];
+}
+
+- (FIRApp *) firebaseApp
+{
+    return [FIRApp defaultApp];
+}
+
 
 RCT_EXPORT_MODULE(Firestack);
 
 RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                   callback:(RCTResponseSenderBlock)callback)
 {
+    NSLog(@"dispatch once on configure");
     dispatch_async(dispatch_get_main_queue(),^{
         // Are we debugging, yo?
         self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
@@ -172,13 +218,14 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                                         storageBucket:[props valueForKey:@"STORAGE_BUCKET"]
                                         deepLinkURLScheme:[props valueForKey:@"DEEP_LINK_SCHEME"]];
             
-            // Save configuration option
-            //        NSDictionary *cfg = [self getConfig];
-            //        [cfg setValuesForKeysWithDictionary:props];
-            
-            // if (!self.configured) {
-            
-            [FIRApp configureWithOptions:finalOptions];
+            NSLog(@"Configuring firestack instance: %@", self);
+             // Save configuration option
+            // NSDictionary *cfg = [self getConfig];
+            // [cfg setValuesForKeysWithDictionary:props];
+            // self.configuration = cfg;
+
+            [Firestack initializeFirestack:self];
+            self.configured = YES;
             callback(@[[NSNull null], props]);
         }
         @catch (NSException *exception) {
@@ -312,17 +359,12 @@ RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
 {
     if (self.debug) {
         NSLog(@"%@: %@", title, msg);
-        //        [self sendJSEvent:DEBUG_EVENT
-        //                    props:@{
-        //                            @"name": title,
-        //                            @"message": msg
-        //                            }];
     }
 }
 
 // Not sure how to get away from this... yet
 - (NSArray<NSString *> *)supportedEvents {
-    return @[DEBUG_EVENT, AUTH_CHANGED_EVENT];
+    return @[INITIALIZED_EVENT, DEBUG_EVENT, AUTH_CHANGED_EVENT];
 }
 
 - (void) sendJSEvent:(NSString *)title

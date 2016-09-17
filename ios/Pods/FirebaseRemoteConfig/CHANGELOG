@@ -1,3 +1,12 @@
+Version 1.2.1
+==================================
+Features:
+-  Support user property targeting for analytics abilities.
+
+Resolved Issues:
+- Fix critical crashes due to concurrent fetches, make it more thread safe.
+
+
 Version 1.2.0
 ==================================
 Features:

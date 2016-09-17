@@ -17,7 +17,6 @@
 		D97261661D550CF5000F703F /* GoogleInterchangeUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261651D550CF5000F703F /* GoogleInterchangeUtilities.framework */; };
 		D97261691D550D03000F703F /* GoogleIPhoneUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261681D550D03000F703F /* GoogleIPhoneUtilities.framework */; };
 		D972616B1D550D07000F703F /* GoogleNetworkingUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D972616A1D550D07000F703F /* GoogleNetworkingUtilities.framework */; };
-		D972616D1D550D0B000F703F /* GoogleParsingUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D972616C1D550D0B000F703F /* GoogleParsingUtilities.framework */; };
 		D972616F1D550D0F000F703F /* GoogleSymbolUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D972616E1D550D0F000F703F /* GoogleSymbolUtilities.framework */; };
 		D97261711D550D13000F703F /* GoogleUtilities.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261701D550D13000F703F /* GoogleUtilities.framework */; };
 		D97261771D550D81000F703F /* FirebaseAnalytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261761D550D81000F703F /* FirebaseAnalytics.framework */; };
@@ -31,6 +30,7 @@
 		D97261C51D551BF0000F703F /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C41D551BF0000F703F /* libicucore.tbd */; };
 		D97261C71D551BF5000F703F /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C61D551BF5000F703F /* CFNetwork.framework */; };
 		D97261C91D551BFF000F703F /* AddressBook.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C81D551BFF000F703F /* AddressBook.framework */; };
+		D98A11F41D8D167D004DB865 /* AppDelegate+Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = D98A11F31D8D167D004DB865 /* AppDelegate+Firestack.m */; };
 		D9A8C7A41D7E54C900142F94 /* libPods-Firestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D95036B81D19C90300F7094D /* libPods-Firestack.a */; };
 		D9D62E7C1D6D86FD003D826D /* FirestackStorage.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D62E7B1D6D86FD003D826D /* FirestackStorage.m */; };
 		D9D62E801D6D8717003D826D /* FirestackAuth.m in Sources */ = {isa = PBXBuildFile; fileRef = D9D62E7F1D6D8717003D826D /* FirestackAuth.m */; };
@@ -99,6 +99,8 @@
 		D97261C41D551BF0000F703F /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
 		D97261C61D551BF5000F703F /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D97261C81D551BFF000F703F /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
+		D98A11F21D8D167D004DB865 /* AppDelegate+Firestack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "AppDelegate+Firestack.h"; path = "Firestack/AppDelegate+Firestack.h"; sourceTree = "<group>"; };
+		D98A11F31D8D167D004DB865 /* AppDelegate+Firestack.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "AppDelegate+Firestack.m"; path = "Firestack/AppDelegate+Firestack.m"; sourceTree = "<group>"; };
 		D9CFBE441D531058002623BF /* buildScript.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = buildScript.sh; sourceTree = "<group>"; };
 		D9D62E7A1D6D86FD003D826D /* FirestackStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackStorage.h; path = Firestack/FirestackStorage.h; sourceTree = "<group>"; };
 		D9D62E7B1D6D86FD003D826D /* FirestackStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackStorage.m; path = Firestack/FirestackStorage.m; sourceTree = "<group>"; };
@@ -128,7 +130,6 @@
 				D97261661D550CF5000F703F /* GoogleInterchangeUtilities.framework in Frameworks */,
 				D97261691D550D03000F703F /* GoogleIPhoneUtilities.framework in Frameworks */,
 				D972616B1D550D07000F703F /* GoogleNetworkingUtilities.framework in Frameworks */,
-				D972616D1D550D0B000F703F /* GoogleParsingUtilities.framework in Frameworks */,
 				D972616F1D550D0F000F703F /* GoogleSymbolUtilities.framework in Frameworks */,
 				D97261711D550D13000F703F /* GoogleUtilities.framework in Frameworks */,
 				0A4200BEE17F6884883BB2E7 /* libPods-Firestack.a in Frameworks */,
@@ -176,6 +177,7 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				D98A11F61D8D1683004DB865 /* Extensions */,
 				D96290351D6D145F0099A3EC /* Modules */,
 				D9CFBE441D531058002623BF /* buildScript.sh */,
 				D950369C1D19C77400F7094D /* Firestack.h */,
@@ -221,6 +223,15 @@
 				D9D62E7B1D6D86FD003D826D /* FirestackStorage.m */,
 			);
 			name = Modules;
+			sourceTree = "<group>";
+		};
+		D98A11F61D8D1683004DB865 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				D98A11F21D8D167D004DB865 /* AppDelegate+Firestack.h */,
+				D98A11F31D8D167D004DB865 /* AppDelegate+Firestack.m */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -336,6 +347,7 @@
 				D9D62E7C1D6D86FD003D826D /* FirestackStorage.m in Sources */,
 				D962903F1D6D15B00099A3EC /* FirestackErrors.m in Sources */,
 				D950369E1D19C77400F7094D /* Firestack.m in Sources */,
+				D98A11F41D8D167D004DB865 /* AppDelegate+Firestack.m in Sources */,
 				D90882D61D89C18C00FB6742 /* FirestackCloudMessaging.m in Sources */,
 				D96290851D6D28B80099A3EC /* FirestackDatabase.m in Sources */,
 			);

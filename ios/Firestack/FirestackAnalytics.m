@@ -6,24 +6,31 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#import "Firestack.h"
+#import "FirestackEvents.h"
 #import "FirestackAnalytics.h"
 
 @import FirebaseAnalytics;
 
 @implementation FirestackAnalytics
 
-RCT_EXPORT_MODULE(FirestackAnalytics);
-
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+RCT_EXPORT_MODULE(FirestackAnalytics);
+
+// Implementation
 RCT_EXPORT_METHOD(logEventWithName:(NSString *)name
                   props:(NSDictionary *)props
                   callback:(RCTResponseSenderBlock) callback)
 {
-    NSLog(@"logEventWithName called: %@ and %@", name, props);
+  NSString *debugMsg = [NSString stringWithFormat:@"%@: %@ with %@", 
+                          @"FirestackAnalytics", name, props];
+  [[Firestack sharedInstance] debugLog:@"logEventWithName called"
+                                   msg:debugMsg];
+
     [FIRAnalytics logEventWithName:name parameters:props];
     callback(@[[NSNull null], @YES]);
 }

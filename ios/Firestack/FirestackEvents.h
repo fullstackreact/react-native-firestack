@@ -12,6 +12,10 @@
 #define SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(v)  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
 #define SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(v)     ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] != NSOrderedDescending)
+#define FIRESTACK_QUEUE_NAME                        "io.fullstack.firestack.WorkerQueue"
+
+static NSString *const kFirestackInitialized = @"FirestackInitializedEvent";
+static NSString *const INITIALIZED_EVENT = @"firestackInitialized";
 
 static NSString *const AUTH_CHANGED_EVENT = @"listenForAuth";
 static NSString *const DEBUG_EVENT = @"debug";

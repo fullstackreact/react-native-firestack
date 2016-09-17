@@ -16,7 +16,7 @@
 /// The following event names are reserved and cannot be used:
 /// <ul>
 ///     <li>app_clear_data</li>
-///     <li>app_uninstall</li>
+///     <li>app_remove</li>
 ///     <li>app_update</li>
 ///     <li>error</li>
 ///     <li>first_open</li>

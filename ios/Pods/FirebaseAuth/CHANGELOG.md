@@ -1,3 +1,8 @@
+# 2016-09-14 -- v3.0.5
+- Works around a keychain issue in iOS 10 simulator.
+- Reports the correct error for invalid email when signing with email and
+  password.
+
 # 2016-07-18 -- v3.0.4
 - Fixes a race condition bug that could crash the app with an exception from
   NSURLSession on iOS 9.

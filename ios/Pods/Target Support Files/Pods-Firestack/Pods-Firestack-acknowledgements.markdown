@@ -45,10 +45,6 @@ Copyright 2015 Google Inc.
 
 Copyright 2015 Google Inc.
 
-## GoogleParsingUtilities
-
-Copyright 2015 Google Inc.
-
 ## GoogleSymbolUtilities
 
 Copyright 2015 Google Inc.
