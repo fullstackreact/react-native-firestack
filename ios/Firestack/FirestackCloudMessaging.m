@@ -190,6 +190,8 @@ RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock)callback)
   }]);
 }
 
+
+
 RCT_EXPORT_METHOD(sendLocal:(UILocalNotification *)notification
   callback:(RCTResponseSenderBlock) callback)
 {

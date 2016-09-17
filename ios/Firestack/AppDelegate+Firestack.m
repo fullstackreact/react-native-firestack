@@ -51,9 +51,14 @@
 - (void) setupListeners
 {
     // Post notification that we've initialized Firebase
-    [[NSNotificationCenter defaultCenter] 
-      postNotificationName:kFirestackInitialized
-      object:nil];
+    // [[NSNotificationCenter defaultCenter] 
+    //   postNotificationName:kFirestackInitialized
+    //   object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                         selector:@selector(firestackConfigured:)
+                                             name:kFirestackInitialized
+                                           object:nil];
 
     // Add listener for when firestack the app reloads
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -65,6 +70,11 @@
 - (void) reloadFirestack
 {
   // TODO:
+}
+
+- (void) firestackConfigured:(NSDictionary *) configuration
+{
+  NSLog(@"firestackConfigured: %@", configuration);
 }
 
 @end

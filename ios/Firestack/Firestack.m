@@ -42,6 +42,10 @@ typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 
     _sharedInstance = instance;
 
+    [[NSNotificationCenter defaultCenter] 
+      postNotificationName:kFirestackInitialized
+      object:[instance getConfig]];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadFirestack)
                                                  name:RCTReloadNotification
@@ -81,165 +85,96 @@ RCT_EXPORT_MODULE(Firestack);
 RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                   callback:(RCTResponseSenderBlock)callback)
 {
-    NSLog(@"dispatch once on configure");
-    dispatch_async(dispatch_get_main_queue(),^{
-        // Are we debugging, yo?
-        self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
-        NSLog(@"options passed into configureWithOptions: %@", [opts valueForKey:@"debug"]);
-        
+    // Are we debugging, yo?
+    self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
+    NSDictionary *props = [self pluckOptions:opts];
+
+    @try {
+        if (self.debug) {
+            NSLog(@"debugging: %@", [props valueForKey:@"debug"]);
+            NSLog(@"cloudMessaging: %@", [props valueForKey:@"cloudMessaging"]);
+        }
+         
+        NSLog(@"Configuring firestack instance: %@", self);
+         // Save configuration option
+        NSDictionary *cfg = [self getConfig];
+        [cfg setValuesForKeysWithDictionary:props];
+        self.configuration = cfg;
+
+        [Firestack initializeFirestack:self];
+        self.configured = YES;
+        callback(@[[NSNull null], props]);
+    }
+    @catch (NSException *exception) {
+        NSLog(@"Exception occurred while configuring: %@", exception);
+        [self debugLog:@"Configuring error"
+                   msg:[NSString stringWithFormat:@"An error occurred while configuring: %@", [exception debugDescription]]];
+        NSDictionary *errProps = @{
+                                   @"error": [exception name],
+                                   @"description": [exception debugDescription]
+                                   };
+        callback(@[errProps]);
+    }
+}
+
+/**
+ * Pluck the options that are given by JS
+ **/
+- (NSDictionary *) pluckOptions:(NSDictionary *) opts
+{
         NSDictionary *keyMapping = @{
-                                     @"GOOGLE_APP_ID": @[
-                                             @"appId",
-                                             @"googleAppId",
-                                             @"applicationId"
-                                             ],
-                                     @"BUNDLE_ID": @[
-                                             @"bundleId",
-                                             @"bundleID"
-                                             ],
-                                     @"GCM_SENDER_ID": @[
-                                             @"gcmSenderID",
-                                             @"GCMSenderID"
-                                             ],
-                                     @"API_KEY": @[
-                                             @"apiKey"
-                                             ],
-                                     @"CLIENT_ID": @[
-                                             @"clientId",
-                                             @"clientID"
-                                             ],
-                                     @"TRACKING_ID": @[
-                                             @"trackingID",
-                                             @"trackingId"
-                                             ],
-                                     @"ANDROID_CLIENT_ID": @[
-                                             @"applicationId",
-                                             @"clientId",
-                                             @"clientID",
-                                             @"androidClientID",
-                                             @"androidClientId"
-                                             ],
-                                     @"DATABASE_URL": @[
-                                             @"databaseUrl",
-                                             @"databaseURL"
-                                             ],
-                                     @"STORAGE_BUCKET": @[
-                                             @"storageBucket"
-                                             ],
-                                     @"PROJECT_ID": @[
-                                             @"projectId",
-                                             @"projectID"
-                                             ],
-                                     @"TRACKING_ID": @[
-                                             @"trackingID",
-                                             @"trackingId"
-                                             ],
-                                     @"DEEP_LINK_SCHEME": @[
-                                             @"deepLinkScheme"
-                                             ],
-                                     @"MESSAGING_SENDER_ID": @[
-                                             @"messagingSenderId",
-                                             @"messagingSenderID"
-                                             ]
-                                     };
-        NSArray *optionKeys = [keyMapping allKeys];
-        
-        NSMutableDictionary *props;
-        
-        NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
-        
-        if ([[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
-            // If the Firebase plist is included
-            props = [NSMutableDictionary dictionaryWithContentsOfFile:plistPath];
-        } else {
-            props = [[NSMutableDictionary alloc] initWithCapacity:[optionKeys count]];
+                                 @"cloudMessaging": @[
+                                         @"messaging",
+                                         ]
+                                 };
+    NSArray *optionKeys = [keyMapping allKeys];
+    NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"Info" ofType:@"plist"];
+
+    NSDictionary *defaultOptions = @{
+        @"debug": @NO,
+        @"cloudMessaging": @{
+            @"enabled": @YES
         }
-        
-        // Bundle ID either from options OR from the main bundle
-        NSString *bundleID;
-        if ([opts valueForKey:@"bundleID"]) {
-            bundleID = [opts valueForKey:@"bundleID"];
-        } else {
-            bundleID = [[NSBundle mainBundle] bundleIdentifier];
+    };
+    
+    NSMutableDictionary *props = [defaultOptions copy];
+
+    if ([[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
+        // If the Info plist is included
+        NSDictionary *infoProps = [NSMutableDictionary dictionaryWithContentsOfFile:plistPath];
+        NSDictionary *firestackOptions = [infoProps valueForKey:@"firestack"];
+        if (firestackOptions != nil) {
+            props = [firestackOptions copy];
         }
-        [props setValue:bundleID forKey:@"BUNDLE_ID"];
-        
-        // Prefer the user configuration options over the default options
-        for (int i=0; i < [optionKeys count]; i++) {
-            // Traditional for loop here
-            @try {
-                NSString *key = [optionKeys objectAtIndex:i];
-                // If the name is capitalized
-                if ([opts valueForKey:key] != nil) {
-                    NSString *value = [opts valueForKey:key];
+    }
+
+    // Prefer the user configuration options over the default options
+    for (int i=0; i < [optionKeys count]; i++) {
+        // Traditional for loop here
+        @try {
+            NSString *key = [optionKeys objectAtIndex:i];
+
+            // If the name is the key name            
+            NSMutableArray *possibleNames = [NSMutableArray arrayWithArray:[keyMapping objectForKey:key]];
+            [possibleNames addObject:key];
+
+            for (NSString *name in possibleNames) {
+                if ([opts valueForKey:name] != nil) {
+                    // The user passed this option in
+                    NSString *value = [opts valueForKey:name];
                     [props setValue:value forKey:key];
                 }
-                
-                NSArray *possibleNames = [keyMapping objectForKey:key];
-                
-                for (NSString *name in possibleNames) {
-                    if ([opts valueForKey:name] != nil) {
-                        // The user passed this option in
-                        NSString *value = [opts valueForKey:name];
-                        [props setValue:value forKey:key];
-                    }
-                }
-            }
-            @catch (NSException *err) {
-                // Uh oh?
-                NSLog(@"An error occurred: %@", err);
             }
         }
-        
-        @try {
-            if (self.debug) {
-                NSLog(@"props ->: %@", props);
-                NSLog(@"GOOGLE_APP_ID: %@", [props valueForKey:@"GOOGLE_APP_ID"]);
-                NSLog(@"BUNDLE_ID: %@", [props valueForKey:@"BUNDLE_ID"]);
-                NSLog(@"GCM_SENDER_ID: %@", [props valueForKey:@"GCM_SENDER_ID"]);
-                NSLog(@"API_KEY: %@", [props valueForKey:@"API_KEY"]);
-                NSLog(@"CLIENT_ID: %@", [props valueForKey:@"CLIENT_ID"]);
-                NSLog(@"TRACKING_ID: %@", [props valueForKey:@"TRACKING_ID"]);
-                NSLog(@"ANDROID_CLIENT_ID: %@", [props valueForKey:@"ANDROID_CLIENT_ID"]);
-                NSLog(@"DATABASE_URL: %@", [props valueForKey:@"DATABASE_URL"]);
-                NSLog(@"STORAGE_BUCKET: %@", [props valueForKey:@"STORAGE_BUCKET"]);
-                NSLog(@"DEEP_LINK_SCHEME: %@", [props valueForKey:@"DEEP_LINK_SCHEME"]);
-            }
-            
-            FIROptions *finalOptions = [[FIROptions alloc]
-                                        initWithGoogleAppID:[props valueForKey:@"GOOGLE_APP_ID"]
-                                        bundleID:[props valueForKey:@"BUNDLE_ID"]
-                                        GCMSenderID:[props valueForKey:@"GCM_SENDER_ID"]
-                                        APIKey:[props valueForKey:@"API_KEY"]
-                                        clientID:[props valueForKey:@"CLIENT_ID"]
-                                        trackingID:[props valueForKey:@"TRACKING_ID"]
-                                        androidClientID:[props valueForKey:@"ANDROID_CLIENT_ID"]
-                                        databaseURL:[props valueForKey:@"DATABASE_URL"]
-                                        storageBucket:[props valueForKey:@"STORAGE_BUCKET"]
-                                        deepLinkURLScheme:[props valueForKey:@"DEEP_LINK_SCHEME"]];
-            
-            NSLog(@"Configuring firestack instance: %@", self);
-             // Save configuration option
-            // NSDictionary *cfg = [self getConfig];
-            // [cfg setValuesForKeysWithDictionary:props];
-            // self.configuration = cfg;
+        @catch (NSException *err) {
+            // Uh oh?
+            NSLog(@"An error occurred: %@", err);
+        }
+    }
 
-            [Firestack initializeFirestack:self];
-            self.configured = YES;
-            callback(@[[NSNull null], props]);
-        }
-        @catch (NSException *exception) {
-            NSLog(@"Exception occurred while configuring: %@", exception);
-            [self debugLog:@"Configuring error"
-                       msg:[NSString stringWithFormat:@"An error occurred while configuring: %@", [exception debugDescription]]];
-            NSDictionary *errProps = @{
-                                       @"error": [exception name],
-                                       @"description": [exception debugDescription]
-                                       };
-            callback(@[errProps]);
-        }
-    });
+    return props;
 }
+
 
 RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
 {
