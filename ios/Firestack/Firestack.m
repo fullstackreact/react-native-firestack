@@ -15,6 +15,7 @@
 @import Firebase;
 
 static Firestack *_sharedInstance = nil;
+static dispatch_once_t * onceToken;
 
 @implementation Firestack
 
@@ -29,37 +30,27 @@ typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 - (instancetype) init {
   self = [super init];
   if (self) {
-    NSLog(@"Initializing Firestack: %@", self);
-    [Firestack initializeFirestack:self];
+    dispatch_once(&onceToken, ^{
+        NSLog(@"Initializing Firestack: %@", self);
+        [Firestack initializeFirestack:self];
+    });
   }
   return self;
 }
 
 + (void) initializeFirestack:(Firestack *) instance
 {
-    NSLog(@"Shared instance created on Firestack: %@", instance);
-    // [FIRApp configureWithOptions:finalOptions];
-
     _sharedInstance = instance;
-
-    [[NSNotificationCenter defaultCenter] 
-      postNotificationName:kFirestackInitialized
-      object:[instance getConfig]];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(reloadFirestack)
                                                  name:RCTReloadNotification
                                                object:nil];
 
-    // [[NSNotificationCenter defaultCenter] 
-    //     postNotificationName:RCTReloadNotification 
-    //     object:nil 
-    //     userInfo:nil];
+    [[NSNotificationCenter defaultCenter] 
+        postNotificationName:kFirestackInitialized
+        object:nil];
 
-    // [[NSNotificationCenter defaultCenter] addObserver:self
-    //     selector:@selector(firestackConfigured:)
-    //     name:kFirestackInitialized
-    //     object:instance];
 }
 
 + (instancetype) sharedInstance
@@ -70,6 +61,7 @@ typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 + (void) reloadFirestack
 {
     // Reloading firestack
+    onceToken = 0; // not sure if this is a good idea or a bad idea...
     [[Firestack sharedInstance] debugLog:@"Firestack"
                                      msg:@"Reloading firestack"];
 }

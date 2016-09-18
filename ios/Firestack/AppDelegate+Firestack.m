@@ -40,6 +40,7 @@
     BOOL res = [self swizzled_application:application didFinishLaunchingWithOptions:launchOptions];
     [FIRApp configure];
     [self setupListeners];
+    [self dispatchFirestackConfigured];
     return res;
 }
 
@@ -50,11 +51,6 @@
 
 - (void) setupListeners
 {
-    // Post notification that we've initialized Firebase
-    // [[NSNotificationCenter defaultCenter] 
-    //   postNotificationName:kFirestackInitialized
-    //   object:nil];
-
     [[NSNotificationCenter defaultCenter] addObserver:self
                                          selector:@selector(firestackConfigured:)
                                              name:kFirestackInitialized
@@ -65,6 +61,24 @@
                                          selector:@selector(reloadFirestack)
                                              name:RCTReloadNotification
                                            object:nil];
+}
+
+- (void) dispatchFirestackConfigured
+{
+    FIROptions *opts = [[FIRApp defaultApp] options];
+    NSLog(@"opts: %@", opts);
+    NSLog(@"googleAppID: %@", [opts googleAppID]);
+    NSLog(@"GCMSenderID: %@", [opts GCMSenderID]);
+    NSLog(@"APIKey: %@", [opts APIKey]);
+    NSLog(@"databaseURL: %@", [opts databaseURL]);
+    NSLog(@"trackingID: %@", [opts trackingID]);
+    NSLog(@"storageBucket: %@", [opts storageBucket]);
+    NSLog(@"clientID: %@", [opts clientID]);
+    NSLog(@"androidClientID: %@", [opts androidClientID]);
+  // Post notification that we've initialized Firebase
+  // [[NSNotificationCenter defaultCenter] 
+  //   postNotificationName:kFirestackInitialized
+  //   object:nil];
 }
 
 - (void) reloadFirestack
