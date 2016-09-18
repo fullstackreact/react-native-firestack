@@ -384,10 +384,10 @@ RCT_EXPORT_METHOD(on:(NSString *) path
                    @"handle": @(handle)
                    }]);
     } else {
-      callback(@{
+      callback(@[@{
                    @"result": @"exists",
                    @"msg": @"Listener already exists"
-                   });
+                   }]);
     }
 }
 
