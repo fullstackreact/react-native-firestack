@@ -6,6 +6,7 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#import "Firestack.h"
 #import "FirestackDatabase.h"
 #import "FirestackEvents.h"
 
@@ -215,18 +216,20 @@
 }
 
 - (void) cleanup {
-    FIRDatabaseReference *ref = [self getRef];
+    if (self.childValueHandler > 0) {
+        [self removeEventHandler:DATABASE_VALUE_EVENT];
+    }
     if (self.childAddedHandler > 0) {
-        [ref removeObserverWithHandle:self.childAddedHandler];
+        [self removeEventHandler:DATABASE_CHILD_ADDED_EVENT];
     }
     if (self.childModifiedHandler > 0) {
-        [ref removeObserverWithHandle:self.childModifiedHandler];
+        [self removeEventHandler:DATABASE_CHILD_MODIFIED_EVENT];
     }
     if (self.childRemovedHandler > 0) {
-        [ref removeObserverWithHandle:self.childRemovedHandler];
+        [self removeEventHandler:DATABASE_CHILD_REMOVED_EVENT];
     }
     if (self.childMovedHandler > 0) {
-        [ref removeObserverWithHandle:self.childMovedHandler];
+        [self removeEventHandler:DATABASE_CHILD_MOVED_EVENT];
     }
 }
 
@@ -377,7 +380,7 @@ RCT_EXPORT_METHOD(on:(NSString *) path
         [r setEventHandler:handle
                    forName:eventName];
 
-        [self saveDBHandle:path dbRef:r];
+        // [self saveDBHandle:path dbRef:r];
 
         callback(@[[NSNull null], @{
                    @"result": @"success",
@@ -425,6 +428,7 @@ RCT_EXPORT_METHOD(off:(NSString *)path
     FirestackDBReference *r = [self getDBHandle:path];
     if (eventName == nil || [eventName isEqualToString:@""]) {
         [r cleanup];
+        [self removeDBHandle:path];
     } else {
         [r removeEventHandler:eventName];
         if (![r hasListeners]) {
@@ -432,7 +436,7 @@ RCT_EXPORT_METHOD(off:(NSString *)path
         }
     }
 
-    [self saveDBHandle:path dbRef:r];
+    // [self saveDBHandle:path dbRef:r];
     
     callback(@[[NSNull null], @{
                    @"result": @"success",

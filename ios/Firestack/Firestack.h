@@ -26,6 +26,9 @@
 - (void) debugLog:(NSString *)title
               msg:(NSString *)msg;
 
+- (void) sendJSEvent:(NSString *)title
+               props:(NSDictionary *)props;
+
 
 @property (nonatomic) BOOL debug;
 @property (atomic) BOOL configured;
