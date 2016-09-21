@@ -4,24 +4,20 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
-// #import <UIKit/UIKit.h>
-#import "Firebase.h"
+#import <UIKit/UIKit.h>
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
 #import "RCTEventEmitter.h"
-#import "AppDelegate+Firestack.h"
 
 @interface Firestack : RCTEventEmitter <RCTBridgeModule> {
-    FIRAuthStateDidChangeListenerHandle authListenerHandle;
 }
 
 // + (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
-// + (void) setup:(UIApplication *) application;
++ (void) setup:(UIApplication *) application 
+withLaunchOptions: (NSDictionary *) launchOptions;
 
 + (void) reloadFirestack;
-+ (void) initializeFirestack:(Firestack *) instance;
-+ (instancetype) sharedInstance;
-- (FIRApp *) firebaseApp;
++ (id) sharedInstance;
 
 - (void) debugLog:(NSString *)title
               msg:(NSString *)msg;

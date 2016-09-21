@@ -1,0 +1,3 @@
+module Firestack {
+    umbrella header "Firestack.h"
+}
