@@ -508,7 +508,7 @@ To upload camera photos, we can combine this method with the `react-native-camer
 ```javascript
 this.camera.capture()
 .then(({path}) => {
-  firestack.uploadFile(`photos/${auth.user.uid}/${filename}`, path, {
+  firestack.storage.uploadFile(`photos/${auth.user.uid}/${filename}`, path, {
     contentType: 'image/jpeg',
     contentEncoding: 'base64',
   })
@@ -545,7 +545,7 @@ takePicture() {
   this.camera.capture()
     .then(({path}) => {
       const filename = 'photo.jpg'
-      firestack.uploadFile(`photos/${filename}`, path, {
+      firestack.storage.uploadFile(`photos/${filename}`, path, {
         contentType: 'image/jpeg',
         contentEncoding: 'base64',
       }, (evt) => {
