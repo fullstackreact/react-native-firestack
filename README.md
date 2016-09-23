@@ -485,9 +485,7 @@ In order to store anything on Firebase, we need to set the storage url provided 
 The `setStorageUrl()` method accepts a single parameter: your root storage url.
 
 ```javascript
-firestack.setStorageUrl(`gs://${config.firebase.storageBucket}`)
-.then(() => console.log('The storage url has been set'))
-.catch(() => console.error('This is weird: something happened...'))
+firestack.storage.setStorageUrl(`gs://${config.firebase.storageBucket}`)
 ```
 
 If the `storageBucket` key is passed as a configuration option, this method is automatically called by default.
@@ -510,7 +508,7 @@ To upload camera photos, we can combine this method with the `react-native-camer
 ```javascript
 this.camera.capture()
 .then(({path}) => {
-  firestack.uploadFile(`photos/${auth.user.uid}/${filename}`, path, {
+  firestack.storage.uploadFile(`photos/${auth.user.uid}/${filename}`, path, {
     contentType: 'image/jpeg',
     contentEncoding: 'base64',
   })
@@ -547,7 +545,7 @@ takePicture() {
   this.camera.capture()
     .then(({path}) => {
       const filename = 'photo.jpg'
-      firestack.uploadFile(`photos/${filename}`, path, {
+      firestack.storage.uploadFile(`photos/${filename}`, path, {
         contentType: 'image/jpeg',
         contentEncoding: 'base64',
       }, (evt) => {
