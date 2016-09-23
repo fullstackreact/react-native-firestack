@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
+import com.google.firebase.database.ServerValue;
 
 interface KeySetterFn {
   String setKeyOrDefault(String a, String b);
@@ -169,6 +170,14 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
 
         onComplete.invoke(resp);
     }
+  }
+
+  @ReactMethod
+  public void serverValue(@Nullable final Callback onComplete) {
+    WritableMap map = Arguments.createMap();
+    // TODO
+    map.putString("TIMESTAMP", "ServerValue.TIMESTAMP");
+    onComplete.invoke(null, map);
   }
 
     // Internal helpers
