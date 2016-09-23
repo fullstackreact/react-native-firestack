@@ -32,11 +32,12 @@ target 'Firestack' do
         target.build_settings(configuration.name)['LD_RUNPATH_SEARCH_PATHS'] = '$(inherited) @rpath @loader_path/../Frameworks @executable_path/Frameworks'
 
         target.build_settings(configuration.name)['HEADER_SEARCH_PATHS'] = [
-          "$(inherited)", "${PODS_ROOT}/Headers/**",
-          "$(SRCROOT)/../../../React/**",
-          "$(SRCROOT)/../../../react-native/React/**"
+          "$(inherited)", 
+          "${PODS_ROOT}/Headers/**",
+          "$(SRCROOT)/../../node_modules/React/**",
+          "$(SRCROOT)/../../node_modules/react-native/React/**"
         ].join(' ')
-        target.build_settings(configuration.name)['OTHER_LDFLAGS'] = "$(inherited) -undefined dynamic_lookup"
+        target.build_settings(configuration.name)['OTHER_LDFLAGS'] = "$(inherited)"
       end
     end
   end
