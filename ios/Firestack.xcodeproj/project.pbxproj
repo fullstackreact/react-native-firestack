@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0A4200BEE17F6884883BB2E7 /* libPods-Firestack.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58A186F11042C569425E5D5F /* libPods-Firestack.a */; };
+		AF7CE7701D96644500431020 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AF7CE76F1D96644500431020 /* UserNotifications.framework */; };
 		D90882D61D89C18C00FB6742 /* FirestackCloudMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = D90882D51D89C18C00FB6742 /* FirestackCloudMessaging.m */; };
 		D90883031D89C4FC00FB6742 /* FirebaseMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D90883021D89C4FC00FB6742 /* FirebaseMessaging.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		D950369E1D19C77400F7094D /* Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* Firestack.m */; };
@@ -68,6 +69,7 @@
 		134814201AA4EA6300B7C361 /* libFirestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFirestack.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		58A186F11042C569425E5D5F /* libPods-Firestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Firestack.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		61152A448EBF126366D048D6 /* Pods-Firestack.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Firestack.release.xcconfig"; path = "Pods/Target Support Files/Pods-Firestack/Pods-Firestack.release.xcconfig"; sourceTree = "<group>"; };
+		AF7CE76F1D96644500431020 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		D90882D41D89C18C00FB6742 /* FirestackCloudMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackCloudMessaging.h; path = Firestack/FirestackCloudMessaging.h; sourceTree = "<group>"; };
 		D90882D51D89C18C00FB6742 /* FirestackCloudMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackCloudMessaging.m; path = Firestack/FirestackCloudMessaging.m; sourceTree = "<group>"; };
 		D90883021D89C4FC00FB6742 /* FirebaseMessaging.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseMessaging.framework; path = Pods/FirebaseMessaging/Frameworks/frameworks/FirebaseMessaging.framework; sourceTree = "<group>"; };
@@ -112,6 +114,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AF7CE7701D96644500431020 /* UserNotifications.framework in Frameworks */,
 				D90883031D89C4FC00FB6742 /* FirebaseMessaging.framework in Frameworks */,
 				D9A8C7A41D7E54C900142F94 /* libPods-Firestack.a in Frameworks */,
 				D97261C91D551BFF000F703F /* AddressBook.framework in Frameworks */,
@@ -148,6 +151,7 @@
 		4C361DE13748C14BF1F87624 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				AF7CE76F1D96644500431020 /* UserNotifications.framework */,
 				D90883021D89C4FC00FB6742 /* FirebaseMessaging.framework */,
 				D97261C81D551BFF000F703F /* AddressBook.framework */,
 				D97261C61D551BF5000F703F /* CFNetwork.framework */,
