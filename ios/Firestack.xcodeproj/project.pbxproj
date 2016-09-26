@@ -24,7 +24,6 @@
 		D972617B1D550D89000F703F /* FirebaseDatabase.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D972617A1D550D89000F703F /* FirebaseDatabase.framework */; };
 		D972617D1D550D8F000F703F /* FirebaseInstanceID.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D972617C1D550D8F000F703F /* FirebaseInstanceID.framework */; };
 		D972617F1D550D94000F703F /* FirebaseRemoteConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D972617E1D550D94000F703F /* FirebaseRemoteConfig.framework */; };
-		D97261811D550D98000F703F /* FirebaseStorage.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261801D550D98000F703F /* FirebaseStorage.framework */; };
 		D97261C11D551BE0000F703F /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C01D551BE0000F703F /* libz.tbd */; };
 		D97261C31D551BE7000F703F /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C21D551BE7000F703F /* libsqlite3.tbd */; };
 		D97261C51D551BF0000F703F /* libicucore.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D97261C41D551BF0000F703F /* libicucore.tbd */; };
@@ -84,7 +83,6 @@
 		D97261651D550CF5000F703F /* GoogleInterchangeUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleInterchangeUtilities.framework; path = Pods/GoogleInterchangeUtilities/Frameworks/GoogleInterchangeUtilities.framework; sourceTree = "<group>"; };
 		D97261681D550D03000F703F /* GoogleIPhoneUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleIPhoneUtilities.framework; path = Pods/GoogleIPhoneUtilities/Frameworks/GoogleIPhoneUtilities.framework; sourceTree = "<group>"; };
 		D972616A1D550D07000F703F /* GoogleNetworkingUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleNetworkingUtilities.framework; path = Pods/GoogleNetworkingUtilities/Frameworks/GoogleNetworkingUtilities.framework; sourceTree = "<group>"; };
-		D972616C1D550D0B000F703F /* GoogleParsingUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleParsingUtilities.framework; path = Pods/GoogleParsingUtilities/Frameworks/GoogleParsingUtilities.framework; sourceTree = "<group>"; };
 		D972616E1D550D0F000F703F /* GoogleSymbolUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleSymbolUtilities.framework; path = Pods/GoogleSymbolUtilities/Frameworks/GoogleSymbolUtilities.framework; sourceTree = "<group>"; };
 		D97261701D550D13000F703F /* GoogleUtilities.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleUtilities.framework; path = Pods/GoogleUtilities/Frameworks/GoogleUtilities.framework; sourceTree = "<group>"; };
 		D97261761D550D81000F703F /* FirebaseAnalytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseAnalytics.framework; path = Pods/FirebaseAnalytics/Frameworks/frameworks/FirebaseAnalytics.framework; sourceTree = "<group>"; };
@@ -92,13 +90,11 @@
 		D972617A1D550D89000F703F /* FirebaseDatabase.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseDatabase.framework; path = Pods/FirebaseDatabase/Frameworks/FirebaseDatabase.framework; sourceTree = "<group>"; };
 		D972617C1D550D8F000F703F /* FirebaseInstanceID.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseInstanceID.framework; path = Pods/FirebaseInstanceID/Frameworks/frameworks/FirebaseInstanceID.framework; sourceTree = "<group>"; };
 		D972617E1D550D94000F703F /* FirebaseRemoteConfig.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseRemoteConfig.framework; path = Pods/FirebaseRemoteConfig/Frameworks/frameworks/FirebaseRemoteConfig.framework; sourceTree = "<group>"; };
-		D97261801D550D98000F703F /* FirebaseStorage.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FirebaseStorage.framework; path = Pods/FirebaseStorage/Frameworks/FirebaseStorage.framework; sourceTree = "<group>"; };
 		D97261C01D551BE0000F703F /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		D97261C21D551BE7000F703F /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		D97261C41D551BF0000F703F /* libicucore.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libicucore.tbd; path = usr/lib/libicucore.tbd; sourceTree = SDKROOT; };
 		D97261C61D551BF5000F703F /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
 		D97261C81D551BFF000F703F /* AddressBook.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AddressBook.framework; path = System/Library/Frameworks/AddressBook.framework; sourceTree = SDKROOT; };
-		D984ECF51D9253930037D97B /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; name = module.modulemap; path = Firestack/module.modulemap; sourceTree = SOURCE_ROOT; };
 		D9CFBE441D531058002623BF /* buildScript.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = buildScript.sh; sourceTree = "<group>"; };
 		D9D62E7A1D6D86FD003D826D /* FirestackStorage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackStorage.h; path = Firestack/FirestackStorage.h; sourceTree = "<group>"; };
 		D9D62E7B1D6D86FD003D826D /* FirestackStorage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackStorage.m; path = Firestack/FirestackStorage.m; sourceTree = "<group>"; };
@@ -124,7 +120,6 @@
 				D972617B1D550D89000F703F /* FirebaseDatabase.framework in Frameworks */,
 				D972617D1D550D8F000F703F /* FirebaseInstanceID.framework in Frameworks */,
 				D972617F1D550D94000F703F /* FirebaseRemoteConfig.framework in Frameworks */,
-				D97261811D550D98000F703F /* FirebaseStorage.framework in Frameworks */,
 				D97261661D550CF5000F703F /* GoogleInterchangeUtilities.framework in Frameworks */,
 				D97261691D550D03000F703F /* GoogleIPhoneUtilities.framework in Frameworks */,
 				D972616B1D550D07000F703F /* GoogleNetworkingUtilities.framework in Frameworks */,
@@ -154,7 +149,6 @@
 				D97261C41D551BF0000F703F /* libicucore.tbd */,
 				D97261C21D551BE7000F703F /* libsqlite3.tbd */,
 				D97261C01D551BE0000F703F /* libz.tbd */,
-				D97261801D550D98000F703F /* FirebaseStorage.framework */,
 				D972617E1D550D94000F703F /* FirebaseRemoteConfig.framework */,
 				D972617C1D550D8F000F703F /* FirebaseInstanceID.framework */,
 				D972617A1D550D89000F703F /* FirebaseDatabase.framework */,
@@ -162,7 +156,6 @@
 				D97261761D550D81000F703F /* FirebaseAnalytics.framework */,
 				D97261701D550D13000F703F /* GoogleUtilities.framework */,
 				D972616E1D550D0F000F703F /* GoogleSymbolUtilities.framework */,
-				D972616C1D550D0B000F703F /* GoogleParsingUtilities.framework */,
 				D972616A1D550D07000F703F /* GoogleNetworkingUtilities.framework */,
 				D97261681D550D03000F703F /* GoogleIPhoneUtilities.framework */,
 				D97261651D550CF5000F703F /* GoogleInterchangeUtilities.framework */,
@@ -175,7 +168,6 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
-				D984ECF51D9253930037D97B /* module.modulemap */,
 				D96290351D6D145F0099A3EC /* Modules */,
 				D9CFBE441D531058002623BF /* buildScript.sh */,
 				D950369C1D19C77400F7094D /* Firestack.h */,
@@ -432,7 +424,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = EF9B4692F57E7CF2C25A04C2 /* Pods-Firestack.debug.xcconfig */;
 			buildSettings = {
-				DEFINES_MODULE = YES;
+				DEFINES_MODULE = NO;
 				DYLIB_INSTALL_NAME_BASE = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_BITCODE = NO;
@@ -464,7 +456,7 @@
 				LD_DYLIB_INSTALL_NAME = "@rpath/${EXECUTABLE_NAME}";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACH_O_TYPE = mh_dylib;
-				MODULEMAP_FILE = module.modulemap;
+				MODULEMAP_FILE = "";
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -480,7 +472,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 61152A448EBF126366D048D6 /* Pods-Firestack.release.xcconfig */;
 			buildSettings = {
-				DEFINES_MODULE = YES;
+				DEFINES_MODULE = NO;
 				DYLIB_INSTALL_NAME_BASE = "";
 				EMBEDDED_CONTENT_CONTAINS_SWIFT = NO;
 				ENABLE_BITCODE = NO;
@@ -512,7 +504,7 @@
 				LD_DYLIB_INSTALL_NAME = "@rpath/${EXECUTABLE_NAME}";
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACH_O_TYPE = mh_dylib;
-				MODULEMAP_FILE = module.modulemap;
+				MODULEMAP_FILE = "";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-undefined",
