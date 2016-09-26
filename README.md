@@ -306,40 +306,7 @@ We can use an external authentication provider, such as twitter/facebook for aut
 
 ### OAuth setup with library
 
-We'll use the [react-native-oauth](https://github.com/fullstackreact/react-native-oauth) library, which was built along-side [Firestack](https://github.com/fullstackreact/react-native-firestack) specifically to handle authentication through third-party providers.
-
-> If you prefer to use another library, make sure you pass through the `oauthToken` and `oauthTokenSecret` provided by your other library to call the `signInWithProvider()` method.
-
-Following the instructions on the [react-native-oauth README](https://github.com/fullstackreact/react-native-oauth), we'll need to install it using `npm`:
-
-```javascript
-npm install --save react-native-oauth
-```
-
-It's important to set up the authentication library fully with our app configuration. Make sure to configure your app [along with this step](https://github.com/fullstackreact/react-native-oauth#handle-deep-linking-loading) otherwise authentication _cannot_ work.
-
-Once the app is configured with the instructions, we can call the `oauthManager`'s (or other library's) login method. We'll need to hold on to the `oauthToken` and an `oauthTokenSecret` provided by the provider. Using these values, we can call the `signInWithProvider()` method. The `signInWithProvider()` method accepts three parameters:
-
-1. The provider (such as `twitter`, `facebook`, etc) name
-2. The `authToken` value granted by the provider
-3. The `authTokenSecret` value granted by the provider
-
-```javascript
-// For instance, using the react-native-oauth library, this process
-// looks like:
-
-const appUrl = 'app-uri://oauth-callback/twitter'
-authManager.authorizeWithCallbackURL('twitter', appUrl)
-.then(creds => {
-  return firestack.signInWithProvider('twitter', creds.oauth_token, creds.oauth_token_secret)
-    .then(() => {
-      // We're now signed in through Firebase
-    })
-    .catch(err => {
-      // There was an error
-    })
-})
-```
+[Currently undergoing updates]
 
 ### socialLogin with custom Library
 If you don't want to use [react-native-oauth](https://github.com/fullstackreact/react-native-oauth), you can use other library such as [react-native-facebook-login](https://github.com/magus/react-native-facebook-login). 
