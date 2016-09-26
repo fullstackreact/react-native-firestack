@@ -436,12 +436,12 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
                                          secret:(NSString *)authTokenSecret
 {
     FIRAuthCredential *credential;
-    if ([provider isEqualToString: @"twitter"]) {
+    if ([provider caseInsensitiveCompare: @"twitter"]) {
         credential = [FIRTwitterAuthProvider credentialWithToken:authToken
                                                           secret:authTokenSecret];
-    } if ([provider isEqualToString: @"facebook"]) {
+    } if ([provider caseInsensitiveCompare: @"facebook"]) {
         credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
-    } if ([provider isEqualToString: @"google"]) {
+    } if ([provider caseInsensitiveCompare: @"google"]) {
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
                                                       accessToken:authTokenSecret];
     } else {
