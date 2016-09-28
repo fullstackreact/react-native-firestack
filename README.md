@@ -432,7 +432,7 @@ Wouldn't it be nice to send analytics about your app usage from your users? Well
 #### logEventWithName()
 
 ```javascript
-firestack.logEventWithName("launch", {
+firestack.analytics.logEventWithName("launch", {
   'screen': 'Main screen'
 })
 .then(res => console.log('Sent event named launch'))
