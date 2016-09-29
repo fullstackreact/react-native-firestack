@@ -449,10 +449,10 @@ In order to store anything on Firebase, we need to set the storage url provided 
 
 ![Storage url](http://d.pr/i/1lKjQ.png)
 
-The `setStorageUrl()` method accepts a single parameter: your root storage url.
+The `setStorageUrl()` method accepts a single parameter: your root storage url (without leading "gs://").
 
 ```javascript
-firestack.storage.setStorageUrl(`gs://${config.firebase.storageBucket}`)
+firestack.storage.setStorageUrl(`${config.firebase.storageBucket}`)
 ```
 
 If the `storageBucket` key is passed as a configuration option, this method is automatically called by default.
