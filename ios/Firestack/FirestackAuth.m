@@ -10,8 +10,6 @@
 #import "FirestackErrors.h"
 #import "FirestackEvents.h"
 
-@import Firebase;
-
 @implementation FirestackAuth
 
 typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
