@@ -1,1 +1,0 @@
-../../../../FirebaseDatabase/Frameworks/FirebaseDatabase.framework/Headers/FIRTransactionResult.h
