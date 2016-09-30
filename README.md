@@ -222,7 +222,17 @@ We can pass _custom_ options by passing an object with configuration options. Th
 
 | option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
 |----------------|----------|-------------------------|----------------------------------------|
-| debug | string/bool | false | When set to true, Firestack will log messages to the console and fire `debug` events we can listen to in `js` |
+| debug | bool | false | When set to true, Firestack will log messages to the console and fire `debug` events we can listen to in `js` |
+| bundleID | string | Default from app `[NSBundle mainBundle]` | The bundle ID for the app to be bundled with |
+| googleAppID | string | "" | The Google App ID that is used to uniquely identify an instance of an app. |
+| databaseURL | string | "" | The database root (i.e. https://my-app.firebaseio.com) |
+| deepLinkURLScheme | string | "" | URL scheme to set up durable deep link service |
+| storageBucket | string | "" | The Google Cloud storage bucket name |
+| androidClientID | string | "" | The Android client ID used in Google AppInvite when an iOS app has it's android version |
+| GCMSenderID | string | "" | The Project number from the Google Developer's console used to configure Google Cloud Messaging |
+| trackingID | string | "" | The tracking ID for Google Analytics |
+| clientID | string | "" | The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google |
+| APIKey | string | "" | The secret iOS API key used for authenticating requests from our app |
 
 For instance:
 
