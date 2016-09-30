@@ -21,6 +21,22 @@ if [ -f $podfile ]
 
   if [ "$generate_env_file" != "y" ]
     then
+
+    # pod outdated | grep "The following pod updates are available:"
+    # status=$?
+    # if [ $status -eq 0 ]; then
+    #   echo "From what I can tell, there look to be updates available..."
+    #   echo "Do you want to update your cocoapods? [N/y]"
+    #   read update_pods
+    #   if [ "$update_pods" != "y" ]
+    #     then
+    #       pod update --project-directory=ios
+    #       exit 0
+    #     else
+    #       exit 0
+    #   fi
+    # fi
+  
     echo "Add the following pods":
     echo ""
     echo ""
