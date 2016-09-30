@@ -8,6 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import <NotificationCenter/NotificationCenter.h>
+#if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+#import <UserNotifications/UserNotifications.h>
+#endif
+#import "FirestackCloudMessaging.h"
 #import "FirestackEvents.h"
 #import "RCTConvert.h"
 #import "FirestackCloudMessaging.h"
