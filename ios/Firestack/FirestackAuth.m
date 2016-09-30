@@ -64,7 +64,6 @@ RCT_EXPORT_METHOD(signInWithProvider:
                                           callback(@[[NSNull null], userProps]);
                                       } else {
                                           NSLog(@"An error occurred: %@", [error localizedDescription]);
-                                          NSLog(@"Error: %@", error);
                                           // No user is signed in.
                                           NSDictionary *err = @{
                                                                 @"error": @"No user signed in",
@@ -436,16 +435,16 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
                                          secret:(NSString *)authTokenSecret
 {
     FIRAuthCredential *credential;
-    if ([provider caseInsensitiveCompare: @"twitter"]) {
+    if ([provider compare:@"twitter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRTwitterAuthProvider credentialWithToken:authToken
                                                           secret:authTokenSecret];
-    } if ([provider caseInsensitiveCompare: @"facebook"]) {
+    } else if ([provider compare:@"facebook" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
-    } if ([provider caseInsensitiveCompare: @"google"]) {
+    } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
                                                       accessToken:authTokenSecret];
     } else {
-        NSLog(@"Provider not yet handled");
+        NSLog(@"Provider not yet handled: %@", provider);
     }
     return credential;
 }
