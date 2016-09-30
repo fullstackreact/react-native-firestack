@@ -6,11 +6,13 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#ifndef FirestackDatabase_h
+#define FirestackDatabase_h
+
 #import "Firebase.h"
+#import "FirebaseDatabase.h"
 #import "RCTEventEmitter.h"
 #import "RCTBridgeModule.h"
-
-@import FirebaseDatabase;
 
 @interface FirestackDatabase : RCTEventEmitter <RCTBridgeModule> {
 
@@ -20,3 +22,5 @@
 @property (nonatomic, weak) FIRDatabaseReference *ref;
 
 @end
+
+#endif

@@ -121,11 +121,9 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 58B511EF1A9E6C8500147676 /* Build configuration list for PBXNativeTarget "Firestack" */;
 			buildPhases = (
-				48AA3DACF902ED2473601A8C /* [CP] Check Pods Manifest.lock */,
 				58B511D71A9E6C8500147676 /* Sources */,
 				58B511D81A9E6C8500147676 /* Frameworks */,
 				58B511D91A9E6C8500147676 /* CopyFiles */,
-				6A34E35DF50BEC97B74FC183 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -166,39 +164,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		48AA3DACF902ED2473601A8C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		6A34E35DF50BEC97B74FC183 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "[CP] Copy Pods Resources";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-Firestack/Pods-Firestack-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		58B511D71A9E6C8500147676 /* Sources */ = {
@@ -303,27 +268,15 @@
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseDatabase/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseStorage/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleInterchangeUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleIPhoneUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleNetworkingUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleSymbolUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks/frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks/frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks/frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseRemoteConfig/Frameworks/frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks/frameworks",
+					"${BUILT_PRODUCTS_DIR}",
+					"${PROJECT_DIR}/../../../ios/Pods",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../React/**",
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
+					"${PROJECT_DIR}/../../../ios/Pods/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_DYLIB_INSTALL_NAME = "@rpath/${EXECUTABLE_NAME}";
@@ -350,27 +303,15 @@
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseDatabase/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseStorage/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleInterchangeUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleIPhoneUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleNetworkingUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleSymbolUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/GoogleUtilities/Frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseAnalytics/Frameworks/frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseAuth/Frameworks/frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseInstanceID/Frameworks/frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseRemoteConfig/Frameworks/frameworks",
-					"$(PROJECT_DIR)/Pods/FirebaseMessaging/Frameworks/frameworks",
+					"${BUILT_PRODUCTS_DIR}",
+					"${PROJECT_DIR}/../../../ios/Pods",
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../../React/**",
 					"$(SRCROOT)/../../node_modules/react-native/React/**",
 					"$(SRCROOT)/../../react-native/React/**",
+					"${PROJECT_DIR}/../../../ios/Pods/**",
 				);
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_DYLIB_INSTALL_NAME = "@rpath/${EXECUTABLE_NAME}";

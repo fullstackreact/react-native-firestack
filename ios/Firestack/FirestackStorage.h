@@ -6,6 +6,11 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#ifndef FirestackStorage_h
+#define FirestackStorage_h
+
+#import "Firebase.h"
+#import "FirebaseStorage.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventEmitter.h"
 
@@ -16,3 +21,5 @@
 @property (nonatomic) NSString *_storageUrl;
 
 @end
+
+#endif

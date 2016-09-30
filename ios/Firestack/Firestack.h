@@ -4,6 +4,9 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#ifndef Firestack_h
+#define Firestack_h
+
 #import <UIKit/UIKit.h>
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
@@ -31,3 +34,5 @@ withLaunchOptions: (NSDictionary *) launchOptions;
 @property (nonatomic, strong) NSDictionary *configuration;
 
 @end
+
+#endif

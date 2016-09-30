@@ -6,6 +6,9 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#ifndef FirestackAuth_h
+#define FirestackAuth_h
+
 #import "Firebase.h"
 #import "RCTEventEmitter.h"
 #import "RCTBridgeModule.h"
@@ -15,3 +18,5 @@
 }
 
 @end
+
+#endif

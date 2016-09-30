@@ -8,12 +8,9 @@
 
 #import <Foundation/Foundation.h>
 #import <NotificationCenter/NotificationCenter.h>
-#import "FirestackCloudMessaging.h"
 #import "FirestackEvents.h"
 #import "RCTConvert.h"
-
-@import FirebaseInstanceID;
-@import FirebaseMessaging;
+#import "FirestackCloudMessaging.h"
 
 // https://github.com/facebook/react-native/blob/master/Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 @implementation RCTConvert (UILocalNotification)

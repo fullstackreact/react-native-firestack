@@ -10,8 +10,6 @@
 #import "FirestackDatabase.h"
 #import "FirestackEvents.h"
 
-@import FirebaseDatabase;
-
 @interface FirestackDBReference : NSObject
 @property NSString *path;
 @property NSDictionary *listeners;

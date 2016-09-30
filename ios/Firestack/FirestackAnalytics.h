@@ -6,6 +6,10 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#ifndef FirestackAnalytics_h
+#define FirestackAnalytics_h
+
+#import "FirebaseAnalytics.h"
 #import "RCTBridgeModule.h"
 
 @interface FirestackAnalytics : NSObject <RCTBridgeModule> {
@@ -13,3 +17,5 @@
 }
 
 @end
+
+#endif

@@ -10,8 +10,6 @@
 #import "FirestackEvents.h"
 #import "FirestackAnalytics.h"
 
-@import FirebaseAnalytics;
-
 @implementation FirestackAnalytics
 
 - (void)dealloc

@@ -6,12 +6,14 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
+#ifndef FirestackCloudMessaging_h
+#define FirestackCloudMessaging_h
+
 #import "Firebase.h"
+#import "FirebaseMessaging.h"
 #import "RCTEventEmitter.h"
 #import "RCTBridgeModule.h"
 #import "RCTUtils.h"
-
-@import FirebaseMessaging;
 
 @interface FirestackCloudMessaging : RCTEventEmitter <RCTBridgeModule> {
     
@@ -20,3 +22,5 @@
 + (void) setup:(UIApplication *)application;
 
 @end
+
+#endif

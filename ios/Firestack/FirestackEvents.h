@@ -5,6 +5,10 @@
 //  Created by Ari Lerner on 8/23/16.
 //  Copyright © 2016 Facebook. All rights reserved.
 //
+
+#ifndef FirestackEvents_h
+#define FirestackEvents_h
+
 #import <Foundation/Foundation.h>
 
 #define SYSTEM_VERSION_EQUAL_TO(v)                  ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedSame)
@@ -42,3 +46,5 @@ static NSString *const MESSAGING_TOKEN_REFRESH = @"messaging_token_refresh";
 
 static NSString *const MESSAGING_MESSAGE_RECEIVED_REMOTE = @"messaging_remote_event_received";
 static NSString *const MESSAGING_MESSAGE_RECEIVED_LOCAL = @"messaging_local_event_received";
+
+#endif

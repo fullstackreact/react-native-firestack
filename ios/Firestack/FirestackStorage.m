@@ -9,8 +9,6 @@
 #import "FirestackStorage.h"
 #import "FirestackEvents.h"
 
-@import FirebaseStorage;
-
 @implementation FirestackStorage
 
 RCT_EXPORT_MODULE(FirestackStorage);

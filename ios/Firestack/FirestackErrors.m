@@ -8,8 +8,6 @@
 
 #import "FirestackErrors.h"
 
-@import Firebase;
-
 @implementation FirestackErrors
 
 RCT_EXPORT_MODULE(FirestackErrors);

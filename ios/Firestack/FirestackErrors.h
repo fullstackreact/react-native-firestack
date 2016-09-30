@@ -6,10 +6,12 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
-#import "RCTBridgeModule.h"
+#ifndef FirestackErrors_h
+#define FirestackErrors_h
 
-@import Firebase;
-@import FirebaseAuth;
+#import "RCTBridgeModule.h"
+#import "Firebase.h"
+#import "FirebaseAuth.h"
 
 @interface FirestackErrors : NSObject <RCTBridgeModule> {
     
@@ -22,3 +24,5 @@
                                  error:(NSError *) error
                               withUser:(FIRUser *) user;
 @end
+
+#endif
