@@ -53,6 +53,10 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
     FirebaseOptions defaultOptions = FirebaseOptions.fromResource(this.context);
 
+    if (defaultOptions == null) {
+      defaultOptions = new FirebaseOptions.Builder().build();
+    }
+
     KeySetterFn fn = new KeySetterFn() {
       public String setKeyOrDefault(
         final String key,
