@@ -1,6 +1,6 @@
 {
   "name": "react-native-firestack",
-  "version": "2.2.3",
+  "version": "2.2.4",
   "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "description": "A firebase v3 adapter",
   "main": "index",
@@ -19,8 +19,7 @@
   },
   "jest": {
     "preset": "jest-react-native",
-    "setupFiles": [
-    ],
+    "setupFiles": [],
     "unmockedModulePathPatterns": [
       "./node_modules/react",
       "./node_modules/react-native",
