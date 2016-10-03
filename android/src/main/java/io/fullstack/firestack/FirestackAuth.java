@@ -144,21 +144,42 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    public void signInAnonymously(final Callback callback) {
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuth.signInAnonymously()
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
+
+                        if (task.isSuccessful()) {
+                            user = task.getResult().getUser();
+                            userCallback(user, callback);
+                        }else{
+                            userErrorCallback(task, callback);
+                        }
+                    }
+                });
+
+    }
+
+    @ReactMethod
     public void signInWithCustomToken(final String customToken, final Callback callback) {
       mAuth = FirebaseAuth.getInstance();
 
       mAuth.signInWithCustomToken(customToken)
         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-          @Override
-          public void onComplete(@NonNull Task<AuthResult> task) {
-            Log.d(TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful());
-            if (task.isSuccessful()) {
-              user = task.getResult().getUser();
-              userCallback(user, callback);
-            } else {
-              userErrorCallback(task, callback);
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d(TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful());
+                if (task.isSuccessful()) {
+                    user = task.getResult().getUser();
+                    userCallback(user, callback);
+                } else {
+                    userErrorCallback(task, callback);
+                }
             }
-          }
         });
     }
 
