@@ -200,9 +200,30 @@ Lastly, due to some dependencies requirements, Firestack supports iOS versions 8
 
 ### Android
 
-There are several ways to setup Firebase on Android. The _easiest_ way is to pass the configuration settings in JavaScript. In that way, there is no setup for the native platform. 
+There are several ways to setup Firebase on Android. The _easiest_ way is to pass the configuration settings in JavaScript. In that way, there is no setup for the native platform.
 
+#### google-services.json setup
 If you prefer to include the default settings in the source of your app, download the `google-services.json` file provided by Firebase in the _Add Firebase to Android_ platform menu in your Firebase configuration console.
+
+Next you'll have to add the google-services gradle plugin in order to parse it.
+
+Add the google-services gradle plugin as a dependency in the *project* level build.gradle
+`android/build.gradle`
+```java
+buildscript {
+  // ...
+  dependencies {
+    // ...
+    classpath 'com.google.gms:google-services:3.0.0'
+  }
+}
+```
+
+In your app build.gradle file, add the gradle plugin at the VERY BOTTOM of the file (below all dependencies)
+`android/app/build.gradle`
+```java
+apply plugin: 'com.google.gms.google-services'
+```
 
 ## Usage
 
