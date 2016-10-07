@@ -14,7 +14,6 @@
 #import "FirestackCloudMessaging.h"
 #import "FirestackEvents.h"
 #import "RCTConvert.h"
-#import "FirestackCloudMessaging.h"
 
 // https://github.com/facebook/react-native/blob/master/Libraries/PushNotificationIOS/RCTPushNotificationManager.m
 @implementation RCTConvert (UILocalNotification)

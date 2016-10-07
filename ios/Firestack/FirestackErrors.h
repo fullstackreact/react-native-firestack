@@ -11,7 +11,6 @@
 
 #import "RCTBridgeModule.h"
 #import "Firebase.h"
-#import "FirebaseAuth.h"
 
 @interface FirestackErrors : NSObject <RCTBridgeModule> {
     

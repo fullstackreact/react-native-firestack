@@ -7,7 +7,7 @@
 #import "Firestack.h"
 #import "FirestackErrors.h"
 #import "FirestackEvents.h"
-#import "FirestackAnalytics.h"
+// #import "FirestackAnalytics.h"
 // #import "FirestackCloudMessaging.h"
 
 static Firestack *_sharedInstance = nil;
