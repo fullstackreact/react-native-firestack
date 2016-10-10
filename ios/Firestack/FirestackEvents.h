@@ -38,6 +38,9 @@ static NSString *const DATABASE_CHILD_MOVED_EVENT = @"child_moved";
 static NSString *const STORAGE_UPLOAD_PROGRESS = @"upload_progress";
 static NSString *const STORAGE_UPLOAD_PAUSED = @"upload_paused";
 static NSString *const STORAGE_UPLOAD_RESUMED = @"upload_resumed";
+static NSString *const STORAGE_DOWNLOAD_PROGRESS = @"download_progress";
+static NSString *const STORAGE_DOWNLOAD_PAUSED = @"download_paused";
+static NSString *const STORAGE_DOWNLOAD_RESUMED = @"download_resumed";
 
 // Messaging
 static NSString *const MESSAGING_SUBSYSTEM_EVENT = @"messaging_event";
