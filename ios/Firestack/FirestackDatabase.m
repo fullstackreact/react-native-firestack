@@ -358,7 +358,8 @@ RCT_EXPORT_METHOD(on:(NSString *) path
             NSDictionary *props =
             [self snapshotToDict:snapshot];
             [self
-             sendJSEvent:eventName
+             sendJSEvent:DATABASE_DATA_EVENT
+             title:eventName
              props: @{
                       @"eventName": eventName,
                       @"path": path,
@@ -676,6 +677,7 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
                           };
     [self
      sendJSEvent:DATABASE_ERROR_EVENT
+     title:DATABASE_ERROR_EVENT
      props: evt];
     
     return evt;
@@ -686,11 +688,12 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
     return @[DATABASE_DATA_EVENT, DATABASE_ERROR_EVENT];
 }
 
-- (void) sendJSEvent:(NSString *)title
+- (void) sendJSEvent:(NSString *)type
+               title:(NSString *)title
                props:(NSDictionary *)props
 {
     @try {
-        [self sendEventWithName:DATABASE_DATA_EVENT
+        [self sendEventWithName:type
                            body:@{
                             @"eventName": title,
                             @"body": props
