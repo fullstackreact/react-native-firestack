@@ -53,45 +53,36 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
         return callback(@[err]);
     }
     
+    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:urlStr];
+    FIRStorageReference *uploadRef = [storageRef child:name];
+    FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
+    
     if ([path hasPrefix:@"assets-library://"]) {
         NSURL *localFile = [[NSURL alloc] initWithString:path];
         PHFetchResult* assets = [PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil];
         PHAsset *asset = [assets firstObject];
-        [asset requestContentEditingInputWithOptions:nil
-                                   completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
-                                       NSURL *imageFile = contentEditingInput.fullSizeImageURL;
-                                       
-                                       [self performUpload:urlStr
-                                                      name:name
-                                                      file:imageFile
-                                                  metadata:nil
-                                                  callback:callback];
-                                   }];
+        [[PHImageManager defaultManager] requestImageDataForAsset:asset
+                                                    options:nil
+                                                    resultHandler:^(NSData * imageData, NSString * dataUTI, UIImageOrientation orientation, NSDictionary * info) {
+                                                        FIRStorageUploadTask *uploadTask = [uploadRef putData:imageData
+                                                                                                     metadata:firmetadata];
+                                                        [self addUploadObservers:uploadTask
+                                                                        callback:callback];
+                                                    }];
     } else {
-        NSURL *localFile = [NSURL fileURLWithPath:path];
-        FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
+        NSURL *imageFile = [NSURL fileURLWithPath:path];
+        FIRStorageUploadTask *uploadTask = [uploadRef putFile:imageFile
+                                                     metadata:firmetadata];
         
-        [self performUpload:urlStr
-                       name:name
-                       file:localFile
-                   metadata:firmetadata
-                   callback:callback];
+        [self addUploadObservers:uploadTask
+                        callback:callback];
     }
     
 }
 
-- (void) performUpload:(NSString *) urlStr
-                  name:(NSString *) name
-                  file:(NSURL *) imageFile
-              metadata:(FIRStorageMetadata *) firmetadata
-              callback:(RCTResponseSenderBlock) callback
+- (void) addUploadObservers:(FIRStorageUploadTask *) uploadTask
+                   callback:(RCTResponseSenderBlock) callback
 {
-    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:urlStr];
-    FIRStorageReference *uploadRef = [storageRef child:name];
-    
-    FIRStorageUploadTask *uploadTask = [uploadRef putFile:imageFile
-                                                 metadata:firmetadata];
-    
     // Listen for state changes, errors, and completion of the upload.
     [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload resumed, also fires when the upload starts
