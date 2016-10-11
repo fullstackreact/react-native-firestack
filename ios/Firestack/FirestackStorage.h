@@ -10,7 +10,6 @@
 #define FirestackStorage_h
 
 #import "Firebase.h"
-#import "FirebaseStorage.h"
 #import "RCTBridgeModule.h"
 #import "RCTEventEmitter.h"
 

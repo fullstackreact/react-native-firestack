@@ -10,7 +10,6 @@
 #define FirestackDatabase_h
 
 #import "Firebase.h"
-#import "FirebaseDatabase.h"
 #import "RCTEventEmitter.h"
 #import "RCTBridgeModule.h"
 
