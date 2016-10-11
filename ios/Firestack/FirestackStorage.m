@@ -9,6 +9,8 @@
 #import "FirestackStorage.h"
 #import "FirestackEvents.h"
 
+#import <Photos/Photos.h>
+
 @implementation FirestackStorage
 
 RCT_EXPORT_MODULE(FirestackStorage);
@@ -51,15 +53,45 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
         return callback(@[err]);
     }
     
+    if ([path hasPrefix:@"assets-library://"]) {
+        NSURL *localFile = [[NSURL alloc] initWithString:path];
+        PHFetchResult* assets = [PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil];
+        PHAsset *asset = [assets firstObject];
+        [asset requestContentEditingInputWithOptions:nil
+                                   completionHandler:^(PHContentEditingInput *contentEditingInput, NSDictionary *info) {
+                                       NSURL *imageFile = contentEditingInput.fullSizeImageURL;
+                                       
+                                       [self performUpload:urlStr
+                                                      name:name
+                                                      file:imageFile
+                                                  metadata:nil
+                                                  callback:callback];
+                                   }];
+    } else {
+        NSURL *localFile = [NSURL fileURLWithPath:path];
+        FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
+        
+        [self performUpload:urlStr
+                       name:name
+                       file:localFile
+                   metadata:firmetadata
+                   callback:callback];
+    }
+    
+}
+
+- (void) performUpload:(NSString *) urlStr
+                  name:(NSString *) name
+                  file:(NSURL *) imageFile
+              metadata:(FIRStorageMetadata *) firmetadata
+              callback:(RCTResponseSenderBlock) callback
+{
     FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:urlStr];
     FIRStorageReference *uploadRef = [storageRef child:name];
     
-    NSURL *localFile = [NSURL fileURLWithPath:path];
-    
-    FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
-    
-    FIRStorageUploadTask *uploadTask = [uploadRef putFile:localFile
+    FIRStorageUploadTask *uploadTask = [uploadRef putFile:imageFile
                                                  metadata:firmetadata];
+    
     // Listen for state changes, errors, and completion of the upload.
     [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload resumed, also fires when the upload starts
