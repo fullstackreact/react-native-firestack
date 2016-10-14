@@ -10,7 +10,6 @@
 #define FirestackCloudMessaging_h
 
 #import "Firebase.h"
-#import "FirebaseMessaging.h"
 #import "RCTEventEmitter.h"
 #import "RCTBridgeModule.h"
 #import "RCTUtils.h"
