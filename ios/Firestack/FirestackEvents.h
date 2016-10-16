@@ -22,6 +22,8 @@ static NSString *const kFirestackInitialized = @"FirestackInitializedEvent";
 static NSString *const INITIALIZED_EVENT = @"firestackInitialized";
 
 static NSString *const AUTH_CHANGED_EVENT = @"listenForAuth";
+static NSString *const AUTH_ERROR_EVENT = @"authError";
+static NSString *const AUTH_ANONYMOUS_ERROR_EVENT = @"authAnonymousError";
 static NSString *const DEBUG_EVENT = @"debug";
 
 // Database

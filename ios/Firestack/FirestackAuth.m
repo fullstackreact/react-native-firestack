@@ -19,22 +19,36 @@ RCT_EXPORT_MODULE(FirestackAuth);
 RCT_EXPORT_METHOD(signInAnonymously:
                   (RCTResponseSenderBlock) callBack)
 {
-
+    @try {
     [[FIRAuth auth] signInAnonymouslyWithCompletion
      :^(FIRUser *user, NSError *error) {
          if (!user) {
              NSDictionary *evt = @{
-                                   @"eventName": @"SignInAnonymouslyError",
-                                   @"msg": [error localizedFailureReason]
+                                   @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
+                                   @"msg": [error localizedDescription]
                                    };
 
-             [self sendJSEvent:AUTH_CHANGED_EVENT props: evt];
+
+             [self sendJSEvent:AUTH_CHANGED_EVENT 
+                  props: evt];
+
              callBack(@[evt]);
-             return;
-         }
-         NSDictionary *userProps = [self userPropsFromFIRUser:user];
-         callBack(@[[NSNull null], userProps]);
+         } else {
+          NSDictionary *userProps = [self userPropsFromFIRUser:user];
+          callBack(@[[NSNull null], userProps]);
+        }
      }];
+    } @catch(NSException *ex) {
+        NSDictionary *eventError = @{
+                                     @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
+                                     @"msg": ex.reason
+                                     };
+        
+        [self sendJSEvent:AUTH_ERROR_EVENT
+                    props:eventError];
+        NSLog(@"An exception occurred: %@", ex);
+        callBack(@[eventError]);
+    }
 }
 
 RCT_EXPORT_METHOD(signInWithCustomToken:
@@ -50,7 +64,7 @@ RCT_EXPORT_METHOD(signInWithCustomToken:
              callback(@[[NSNull null], userProps]);
          } else {
              NSDictionary *err =
-             [FirestackErrors handleFirebaseError:@"signinError"
+             [FirestackErrors handleFirebaseError:AUTH_ERROR_EVENT
                                  error:error
                               withUser:user];
              callback(@[err]);
@@ -162,6 +176,11 @@ RCT_EXPORT_METHOD(unlistenForAuth:(RCTResponseSenderBlock)callback)
         [[FIRAuth auth] removeAuthStateDidChangeListener:self->authListenerHandle];
         callback(@[[NSNull null]]);
     }
+}
+
+// Helper
+- (Boolean) listeningForAuth {
+  return (self->authListenerHandle != nil);
 }
 
 RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
@@ -470,15 +489,17 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 
 // Not sure how to get away from this... yet
 - (NSArray<NSString *> *)supportedEvents {
-    return @[AUTH_CHANGED_EVENT];
+    return @[AUTH_CHANGED_EVENT, AUTH_ANONYMOUS_ERROR_EVENT, AUTH_ERROR_EVENT];
 }
 
 - (void) sendJSEvent:(NSString *)title
                props:(NSDictionary *)props
 {
     @try {
+      if ([self listeningForAuth]) {
         [self sendEventWithName:title
                            body:props];
+      }
     }
     @catch (NSException *err) {
         NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
