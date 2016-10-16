@@ -66,7 +66,7 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
           final String val = params.getString(key);
           Log.d(TAG, "Setting " + key + " from params to: " + val);
           return val;
-        } else if (defaultValue != null && defaultValue != "") {
+        } else if (defaultValue != null && !defaultValue.equals("")) {
           Log.d(TAG, "Setting " + key + " from params to: " + defaultValue);
           return defaultValue;
         } else {
