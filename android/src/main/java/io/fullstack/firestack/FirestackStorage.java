@@ -60,14 +60,16 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void downloadUrl(final String storageUrl,
+  public void downloadUrl(final String javascriptStorageBucket,
                           final String path,
                           final Callback callback) {
       FirebaseStorage storage = FirebaseStorage.getInstance();
+      String storageBucket = storage.getApp().getOptions().getStorageBucket();
+      String storageUrl = "gs://"+storageBucket;
       StorageReference storageRef = storage.getReferenceFromUrl(storageUrl);
-    StorageReference fileRef = storageRef.child(path);
+      StorageReference fileRef = storageRef.child(path);
 
-      Task<Uri> downloadTask = storageRef.getDownloadUrl();
+      Task<Uri> downloadTask = fileRef.getDownloadUrl();
       downloadTask.addOnSuccessListener(new OnSuccessListener<Uri>() {
         @Override
         public void onSuccess(Uri uri) {
