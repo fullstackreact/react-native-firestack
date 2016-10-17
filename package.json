@@ -35,7 +35,6 @@
     "firebase"
   ],
   "peerDependencies": {
-    "firebase": "3.x.x",
     "react": "*",
     "react-native": "*"
   },
