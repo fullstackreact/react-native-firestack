@@ -774,8 +774,8 @@ The following is left to be done:
 
 - [x] Complete FirebaseModule functionality
 - [ ] Document FirebaseModule
-- [ ] Add Android support
-  - in progress
+- [X] Add Android support
+  - auth/analytics/database/storage/presence are feature-complete. remoteconfig/messaging are mostly-there.
 - [x] Add Cloud Messaging
   - [ ] Add JS api
 - [ ] Move to use swift (cleaner syntax)
