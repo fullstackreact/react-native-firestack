@@ -592,23 +592,33 @@ storageRef.downloadUrl()
 
 ### Realtime Database
 
-#### database attribute
-
 The native Firebase JavaScript library provides a featureful realtime database that works out of the box. Firestack provides an attribute to interact with the database without needing to configure the JS library.
-
-```javascript
-firestack.database
-      .ref(LIST_KEY)
-      .on('value', snapshot => {
-        if (snapshot.val()) {
-          console.log('The list was updated');
-        }
-      });
-```
 
 #### DatabaseRef
 
-Firestack attempts to provide the same API as the JS Firebase library for both Android and iOS platforms.
+Firestack attempts to provide the same API as the JS Firebase library for both Android and iOS platforms. [Check out the firebase guide](https://firebase.google.com/docs/database/web/read-and-write) for more information on how to use the JS library.
+
+#### Example
+
+```javascript
+
+function handleValueChange(snapshot) {
+  if (snapshot.val()) {
+    console.log('The list was updated');
+  }
+}
+
+const LIST_KEY = 'path/to/data';
+firestack.database.ref(LIST_KEY).on('value', handleValueChange);
+
+// Calling `.off` with a reference to the callback function will only remove that specific listener.
+// This is useful if multiple components are listening and unlistening to the same ref path.
+firestack.database.ref(LIST_KEY).off('value', handleValueChange);
+
+// Calling `.off` without passing the callback function will remove *all* 'value' listeners for that ref
+firestack.database.ref(LIST_KEY).off('value');
+
+```
 
 // TODO: Finish documenting
 
