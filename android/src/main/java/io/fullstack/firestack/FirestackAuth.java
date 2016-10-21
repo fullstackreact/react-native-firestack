@@ -157,7 +157,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
                         if (task.isSuccessful()) {
                             user = task.getResult().getUser();
-                            userCallback(user, callback);
+                            anonymousUserCallback(user, callback);
                         }else{
                             userErrorCallback(task, callback);
                         }
@@ -460,6 +460,53 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             }
         });
     }
+
+    // TODO: Reduce to one method
+    public void anonymousUserCallback(FirebaseUser passedUser, final Callback onComplete) {
+        WritableMap userMap = getUserMap();
+
+        if (passedUser == null) {
+          mAuth = FirebaseAuth.getInstance();
+          final FirebaseUser user = mAuth.getCurrentUser();
+        } else {
+          final FirebaseUser user = passedUser;
+        }
+
+        user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            @Override
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+              WritableMap msgMap = Arguments.createMap();
+                WritableMap userMap = Arguments.createMap();
+
+                if (user != null) {
+                  final String name = user.getDisplayName();
+                  final String token = task.getResult().getToken();
+                  final String email = user.getEmail();
+                  final String uid   = user.getUid();
+                  final String provider = user.getProviderId();
+                  final Uri photoUrl = user.getPhotoUrl();
+
+                  userMap.putString("name", name);
+                  userMap.putString("token", token);
+                  userMap.putString("email", email);
+                  userMap.putString("uid", uid);
+                  userMap.putString("providerId", provider);
+                  userMap.putBoolean("anonymous", true);
+
+                  if (photoUrl!=null) {
+                    userMap.putString("photoUrl",photoUrl.toString());
+                  }
+                } else {
+                  userMap.putString("msg", "no user");
+                }
+
+                msgMap.putMap("user", userMap);
+
+                onComplete.invoke(null, msgMap);
+            }
+        });
+    }
+
 
     public void noUserCallback(final Callback callback) {
         WritableMap message = Arguments.createMap();

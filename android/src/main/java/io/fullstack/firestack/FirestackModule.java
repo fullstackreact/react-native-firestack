@@ -2,6 +2,7 @@ package io.fullstack.firestack;
 
 import android.content.Context;
 import android.util.Log;
+import java.util.Map;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 

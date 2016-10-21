@@ -120,7 +120,7 @@ public class FirestackUtils {
             data.putMap(child.getKey(), (WritableMap) castedChild);
             break;
           default:
-            Log.w(TAG, "Invalid type: "+type);
+            Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
             break;
         }
       }
