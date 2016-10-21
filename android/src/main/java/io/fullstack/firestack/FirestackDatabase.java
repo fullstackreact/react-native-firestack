@@ -682,8 +682,8 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
           case "java.lang.Boolean":
             data.putBoolean(child.getKey(), (Boolean) castedChild);
             break;
-          case "java.lang.Integer":
-            data.putInt(child.getKey(), (Integer) castedChild);
+          case "java.lang.Long":
+            data.putDouble(child.getKey(), (Long) castedChild);
             break;
           case "java.lang.Double":
             data.putDouble(child.getKey(), (Double) castedChild);
@@ -704,7 +704,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
           case "java.lang.Boolean":
             return (Any)((Boolean) snapshot.getValue());
           case "java.lang.Long":
-            return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
+            return (Any) ((Long) snapshot.getValue());
           case "java.lang.Double":
             return (Any)((Double) snapshot.getValue());
           case "java.lang.String":
