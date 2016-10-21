@@ -354,6 +354,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void signOut(final Callback callback) {
       FirebaseAuth.getInstance().signOut();
+      user = null;
 
       WritableMap resp = Arguments.createMap();
       resp.putString("status", "complete");
@@ -426,25 +427,34 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
+              WritableMap msgMap = Arguments.createMap();
                 WritableMap userMap = Arguments.createMap();
-                final String name = user.getDisplayName();
-                final String token = task.getResult().getToken();
-                final String email = user.getEmail();
-                final String uid   = user.getUid();
-                final String provider = user.getProviderId();
-                final Uri photoUrl = user.getPhotoUrl();
 
-                userMap.putString("name", name);
-                userMap.putString("token", token);
-                userMap.putString("email", email);
-                userMap.putString("uid", uid);
-                userMap.putString("provider", provider);
+                if (user != null) {
+                  final String name = user.getDisplayName();
+                  final String token = task.getResult().getToken();
+                  final String email = user.getEmail();
+                  final String uid   = user.getUid();
+                  final String provider = user.getProviderId();
+                  final Uri photoUrl = user.getPhotoUrl();
 
-                if (photoUrl!=null) {
-                  userMap.putString("photoUrl",photoUrl.toString());
+                  userMap.putString("name", name);
+                  userMap.putString("token", token);
+                  userMap.putString("email", email);
+                  userMap.putString("uid", uid);
+                  userMap.putString("providerId", provider);
+                  userMap.putBoolean("anonymous", false);
+
+                  if (photoUrl!=null) {
+                    userMap.putString("photoUrl",photoUrl.toString());
+                  }
+                } else {
+                  userMap.putString("msg", "no user");
                 }
 
-                onComplete.invoke(null, userMap);
+                msgMap.putMap("user", userMap);
+
+                onComplete.invoke(null, msgMap);
             }
         });
     }
@@ -473,9 +483,13 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        userMap.putString("email", user.getEmail());
-        userMap.putString("uid", user.getUid());
-        userMap.putString("provider", user.getProviderId());
+        if (user != null) {
+          userMap.putString("email", user.getEmail());
+          userMap.putString("uid", user.getUid());
+          userMap.putString("provider", user.getProviderId());
+        } else {
+          userMap.putString("msg", "no user");
+        }
 
         return userMap;
     }

@@ -323,7 +323,7 @@ firestack.createUserWithEmail('ari@fullstack.io', '123456')
 To sign a user in with their email and password, use the `signInWithEmail()` function. It accepts two parameters, the user's email and password:
 
 ```javascript
-firestack.signInWithEmail('ari@fullstack.io', '123456')
+firestack.auth.signInWithEmail('ari@fullstack.io', '123456')
   .then((user) => {
     console.log('User successfully logged in', user)
   })
