@@ -788,9 +788,15 @@ Alternatively, you can clone the repo somewhere else and `rsync` the directory o
 > This is the method I use as it allows me to separate the codebases:
 
 ```bash
-git clone https://github.com/fullstackreact/react-native-firestack.git ~/Development/react-native/mine/react-native-firestack/
+git clone https://github.com/fullstackreact/react-native-firestack.git \
+      ~/Development/react-native/mine/react-native-firestack/
+      
 ## And rsync
-rsync -avhW --delete --exclude='node_modules' --exclude='.git' --exclude='*.desktop.js' ~/Development/react-native/mine/react-native-firestack/ ./node_modules/react-native-firestack/
+rsync -avhW --delete \
+      --exclude='node_modules' \
+      --exclude='.git' \
+      ~/Development/react-native/mine/react-native-firestack/ \
+      ./node_modules/react-native-firestack/
 ```
 
 ## Contributing
