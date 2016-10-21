@@ -767,6 +767,31 @@ firestack.off('listenForAuth');
 
 Firestack provides a built-in way to connect your Redux app using the `FirestackModule` export from Firestack.
 
+## Running with the `master` branch
+
+Most of our work is committed to the master branch. If you want to run the bleeding-edge version of Firestack, you'll need to follow these instructions.
+
+Since `react-native` doesn't like symlinks, we need to clone the raw repository into our `node_modules/` manually. First, in order to tell `react-native` we are using the package `react-native-firestack`, make sure to install the `npm` version:
+
+```bash
+npm install --save react-native-firestack
+```
+
+After the `npm` version is installed, you can either clone the repo directly into our `node_modules/` directory:
+
+```bash
+git clone https://github.com/fullstackreact/react-native-firestack.git ./node_modules/react-native-firestack
+```
+
+Alternatively, you can clone the repo somewhere else and `rsync` the directory over to the `node_modules/` directory. 
+
+> This is the method I use as it allows me to separate the codebases:
+
+```bash
+git clone https://github.com/fullstackreact/react-native-firestack.git ~/Development/react-native/mine/react-native-firestack/
+## And rsync
+rsync -avhW --delete --exclude='node_modules' --exclude='.git' --exclude='*.desktop.js' ~/Development/react-native/mine/react-native-firestack/ ./node_modules/react-native-firestack/
+```
 
 ## Contributing
 
