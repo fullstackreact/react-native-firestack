@@ -31,6 +31,10 @@ For a detailed discussion of how Firestack works, check out our [contribution gu
 * Intended on being as drop-dead simple as possible
 * And so much more
 
+## Example app
+
+We have a working application example available in at [fullstackreact/FirestackApp](https://github.com/fullstackreact/FirestackApp). Check it out for more details about how to use Firestack.
+
 ## Why?
 
 Firebase is awesome and it's combination with the Google Cloud Platform makes it super awesome. Sadly, the latest version of Firebase requires the `window` object. That's where Firestack comes in! Firestack provides a really thin layer that sits on top of the native Firebase SDKs and attempts to use the JavaScript library as much as possible rather than reinventing the wheel.
