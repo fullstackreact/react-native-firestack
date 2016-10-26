@@ -9,8 +9,7 @@
 #import "Firestack.h"
 #import "FirestackEvents.h"
 #import "FirestackAnalytics.h"
-
-@import FirebaseAnalytics;
+#import "Firebase.h"
 
 @implementation FirestackAnalytics
 

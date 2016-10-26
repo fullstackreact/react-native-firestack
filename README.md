@@ -31,6 +31,10 @@ For a detailed discussion of how Firestack works, check out our [contribution gu
 * Intended on being as drop-dead simple as possible
 * And so much more
 
+## Example app
+
+We have a working application example available in at [fullstackreact/FirestackApp](https://github.com/fullstackreact/FirestackApp). Check it out for more details about how to use Firestack.
+
 ## Why?
 
 Firebase is awesome and it's combination with the Google Cloud Platform makes it super awesome. Sadly, the latest version of Firebase requires the `window` object. That's where Firestack comes in! Firestack provides a really thin layer that sits on top of the native Firebase SDKs and attempts to use the JavaScript library as much as possible rather than reinventing the wheel.
@@ -41,8 +45,7 @@ Getting `react-native-firestack` up and running in your app should be a 2 step p
 
 1. Install the `npm` package
 2. Link the project with `react-native link react-native-firestack`
-3. Modify the _Build Phases_ for iOS like it says below.
-4. To ensure Android is setup, check your `MainApplication.java` for the `FirestackPackage()` line.
+3. To ensure Android is setup, check your `MainApplication.java` for the `FirestackPackage()` line.
 
 Those steps in more detail:
 
@@ -82,11 +85,7 @@ If you prefer not to use `rnpm`, we can manually link the package together with 
 
 ![Firebase.xcodeproj in Libraries listing](http://d.pr/i/19ktP.png)
 
-3. In the project's "Build Settings" tab in your app's target, add `libFirestack.a` to the list of `Link Binary with Libraries`
-
-![Linking binaries](http://d.pr/i/1cHgs.png)
-
-4. Ensure that the `Build Settings` of the `Firestack.xcodeproj` project is ticked to _All_ and it's `Header Search Paths` include both of the following paths _and_ are set to _recursive_:
+3. Ensure that the `Build Settings` of the `Firestack.xcodeproj` project is ticked to _All_ and it's `Header Search Paths` include both of the following paths _and_ are set to _recursive_:
 
   1. `$(SRCROOT)/../../react-native/React`
   2. `$(SRCROOT)/../node_modules/react-native/React`
@@ -94,7 +93,7 @@ If you prefer not to use `rnpm`, we can manually link the package together with 
 
 ![Recursive paths](http://d.pr/i/1hAr1.png)
 
-5. Setting up cocoapods
+4. Setting up cocoapods
 
 Since we're dependent upon cocoapods (or at least the Firebase libraries being available at the root project -- i.e. your application), we have to make them available for Firestack to find them.
 
@@ -323,7 +322,7 @@ firestack.createUserWithEmail('ari@fullstack.io', '123456')
 To sign a user in with their email and password, use the `signInWithEmail()` function. It accepts two parameters, the user's email and password:
 
 ```javascript
-firestack.signInWithEmail('ari@fullstack.io', '123456')
+firestack.auth.signInWithEmail('ari@fullstack.io', '123456')
   .then((user) => {
     console.log('User successfully logged in', user)
   })
@@ -592,23 +591,33 @@ storageRef.downloadUrl()
 
 ### Realtime Database
 
-#### database attribute
-
 The native Firebase JavaScript library provides a featureful realtime database that works out of the box. Firestack provides an attribute to interact with the database without needing to configure the JS library.
-
-```javascript
-firestack.database
-      .ref(LIST_KEY)
-      .on('value', snapshot => {
-        if (snapshot.val()) {
-          console.log('The list was updated');
-        }
-      });
-```
 
 #### DatabaseRef
 
-Firestack attempts to provide the same API as the JS Firebase library for both Android and iOS platforms.
+Firestack attempts to provide the same API as the JS Firebase library for both Android and iOS platforms. [Check out the firebase guide](https://firebase.google.com/docs/database/web/read-and-write) for more information on how to use the JS library.
+
+#### Example
+
+```javascript
+
+function handleValueChange(snapshot) {
+  if (snapshot.val()) {
+    console.log('The list was updated');
+  }
+}
+
+const LIST_KEY = 'path/to/data';
+firestack.database.ref(LIST_KEY).on('value', handleValueChange);
+
+// Calling `.off` with a reference to the callback function will only remove that specific listener.
+// This is useful if multiple components are listening and unlistening to the same ref path.
+firestack.database.ref(LIST_KEY).off('value', handleValueChange);
+
+// Calling `.off` without passing the callback function will remove *all* 'value' listeners for that ref
+firestack.database.ref(LIST_KEY).off('value');
+
+```
 
 // TODO: Finish documenting
 
@@ -757,6 +766,37 @@ firestack.off('listenForAuth');
 
 Firestack provides a built-in way to connect your Redux app using the `FirestackModule` export from Firestack.
 
+## Running with the `master` branch
+
+Most of our work is committed to the master branch. If you want to run the bleeding-edge version of Firestack, you'll need to follow these instructions.
+
+Since `react-native` doesn't like symlinks, we need to clone the raw repository into our `node_modules/` manually. First, in order to tell `react-native` we are using the package `react-native-firestack`, make sure to install the `npm` version:
+
+```bash
+npm install --save react-native-firestack
+```
+
+After the `npm` version is installed, you can either clone the repo directly into our `node_modules/` directory:
+
+```bash
+git clone https://github.com/fullstackreact/react-native-firestack.git ./node_modules/react-native-firestack
+```
+
+Alternatively, you can clone the repo somewhere else and `rsync` the directory over to the `node_modules/` directory. 
+
+> This is the method I use as it allows me to separate the codebases:
+
+```bash
+git clone https://github.com/fullstackreact/react-native-firestack.git \
+      ~/Development/react-native/mine/react-native-firestack/
+      
+## And rsync
+rsync -avhW --delete \
+      --exclude='node_modules' \
+      --exclude='.git' \
+      ~/Development/react-native/mine/react-native-firestack/ \
+      ./node_modules/react-native-firestack/
+```
 
 ## Contributing
 
@@ -774,8 +814,8 @@ The following is left to be done:
 
 - [x] Complete FirebaseModule functionality
 - [ ] Document FirebaseModule
-- [ ] Add Android support
-  - in progress
+- [X] Add Android support
+  - auth/analytics/database/storage/presence are feature-complete. remoteconfig/messaging are mostly-there.
 - [x] Add Cloud Messaging
   - [ ] Add JS api
 - [ ] Move to use swift (cleaner syntax)

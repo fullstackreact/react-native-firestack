@@ -1,6 +1,6 @@
 {
   "name": "react-native-firestack",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
   "description": "A firebase v3 adapter",
   "main": "index",
@@ -35,7 +35,6 @@
     "firebase"
   ],
   "peerDependencies": {
-    "firebase": "3.x.x",
     "react": "*",
     "react-native": "*"
   },

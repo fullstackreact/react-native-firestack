@@ -2,6 +2,7 @@ package io.fullstack.firestack;
 
 import android.content.Context;
 import android.util.Log;
+import java.util.Map;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -178,9 +179,13 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
 
   @ReactMethod
   public void serverValue(@Nullable final Callback onComplete) {
+    WritableMap timestampMap = Arguments.createMap();
+    for (Map.Entry<String, String> entry : ServerValue.TIMESTAMP.entrySet()) {
+      timestampMap.putString(entry.getKey(), entry.getValue());
+    }
+
     WritableMap map = Arguments.createMap();
-    // TODO
-    map.putString("TIMESTAMP", "ServerValue.TIMESTAMP");
+    map.putMap("TIMESTAMP", timestampMap);
     onComplete.invoke(null, map);
   }
 

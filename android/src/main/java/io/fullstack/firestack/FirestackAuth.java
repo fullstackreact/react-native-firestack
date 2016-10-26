@@ -138,6 +138,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     public void signInWithProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
       if (provider.equals("facebook")) {
            this.facebookLogin(authToken,callback);
+      } else if (provider.equals("google")) {
+           this.googleLogin(authToken,callback);
       } else
       // TODO
       FirestackUtils.todoNote(TAG, "signInWithProvider", callback);
@@ -155,7 +157,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
                         if (task.isSuccessful()) {
                             user = task.getResult().getUser();
-                            userCallback(user, callback);
+                            anonymousUserCallback(user, callback);
                         }else{
                             userErrorCallback(task, callback);
                         }
@@ -354,6 +356,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     @ReactMethod
     public void signOut(final Callback callback) {
       FirebaseAuth.getInstance().signOut();
+      user = null;
 
       WritableMap resp = Arguments.createMap();
       resp.putString("status", "complete");
@@ -426,28 +429,54 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
+              WritableMap msgMap = Arguments.createMap();
                 WritableMap userMap = Arguments.createMap();
-                final String name = user.getDisplayName();
-                final String token = task.getResult().getToken();
-                final String email = user.getEmail();
-                final String uid   = user.getUid();
-                final String provider = user.getProviderId();
-                final Uri photoUrl = user.getPhotoUrl();
 
-                userMap.putString("name", name);
-                userMap.putString("token", token);
-                userMap.putString("email", email);
-                userMap.putString("uid", uid);
-                userMap.putString("provider", provider);
+                if (user != null) {
+                  final String token = task.getResult().getToken();
 
-                if (photoUrl!=null) {
-                  userMap.putString("photoUrl",photoUrl.toString());
+                  userMap.putString("token", token);
+                  userMap.putBoolean("anonymous", false);
                 }
 
-                onComplete.invoke(null, userMap);
+                msgMap.putMap("user", userMap);
+
+                onComplete.invoke(null, msgMap);
             }
         });
     }
+
+    // TODO: Reduce to one method
+    public void anonymousUserCallback(FirebaseUser passedUser, final Callback onComplete) {
+        WritableMap userMap = getUserMap();
+
+        if (passedUser == null) {
+          mAuth = FirebaseAuth.getInstance();
+          final FirebaseUser user = mAuth.getCurrentUser();
+        } else {
+          final FirebaseUser user = passedUser;
+        }
+
+        user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+            @Override
+            public void onComplete(@NonNull Task<GetTokenResult> task) {
+              WritableMap msgMap = Arguments.createMap();
+                WritableMap userMap = Arguments.createMap();
+
+                if (user != null) {
+                  final String token = task.getResult().getToken();
+
+                  userMap.putString("token", token);
+                  userMap.putBoolean("anonymous", true);
+                }
+
+                msgMap.putMap("user", userMap);
+
+                onComplete.invoke(null, msgMap);
+            }
+        });
+    }
+
 
     public void noUserCallback(final Callback callback) {
         WritableMap message = Arguments.createMap();
@@ -473,12 +502,28 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-        userMap.putString("email", user.getEmail());
-        userMap.putString("uid", user.getUid());
-        userMap.putString("provider", user.getProviderId());
+        if (user != null) {
+          final String email = user.getEmail();
+          final String uid   = user.getUid();
+          final String provider = user.getProviderId();
+          final String name = user.getDisplayName();
+          final Uri photoUrl = user.getPhotoUrl();
+
+          userMap.putString("email", email);
+          userMap.putString("uid", uid);
+          userMap.putString("providerId", provider);
+
+          if (name != null) {
+            userMap.putString("name", name);
+          }
+
+          if (photoUrl != null) {
+            userMap.putString("photoUrl", photoUrl.toString());
+          }
+        } else {
+          userMap.putString("msg", "no user");
+        }
 
         return userMap;
     }
-
-
 }

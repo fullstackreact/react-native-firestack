@@ -58,25 +58,27 @@ public class FirestackUtils {
       data.putBoolean("hasChildren", dataSnapshot.hasChildren());
 
       data.putDouble("childrenCount", dataSnapshot.getChildrenCount());
-      if (!dataSnapshot.hasChildren() && dataSnapshot.getValue() != null) {
-        String type = dataSnapshot.getValue().getClass().getName();
+      if (!dataSnapshot.hasChildren()) {
+        Object value = dataSnapshot.getValue();
+        String type = value!=null ? value.getClass().getName() : "";
         switch (type) {
           case "java.lang.Boolean":
-            data.putBoolean("value", (Boolean) dataSnapshot.getValue());
+            data.putBoolean("value", (Boolean)value);
             break;
           case "java.lang.Long":
-            data.putInt("value",(Integer)(((Long) dataSnapshot.getValue()).intValue()));
+            Long longVal = (Long) value;
+            data.putDouble("value", (double)longVal);
             break;
           case "java.lang.Double":
-            data.putDouble("value",(Double) dataSnapshot.getValue());
+            data.putDouble("value", (Double) value);
             break;
           case "java.lang.String":
-            data.putString("value",(String) dataSnapshot.getValue());
+            data.putString("value",(String) value);
             break;
           default:
             data.putString("value", null);
         }
-      }else{
+      } else{
         WritableMap valueMap = FirestackUtils.castSnapshotValue(dataSnapshot);
         data.putMap("value", valueMap);
       }
@@ -104,8 +106,9 @@ public class FirestackUtils {
           case "java.lang.Boolean":
             data.putBoolean(child.getKey(), (Boolean) castedChild);
             break;
-          case "java.lang.Integer":
-            data.putInt(child.getKey(), (Integer) castedChild);
+          case "java.lang.Long":
+            Long longVal = (Long) castedChild;
+            data.putDouble(child.getKey(), (double)longVal);
             break;
           case "java.lang.Double":
             data.putDouble(child.getKey(), (Double) castedChild);
@@ -116,6 +119,9 @@ public class FirestackUtils {
           case "com.facebook.react.bridge.WritableNativeMap":
             data.putMap(child.getKey(), (WritableMap) castedChild);
             break;
+          default:
+            Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
+            break;
         }
       }
       return (Any) data;
@@ -124,19 +130,19 @@ public class FirestackUtils {
         String type = snapshot.getValue().getClass().getName();
         switch (type) {
           case "java.lang.Boolean":
-            return (Any)((Boolean) snapshot.getValue());
+            return (Any)(snapshot.getValue());
           case "java.lang.Long":
-            return (Any)((Integer)(((Long) snapshot.getValue()).intValue()));
+            return (Any)(snapshot.getValue());
           case "java.lang.Double":
-            return (Any)((Double) snapshot.getValue());
+            return (Any)(snapshot.getValue());
           case "java.lang.String":
-            return (Any)((String) snapshot.getValue());
+            return (Any)(snapshot.getValue());
           default:
+            Log.w(TAG, "Invalid type: "+type);
             return (Any) null;
         }
-      } else {
-        return (Any) null;
       }
+      return (Any) null;
     }
   }
 

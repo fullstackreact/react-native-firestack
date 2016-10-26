@@ -9,6 +9,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled  true
     }
     buildTypes {
         release {
@@ -19,6 +20,8 @@ android {
 
 dependencies {
     compile 'com.facebook.react:react-native:0.20.+'
+    compile 'com.google.android.gms:play-services-base:9.6.1'
+
     compile 'com.google.firebase:firebase-core:9.6.0'
     compile 'com.google.firebase:firebase-auth:9.6.0'
     compile 'com.google.firebase:firebase-analytics:9.6.0'
