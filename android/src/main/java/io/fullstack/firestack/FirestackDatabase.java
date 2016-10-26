@@ -87,7 +87,7 @@ class FirestackDBReference {
         self.handleDatabaseError(name, mPath, error);
       }
     };
-    
+
     Query ref = this.getDatabaseQueryAtPathAndModifiers(modifiers);
     ref.addChildEventListener(mEventListener);
     this.setListeningTo(mPath, name);
@@ -224,17 +224,21 @@ class FirestackDBReference {
 
       String[] strArr = str.split(":");
       String methStr = strArr[0];
+      Log.d(TAG, "Adding query modifier: " + methStr);
+      if (strArr.length > 1) {
+        Log.d(TAG, "with query modifier: " + strArr[1]);
+      }
 
       if (methStr.equalsIgnoreCase("orderByKey")) {
-        query = ref.orderByKey();
+        query = query.orderByKey();
       } else if (methStr.equalsIgnoreCase("orderByValue")) {
-        query = ref.orderByValue();
+        query = query.orderByValue();
       } else if (methStr.equalsIgnoreCase("orderByPriority")) {
-        query = ref.orderByPriority();
+        query = query.orderByPriority();
       } else if (methStr.contains("orderByChild")) {
         String key = strArr[1];
         Log.d(TAG, "orderByChild: " + key);
-        query = ref.orderByChild(key);
+        query = query.orderByChild(key);
       } else if (methStr.contains("limitToLast")) {
         String key = strArr[1];
         int limit = Integer.parseInt(key);
