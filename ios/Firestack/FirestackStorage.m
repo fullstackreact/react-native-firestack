@@ -15,6 +15,12 @@
 
 RCT_EXPORT_MODULE(FirestackStorage);
 
+// Run on a different thread
+- (dispatch_queue_t)methodQueue
+{
+  return dispatch_queue_create("io.fullstack.firestack.storage", DISPATCH_QUEUE_SERIAL);
+}
+
 RCT_EXPORT_METHOD(downloadUrl: (NSString *) storageUrl
                   path:(NSString *) path
     callback:(RCTResponseSenderBlock) callback)
@@ -225,6 +231,7 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) urlStr
     [downloadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
         if (snapshot.error != nil) {
             NSDictionary *errProps = [[NSMutableDictionary alloc] init];
+            NSLog(@"Error in download: %@", snapshot.error);
 
             switch (snapshot.error.code) {
                 case FIRStorageErrorCodeObjectNotFound:
@@ -249,6 +256,29 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) urlStr
         }}];
 }
 
+// This is just too good not to use, but I don't want to take credit for
+// this work from RNFS
+// https://github.com/johanneslumpe/react-native-fs/blob/master/RNFSManager.m
+- (NSString *)getPathForDirectory:(int)directory
+{
+  NSArray *paths = NSSearchPathForDirectoriesInDomains(directory, NSUserDomainMask, YES);
+  return [paths firstObject];
+}
+
+- (NSDictionary *)constantsToExport
+{
+  return @{
+           @"MAIN_BUNDLE_PATH": [[NSBundle mainBundle] bundlePath],
+           @"CACHES_DIRECTORY_PATH": [self getPathForDirectory:NSCachesDirectory],
+           @"DOCUMENT_DIRECTORY_PATH": [self getPathForDirectory:NSDocumentDirectory],
+           @"EXTERNAL_DIRECTORY_PATH": [NSNull null],
+           @"EXTERNAL_STORAGE_DIRECTORY_PATH": [NSNull null],
+           @"TEMP_DIRECTORY_PATH": NSTemporaryDirectory(),
+           @"LIBRARY_DIRECTORY_PATH": [self getPathForDirectory:NSLibraryDirectory],
+           @"FILETYPE_REGULAR": NSFileTypeRegular,
+           @"FILETYPE_DIRECTORY": NSFileTypeDirectory
+           };
+}
 
 // Not sure how to get away from this... yet
 - (NSArray<NSString *> *)supportedEvents {
