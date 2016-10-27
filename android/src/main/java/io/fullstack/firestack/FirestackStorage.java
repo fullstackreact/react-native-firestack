@@ -1,8 +1,11 @@
 package io.fullstack.firestack;
 
+import android.os.Environment;
+import android.os.StatFs;
 import android.content.Context;
 import android.util.Log;
 import java.util.Map;
+import java.util.HashMap;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -41,6 +44,17 @@ import com.google.firebase.storage.StorageReference;
 class FirestackStorageModule extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackStorage";
+  private static final String DocumentDirectoryPath = "DOCUMENT_DIRECTORY_PATH";
+  private static final String ExternalDirectoryPath = "EXTERNAL_DIRECTORY_PATH";
+  private static final String ExternalStorageDirectoryPath = "EXTERNAL_STORAGE_DIRECTORY_PATH";
+  private static final String PicturesDirectoryPath = "PICTURES_DIRECTORY_PATH";
+  private static final String TemporaryDirectoryPath = "TEMPORARY_DIRECTORY_PATH";
+  private static final String CachesDirectoryPath = "CACHES_DIRECTORY_PATH";
+  private static final String DocumentDirectory = "DOCUMENT_DIRECTORY_PATH";
+
+  private static final String FileTypeRegular = "FILETYPE_REGULAR";
+  private static final String FileTypeDirectory = "FILETYPE_DIRECTORY";
+
 
   private Context context;
   private ReactContext mReactContext;
@@ -185,5 +199,35 @@ Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
 
       callback.invoke(err);
     }
+  }
+
+  // Comes almost directory from react-native-fs
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+
+    constants.put(DocumentDirectory, 0);
+    constants.put(DocumentDirectoryPath, this.getReactApplicationContext().getFilesDir().getAbsolutePath());
+    constants.put(TemporaryDirectoryPath, null);
+    constants.put(PicturesDirectoryPath, Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).getAbsolutePath());
+    constants.put(CachesDirectoryPath, this.getReactApplicationContext().getCacheDir().getAbsolutePath());
+    constants.put(FileTypeRegular, 0);
+    constants.put(FileTypeDirectory, 1);
+
+    File externalStorageDirectory = Environment.getExternalStorageDirectory();
+    if (externalStorageDirectory != null) {
+        constants.put(ExternalStorageDirectoryPath, externalStorageDirectory.getAbsolutePath());
+    } else {
+        constants.put(ExternalStorageDirectoryPath, null);
+    }
+
+    File externalDirectory = this.getReactApplicationContext().getExternalFilesDir(null);
+    if (externalDirectory != null) {
+      constants.put(ExternalDirectoryPath, externalDirectory.getAbsolutePath());
+    } else {
+      constants.put(ExternalDirectoryPath, null);
+    }
+
+    return constants;
   }
 }

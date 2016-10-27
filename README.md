@@ -589,6 +589,47 @@ storageRef.downloadUrl()
 })
 ```
 
+#### download()
+
+It's possible to download remote files as well. The `download()` method will take a remote file and download and save it to the user's device. It is implemented on the `storageRef`:
+
+```javascript
+const storageRef = data.firestack.storage.ref('photos/photo.jpg');
+const localPath = `downloadedFile.jpg`;
+storageRef.download(localPath, (msg) => {
+  // downloading state callback
+})
+.then(res => {
+  // res contains details about the downloaded file
+})
+.catch(err => {
+  // error contains any errors in downloading
+});
+```
+
+The method accepts a callback that gets called with any download events:
+
+* download_progress ({eventName: 'download_progress', progress: float });
+* download_paused ({eventName: 'download_paused'})
+* download_resumed ({eventName: 'download_resumed'})
+
+As helpful constants, Firestack exports a few storage constants on the `firestack.constants` getter:
+
+* MAIN_BUNDLE_PATH
+* CACHES_DIRECTORY_PATH
+* DOCUMENT_DIRECTORY_PATH
+* EXTERNAL_DIRECTORY_PATH
+* EXTERNAL_STORAGE_DIRECTORY_PATH
+* TEMP_DIRECTORY_PATH
+* LIBRARY_DIRECTORY_PATH
+
+And we also export the filetype constants as well:
+
+* FILETYPE_REGULAR
+* FILETYPE_DIRECTORY
+
+> Note: this idea comes almost directory from [react-native-fs](https://github.com/johanneslumpe/react-native-fs), so we don't claim credit for coming up with this fantastic idea. 
+
 ### Realtime Database
 
 The native Firebase JavaScript library provides a featureful realtime database that works out of the box. Firestack provides an attribute to interact with the database without needing to configure the JS library.
