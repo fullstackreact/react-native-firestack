@@ -47,7 +47,7 @@
       "project": "ios/Firestack.xcodeproj"
     },
     "android": {
-      "packageInstance": "new FirestackPackage(getApplicationContext())"
+      "packageInstance": "new FirestackPackage()"
     }
   },
   "devDependencies": {

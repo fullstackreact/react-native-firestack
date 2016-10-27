@@ -15,8 +15,7 @@ import java.util.List;
 public class FirestackPackage implements ReactPackage {
     private Context mContext;
 
-    public FirestackPackage(Context ctx) {
-        mContext = ctx;
+    public FirestackPackage() {
     }
     /**
      * @param reactContext react application context that can be used to create modules
@@ -26,7 +25,7 @@ public class FirestackPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
 
-        modules.add(new FirestackModule(reactContext, mContext));
+        modules.add(new FirestackModule(reactContext, reactContext.getBaseContext()));
         modules.add(new FirestackAuthModule(reactContext));
         modules.add(new FirestackDatabaseModule(reactContext));
         modules.add(new FirestackAnalyticsModule(reactContext));
