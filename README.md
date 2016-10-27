@@ -8,7 +8,7 @@ Firestack makes using the latest [Firebase](http://firebase.com) straight-forwar
 
 Firestack is a _light-weight_ layer sitting atop the native Firebase libraries for iOS and Android and mirrors the React Native JS api as closely as possible.
 
-For a detailed discussion of how Firestack works, check out our [contribution guide](https://github.com/fullstackreact/react-native-firestack/blob/master/Contributing.md).
+For a detailed discussion of how Firestack works as well as how to contribute, check out our [contribution guide](https://github.com/fullstackreact/react-native-firestack/blob/master/Contributing.md).
 
 ## Features
 
@@ -849,11 +849,7 @@ rsync -avhW --delete \
 
 This is _open-source_ software and we can make it rock for everyone through contributions.
 
-```shell
-git clone https://github.com/fullstackreact/react-native-firestack.git
-cd react-native-firestack
-npm install
-```
+How do you contribute? Check out our contribution guide at [CONTRIBUTING.md](https://github.com/fullstackreact/react-native-firestack/blob/master/Contributing.md)
 
 ## TODO
 

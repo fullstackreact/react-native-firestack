@@ -2,6 +2,35 @@
 
 This is an in-progress guide to help guide you in understanding how Firestack works with the goal to help on-board your contributions. If you have any questions, comments, or concerns, feel free to leave it here or join the [gitter channel at https://gitter.im/fullstackreact/react-native-firestack](https://gitter.im/fullstackreact/react-native-firestack).
 
+## Contribution methods
+
+Contributing is easy. Make a fork of the project on [github](https://github.com/fullstackreact/react-native-firestack). Clone this repo on your machine and work on the edits there. 
+
+```shell
+git clone https://github.com/[your_name]/react-native-firestack.git
+cd react-native-firestack
+npm install
+```
+
+We have an [Example app - FirestackApp](https://github.com/fullstackreact/FirestackApp) which we use to demonstrate and test features (until we can get a proper testing environment). Currently, our workflow looks like this:
+
+1. Write JS/native feature
+2. `rsync` the local library to your `node_modules` directory (react-native does not play well with symlinks).
+For instance, running the following in the firestackApp root directory. Make sure you replace the `~/Development/react-native/mine/react-native-firestack` with the path of your cloned repo on your drive:
+
+```javascript
+rsync -avhW --delete \
+      --exclude='node_modules' \
+      --exclude='.git' \
+      --exclude='coverage' \
+      ~/Development/react-native/mine/react-native-firestack/ \
+      ./node_modules/react-native-firestack/
+```
+
+3. Test in-app
+4. Update README.md with bugfix/feature
+5. Create a pull request (PR)
+
 ## High level
 
 ## How it works technically
