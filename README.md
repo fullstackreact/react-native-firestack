@@ -73,6 +73,12 @@ React native ships with a `link` command that can be used to link the projects t
 react-native link react-native-firestack
 ```
 
+Update the newly installed pods once the linking is done:
+
+```bash
+cd ios && pod update --verbose
+```
+
 #### Manually
 
 If you prefer not to use `rnpm`, we can manually link the package together with the following steps, after `npm install`:
