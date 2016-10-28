@@ -15,6 +15,7 @@
 
 @interface FirestackAuth : RCTEventEmitter <RCTBridgeModule> {
     FIRAuthStateDidChangeListenerHandle authListenerHandle;
+    Boolean listening;
 }
 
 @end
