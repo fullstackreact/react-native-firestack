@@ -417,7 +417,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     // Internal helpers
     public void userCallback(FirebaseUser passedUser, final Callback onComplete) {
-        WritableMap userMap = getUserMap();
 
         if (passedUser == null) {
           mAuth = FirebaseAuth.getInstance();
@@ -429,14 +428,13 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         this.user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
-              WritableMap msgMap = Arguments.createMap();
-                WritableMap userMap = Arguments.createMap();
-
+                WritableMap msgMap = Arguments.createMap();
+                WritableMap userMap = getUserMap();
                 if (FirestackAuthModule.this.user != null) {
-                  final String token = task.getResult().getToken();
+                    final String token = task.getResult().getToken();
 
-                  userMap.putString("token", token);
-                  userMap.putBoolean("anonymous", false);
+                    userMap.putString("token", token);
+                    userMap.putBoolean("anonymous", false);
                 }
 
                 msgMap.putMap("user", userMap);
@@ -448,7 +446,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     // TODO: Reduce to one method
     public void anonymousUserCallback(FirebaseUser passedUser, final Callback onComplete) {
-        WritableMap userMap = getUserMap();
 
         if (passedUser == null) {
           mAuth = FirebaseAuth.getInstance();
@@ -460,14 +457,14 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         this.user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
-              WritableMap msgMap = Arguments.createMap();
-                WritableMap userMap = Arguments.createMap();
+                WritableMap msgMap = Arguments.createMap();
+                WritableMap userMap = getUserMap();
 
                 if (FirestackAuthModule.this.user != null) {
-                  final String token = task.getResult().getToken();
+                    final String token = task.getResult().getToken();
 
-                  userMap.putString("token", token);
-                  userMap.putBoolean("anonymous", true);
+                    userMap.putString("token", token);
+                    userMap.putBoolean("anonymous", true);
                 }
 
                 msgMap.putMap("user", userMap);
