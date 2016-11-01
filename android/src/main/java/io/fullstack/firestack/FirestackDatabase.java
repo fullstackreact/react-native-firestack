@@ -468,7 +468,8 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
       ref.removeChildEventListener();
     }
 
-    this.removeDBHandle(path, name);
+    String key = this.keyPath(path, name);
+    this.removeDBHandle(key);
     Log.d(TAG, "Removed listener " + name);
     WritableMap resp = Arguments.createMap();
     resp.putString("handle", path);
@@ -583,12 +584,11 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
                             final String eventName,
                             final FirestackDBReference dbRef) {
     String key = this.keyPath(path, eventName);
-    this.removeDBHandle(key, eventName);
+    this.removeDBHandle(key);
     mDBListeners.put(key, dbRef);
   }
 
-  private void removeDBHandle(final String path, final String eventName) {
-    String key = this.keyPath(path, eventName);
+  private void removeDBHandle(final String key) {
     if (mDBListeners.containsKey(key)) {
       FirestackDBReference r = mDBListeners.get(key);
       r.cleanup();
