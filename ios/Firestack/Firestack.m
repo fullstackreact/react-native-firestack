@@ -239,7 +239,9 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
             
             // if (!self.configured) {
             
-            [FIRApp configureWithOptions:finalOptions];
+            if ([FIRApp defaultApp] == NULL) {
+                [FIRApp configureWithOptions:finalOptions];
+            }            
             [Firestack initializeFirestack:self];
             callback(@[[NSNull null], props]);
         }
