@@ -261,7 +261,7 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) urlStr
 RCT_EXPORT_METHOD(getRealPathFromURI: (NSString *) urlStr
                   callback:(RCTResponseSenderBlock) callback)
 {
-    callback(@[[NSNull null], urlStr}]);
+    callback(@[[NSNull null], urlStr]);
 }
 
 // This is just too good not to use, but I don't want to take credit for
