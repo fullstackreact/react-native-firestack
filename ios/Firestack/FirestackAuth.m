@@ -130,6 +130,7 @@ RCT_EXPORT_METHOD(signOut:(RCTResponseSenderBlock)callback)
 
 RCT_EXPORT_METHOD(listenForAuth)
 {
+    self->listening = true;
     self->authListenerHandle =
     [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth,
                                                     FIRUser *_Nullable user) {
@@ -174,13 +175,9 @@ RCT_EXPORT_METHOD(unlistenForAuth:(RCTResponseSenderBlock)callback)
 {
     if (self->authListenerHandle != nil) {
         [[FIRAuth auth] removeAuthStateDidChangeListener:self->authListenerHandle];
+        self->listening = false;
         callback(@[[NSNull null]]);
     }
-}
-
-// Helper
-- (Boolean) listeningForAuth {
-  return (self->authListenerHandle != nil);
 }
 
 RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
@@ -496,7 +493,7 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
                props:(NSDictionary *)props
 {
     @try {
-      if ([self listeningForAuth]) {
+      if (self->listening) {
         [self sendEventWithName:title
                            body:props];
       }

@@ -240,7 +240,11 @@ RCT_EXPORT_MODULE(FirestackDatabase);
 RCT_EXPORT_METHOD(enablePersistence:(BOOL) enable
   callback:(RCTResponseSenderBlock) callback)
 {
-  [FIRDatabase database].persistenceEnabled = enable;
+    
+  BOOL isEnabled = [FIRDatabase database].persistenceEnabled;
+  if ( isEnabled != enable) {
+    [FIRDatabase database].persistenceEnabled = enable;
+  }
   callback(@[[NSNull null], @{
     @"result": @"success"
   }]);
