@@ -64,30 +64,40 @@ class FirestackDBReference {
     mEventListener = new ChildEventListener() {
       @Override
       public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-        self.handleDatabaseEvent(name, mPath, dataSnapshot);
+        if (name.equals("child_added")) {
+          self.handleDatabaseEvent(name, mPath, dataSnapshot);
+        }
       }
 
       @Override
       public void onChildChanged(DataSnapshot dataSnapshot, String previousChildName) {
-        self.handleDatabaseEvent(name, mPath, dataSnapshot);
+        if (name.equals("child_changed")) {
+          self.handleDatabaseEvent(name, mPath, dataSnapshot);
+        }
       }
 
       @Override
       public void onChildRemoved(DataSnapshot dataSnapshot) {
-        self.handleDatabaseEvent(name, mPath, dataSnapshot);
+        if (name.equals("child_removed")) {
+          self.handleDatabaseEvent(name, mPath, dataSnapshot);
+        }
       }
 
       @Override
       public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
-        self.handleDatabaseEvent(name, mPath, dataSnapshot);
+        if (name.equals("child_moved")) {
+          self.handleDatabaseEvent(name, mPath, dataSnapshot);
+        }
       }
 
       @Override
       public void onCancelled(DatabaseError error) {
-        self.handleDatabaseError(name, mPath, error);
+        //if (name.equals("child_added")) {
+          //self.handleDatabaseError(name, mPath, error);
+        //}
       }
     };
-    
+
     Query ref = this.getDatabaseQueryAtPathAndModifiers(modifiers);
     ref.addChildEventListener(mEventListener);
     this.setListeningTo(mPath, name);
