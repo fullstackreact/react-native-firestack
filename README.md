@@ -640,6 +640,42 @@ And we also export the filetype constants as well:
 
 The native Firebase JavaScript library provides a featureful realtime database that works out of the box. Firestack provides an attribute to interact with the database without needing to configure the JS library.
 
+Ranking strategy
+
+Add a new record with timestamp using this solution:
+
+firebaseApp.database.ref('posts').push().then((res) => {
+ let newPostKey = res.key;
+ firebaseApp.ServerValue.then(map => {
+   const postData = {
+     name: name,
+     timestamp: map.TIMESTAMP,
+     text: this.state.postText,
+     title: this.state.postTitle,
+     puid: newPostKey
+    }
+    let updates = {}
+    updates['/posts/' + newPostKey] = postData
+    firebaseApp.database.ref().update(updates).then(() => {
+      this.setState({
+                      postStatus: 'Posted! Thank You.',
+                      postText: '',
+                    });
+    }).catch(() => {
+      this.setState({ postStatus: 'Something went wrong!!!' });
+    })
+  })
+})
+
+Then retrieve the feed using this:
+
+firebaseApp.database.ref('posts').orderByChild('timestamp').limitToLast(30).once('value')
+.then((snapshot) => {
+  this.props.savePosts(snapshot.val())
+  const val = snapshot.val();
+  console.log(val);
+})
+
 #### DatabaseRef
 
 Firestack attempts to provide the same API as the JS Firebase library for both Android and iOS platforms. [Check out the firebase guide](https://firebase.google.com/docs/database/web/read-and-write) for more information on how to use the JS library.

@@ -256,6 +256,14 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) urlStr
         }}];
 }
 
+// Compatibility with the android library
+// For now, just passes the url path back
+RCT_EXPORT_METHOD(getRealPathFromURI: (NSString *) urlStr
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    callback(@[[NSNull null], urlStr]);
+}
+
 // This is just too good not to use, but I don't want to take credit for
 // this work from RNFS
 // https://github.com/johanneslumpe/react-native-fs/blob/master/RNFSManager.m

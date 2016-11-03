@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.io.FileNotFoundException;
 
 import android.net.Uri;
+import android.provider.MediaStore;
+import android.database.Cursor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -80,18 +82,49 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
       FirebaseStorage storage = FirebaseStorage.getInstance();
       String storageBucket = storage.getApp().getOptions().getStorageBucket();
       String storageUrl = "gs://"+storageBucket;
-      StorageReference storageRef = storage.getReferenceFromUrl(storageUrl);
-      StorageReference fileRef = storageRef.child(path);
+      Log.d(TAG, "Storage url " + storageUrl + path);
+      final StorageReference storageRef = storage.getReferenceFromUrl(storageUrl);
+      final StorageReference fileRef = storageRef.child(path);
 
       Task<Uri> downloadTask = fileRef.getDownloadUrl();
       downloadTask.addOnSuccessListener(new OnSuccessListener<Uri>() {
         @Override
         public void onSuccess(Uri uri) {
-          WritableMap res = Arguments.createMap();
+          final WritableMap res = Arguments.createMap();
+
           res.putString("status", "success");
+          res.putString("bucket", storageRef.getBucket());
+          res.putString("fullPath", uri.toString());
           res.putString("path", uri.getPath());
-          res.putString("url", uri.toString());
-          callback.invoke(null, res);
+
+          storageRef.getMetadata()
+          .addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+              @Override
+              public void onSuccess(final StorageMetadata storageMetadata) {
+                Log.d(TAG, "getMetadata success " + storageMetadata);
+                res.putString("name", storageMetadata.getName());
+
+                WritableMap metadata = Arguments.createMap();
+                metadata.putString("getBucket", storageMetadata.getBucket());
+                metadata.putString("getName", storageMetadata.getName());
+                metadata.putDouble("sizeBytes", storageMetadata.getSizeBytes());
+                metadata.putDouble("created_at", storageMetadata.getCreationTimeMillis());
+                metadata.putDouble("updated_at", storageMetadata.getUpdatedTimeMillis());
+                metadata.putString("md5hash", storageMetadata.getMd5Hash());
+                metadata.putString("encoding", storageMetadata.getContentEncoding());
+                metadata.putString("downloadUrl", storageMetadata.getDownloadUrl().toString());
+
+                res.putMap("metadata", metadata);
+                callback.invoke(null, res);
+              }
+          }).addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception exception) {
+                Log.e(TAG, "Failure in download " + exception);
+                  callback.invoke(makeErrorPayload(1, exception));
+              }
+          });
+
         }
       }).addOnFailureListener(new OnFailureListener() {
         @Override
@@ -144,20 +177,7 @@ Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
           Log.d(TAG, "Successfully uploaded file " + taskSnapshot);
           // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-          Uri downloadUrl = taskSnapshot.getDownloadUrl();
-          StorageMetadata d = taskSnapshot.getMetadata();
-
-          WritableMap resp = Arguments.createMap();
-          resp.putString("downloadUrl", downloadUrl.toString());
-          resp.putString("fullPath", d.getPath());
-          resp.putString("bucket", d.getBucket());
-          resp.putString("name", d.getName());
-
-          WritableMap metadataObj = Arguments.createMap();
-          metadataObj.putString("cacheControl", d.getCacheControl());
-          metadataObj.putString("contentDisposition", d.getContentDisposition());
-          metadataObj.putString("contentType", d.getContentType());
-          resp.putMap("metadata", metadataObj);
+          WritableMap resp = getDownloadData(taskSnapshot);
                   // NSDictionary *props = @{
                   //               @"fullPath": ref.fullPath,
                   //               @"bucket": ref.bucket,
@@ -171,13 +191,18 @@ Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
       .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
         @Override
         public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-          double progress = (100.0 * taskSnapshot.getBytesTransferred()) / taskSnapshot.getTotalByteCount();
-          System.out.println("Upload is " + progress + "% done");
+          double totalBytes = taskSnapshot.getTotalByteCount();
+          double bytesTransferred = taskSnapshot.getBytesTransferred();
+          double progress = (100.0 * bytesTransferred) / totalBytes;
 
-          WritableMap data = Arguments.createMap();
-          data.putString("eventName", "upload_progress");
-          data.putDouble("progress", progress);
-          FirestackUtils.sendEvent(mReactContext, "upload_progress", data);
+          System.out.println("Transferred " + bytesTransferred + "/" + totalBytes + "("+progress + "% complete)");
+
+          if (progress >= 0) {
+            WritableMap data = Arguments.createMap();
+            data.putString("eventName", "upload_progress");
+            data.putDouble("progress", progress);
+            FirestackUtils.sendEvent(mReactContext, "upload_progress", data);
+          }
         }
       }).addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
         @Override
@@ -193,12 +218,52 @@ Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
       });
     }
     catch (Exception ex) {
-      WritableMap err = Arguments.createMap();
-
-      err.putString("error", "FileNotFoundException");
-
-      callback.invoke(err);
+      callback.invoke(makeErrorPayload(2, ex));
     }
+  }
+
+  @ReactMethod
+  public void getRealPathFromURI(final String uri, final Callback callback) {
+    try {
+      Context context = getReactApplicationContext();
+      String [] proj = {MediaStore.Images.Media.DATA};
+      Cursor cursor = context.getContentResolver().query(Uri.parse(uri), proj,  null, null, null);
+      int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+      cursor.moveToFirst();
+      String path = cursor.getString(column_index); 
+      cursor.close();
+  
+      callback.invoke(null, path);
+    } catch (Exception ex) {
+      ex.printStackTrace();
+      callback.invoke(makeErrorPayload(1, ex));
+    }
+  }
+
+  private WritableMap getDownloadData(final UploadTask.TaskSnapshot taskSnapshot) {
+    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+    StorageMetadata d = taskSnapshot.getMetadata();
+
+    WritableMap resp = Arguments.createMap();
+    resp.putString("downloadUrl", downloadUrl.toString());
+    resp.putString("fullPath", d.getPath());
+    resp.putString("bucket", d.getBucket());
+    resp.putString("name", d.getName());
+
+    WritableMap metadataObj = Arguments.createMap();
+    metadataObj.putString("cacheControl", d.getCacheControl());
+    metadataObj.putString("contentDisposition", d.getContentDisposition());
+    metadataObj.putString("contentType", d.getContentType());
+    resp.putMap("metadata", metadataObj);
+
+    return resp;
+  }
+
+  private WritableMap makeErrorPayload(double code, Exception ex) {
+    WritableMap error = Arguments.createMap();
+    error.putDouble("code", code);
+    error.putString("message", ex.getMessage());
+    return error;
   }
 
   // Comes almost directory from react-native-fs

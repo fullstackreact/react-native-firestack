@@ -12,6 +12,7 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.ReadableMap;
 
 import com.facebook.react.bridge.ReadableArray;
@@ -83,6 +84,10 @@ public class FirestackUtils {
         data.putMap("value", valueMap);
       }
 
+      // Child keys
+      WritableArray childKeys = FirestackUtils.getChildKeys(dataSnapshot);
+      data.putArray("childKeys", childKeys);
+
       Object priority = dataSnapshot.getPriority();
       if (priority == null) {
         data.putString("priority", null);
@@ -144,6 +149,18 @@ public class FirestackUtils {
       }
       return (Any) null;
     }
+  }
+
+  public static WritableArray getChildKeys(DataSnapshot snapshot) {
+    WritableArray childKeys = Arguments.createArray();
+
+    if (snapshot.hasChildren()) {
+      for (DataSnapshot child : snapshot.getChildren()) {
+        childKeys.pushString(child.getKey());
+      }
+    }
+
+    return childKeys;
   }
 
   public static Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
