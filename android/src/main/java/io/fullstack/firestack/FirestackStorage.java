@@ -112,7 +112,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
                 metadata.putDouble("updated_at", storageMetadata.getUpdatedTimeMillis());
                 metadata.putString("md5hash", storageMetadata.getMd5Hash());
                 metadata.putString("encoding", storageMetadata.getContentEncoding());
-                metadata.putString("downloadUrl", storageMetadata.getDownloadUrl().toString());
+                res.putString("url", storageMetadata.getDownloadUrl().toString());
 
                 res.putMap("metadata", metadata);
                 callback.invoke(null, res);
