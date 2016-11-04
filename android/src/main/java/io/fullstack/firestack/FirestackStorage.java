@@ -96,8 +96,9 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
           res.putString("bucket", storageRef.getBucket());
           res.putString("fullPath", uri.toString());
           res.putString("path", uri.getPath());
+          res.putString("url", uri.toString());
 
-          storageRef.getMetadata()
+          fileRef.getMetadata()
           .addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
               @Override
               public void onSuccess(final StorageMetadata storageMetadata) {
