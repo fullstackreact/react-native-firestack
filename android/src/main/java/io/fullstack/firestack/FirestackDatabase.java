@@ -3,15 +3,10 @@ package io.fullstack.firestack;
 import android.content.Context;
 import android.util.Log;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.ArrayList;
 import java.util.Map;
 import android.net.Uri;
-
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -23,11 +18,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReactContext;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
@@ -146,6 +136,9 @@ class FirestackDBReference {
     return mListeners.containsKey(key);
   }
 
+  /**
+   * Note: these path/eventType listeners only get removed when javascript calls .off() and cleanup is run on the entire path
+   */
   public void setListeningTo(final String path, final String evtName) {
     String key = this.pathListeningKey(path, evtName);
     mListeners.put(key, true);
@@ -179,11 +172,15 @@ class FirestackDBReference {
   }
 
   public void removeValueEventListener() {
+    DatabaseReference ref = this.getDatabaseRef();
     if (mValueListener != null) {
-      DatabaseReference ref = this.getDatabaseRef();
       ref.removeEventListener(mValueListener);
       this.notListeningTo(mPath, "value");
       mValueListener = null;
+    }
+    if (mOnceValueListener != null) {
+      ref.removeEventListener(mOnceValueListener);
+      mOnceValueListener = null;
     }
   }
 
@@ -435,7 +432,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
                  final ReadableArray modifiers,
                  final String name,
                  final Callback callback) {
-    FirestackDBReference ref = this.getDBHandle(path, name);
+    FirestackDBReference ref = this.getDBHandle(path);
 
     WritableMap resp = Arguments.createMap();
 
@@ -445,7 +442,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
       ref.addChildEventListener(name, modifiers);
     }
 
-    this.saveDBHandle(path, name, ref);
+    this.saveDBHandle(path, ref);
     resp.putString("result", "success");
     Log.d(TAG, "Added listener " + name + " for " + ref);
     
@@ -459,14 +456,20 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
                      final String name,
                      final Callback callback) {
     Log.d(TAG, "Setting one-time listener on event: " + name + " for path " + path);
-    FirestackDBReference ref = this.getDBHandle(path, "once");
+    FirestackDBReference ref = this.getDBHandle(path);
     ref.addOnceValueEventListener(modifiers, callback);
   }
 
+  /**
+   * At the time of this writing, off() only gets called when there are no more subscribers to a given path.
+   * `mListeners` might therefore be out of sync (though javascript isnt listening for those eventTypes, so
+   * it doesn't really matter- just polluting the RN bridge a little more than necessary.
+   * off() should therefore clean *everything* up
+   */
   @ReactMethod
-  public void off(final String path, final String name, final Callback callback) {
-    String keyPath = this.keyPath(path, name);
-    this.removeDBHandle(keyPath);
+  public void off(final String path, @Deprecated final String name, final Callback callback) {
+    this.removeDBHandle(path);
+    Log.d(TAG, "Removed listener " + path);
     WritableMap resp = Arguments.createMap();
     resp.putString("handle", path);
     resp.putString("result", "success");
@@ -566,27 +569,24 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private FirestackDBReference getDBHandle(final String path, final String eventName) {
-    String keyPath = this.keyPath(path, eventName);
-    if (!mDBListeners.containsKey(keyPath)) {
+  private FirestackDBReference getDBHandle(final String path) {
+    if (!mDBListeners.containsKey(path)) {
       ReactContext ctx = getReactApplicationContext();
-      mDBListeners.put(keyPath, new FirestackDBReference(ctx, path));
+      mDBListeners.put(path, new FirestackDBReference(ctx, path));
     }
 
-    return mDBListeners.get(keyPath);
+    return mDBListeners.get(path);
   }
 
-  private void saveDBHandle(final String path,
-                            final String eventName,
-                            final FirestackDBReference dbRef) {
-    String keyPath = this.keyPath(path, eventName);
-    mDBListeners.put(keyPath, dbRef);
+  private void saveDBHandle(final String path, final FirestackDBReference dbRef) {
+    mDBListeners.put(path, dbRef);
   }
 
-  private void removeDBHandle(final String keyPath) {
-    if (mDBListeners.containsKey(keyPath)) {
-      FirestackDBReference r = mDBListeners.get(keyPath);
+  private void removeDBHandle(final String path) {
+    if (mDBListeners.containsKey(path)) {
+      FirestackDBReference r = mDBListeners.get(path);
       r.cleanup();
+      mDBListeners.remove(path);
     }
   }
 
