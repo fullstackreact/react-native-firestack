@@ -1,3 +1,4 @@
+
 package io.fullstack.firestack;
 
 import android.content.Context;
@@ -139,8 +140,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                     userExceptionCallback(ex, callback);
                   }
                 }
-              }
-          });
+              });
     }
 
     @ReactMethod
@@ -175,9 +175,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                           userExceptionCallback(ex, callback);
                         }
                       }
-                    }
-                });
-
+                    });
     }
 
     @ReactMethod
