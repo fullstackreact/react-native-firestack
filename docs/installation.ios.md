@@ -1,6 +1,8 @@
 #iOS Installation
 
-### cocoapods
+If you don't want to use cocoapods, you don't need to use it! Just make sure you link the Firebase libraries in your project manually. For more information, check out the relevant Firebase docs at [https://firebase.google.com/docs/ios/setup#frameworks](https://firebase.google.com/docs/ios/setup#frameworks).
+
+## cocoapods
 
 Unfortunately, due to AppStore restrictions, we currently do _not_ package Firebase libraries in with Firestack. However, the good news is we've automated the process (with many thanks to the Auth0 team for inspiration) of setting up with cocoapods. This will happen automatically upon linking the package with `react-native-cli`. 
 
@@ -63,5 +65,3 @@ end
 ```
 
 Then you can run `(cd ios && pod install)` to get the pods opened. If you do use this route, remember to use the `.xcworkspace` file.
-
-If you don't want to use cocoapods, you don't need to use it! Just make sure you link the Firebase libraries in your project manually. For more information, check out the relevant Firebase docs at [https://firebase.google.com/docs/ios/setup#frameworks](https://firebase.google.com/docs/ios/setup#frameworks).
