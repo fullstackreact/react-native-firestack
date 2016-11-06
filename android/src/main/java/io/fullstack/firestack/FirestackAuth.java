@@ -1,3 +1,4 @@
+
 package io.fullstack.firestack;
 
 import android.content.Context;
@@ -131,16 +132,15 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 try {
                     if (task.isSuccessful()) {
                       user = task.getResult().getUser();
-                      userCallback(user, onComplete);
+                      userCallback(user, callback);
                     } else {
-                      userErrorCallback(task, onComplete);
+                      userErrorCallback(task, callback);
                     }
                   } catch (Exception ex) {
-                    userExceptionCallback(ex, onComplete);
+                    userExceptionCallback(ex, callback);
                   }
                 }
-              }
-          });
+              });
     }
 
     @ReactMethod
@@ -169,15 +169,13 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                             user = task.getResult().getUser();
                             anonymousUserCallback(user, callback);
                           } else {
-                            userErrorCallback(task, onComplete);
+                            userErrorCallback(task, callback);
                           }
                         } catch (Exception ex) {
-                          userExceptionCallback(ex, onComplete);
+                          userExceptionCallback(ex, callback);
                         }
                       }
-                    }
-                });
-
+                    });
     }
 
     @ReactMethod
@@ -197,7 +195,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                       userErrorCallback(task, callback);
                   }
                 } catch (Exception ex) {
-                  userExceptionCallback(ex, onComplete);
+                  userExceptionCallback(ex, callback);
                 }
             }
         });
