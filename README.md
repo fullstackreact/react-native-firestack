@@ -1,4 +1,4 @@
-## Firestack
+# Firestack
 
 Firestack makes using the latest [Firebase](http://firebase.com) with React Native straight-forward.
 
