@@ -118,7 +118,9 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                         userExceptionCallback(ex, callback);
                       }
                   }
-              });
+            }).addOnFailureListener(new OnFailureListener(Exception ex) {
+              userExceptionCallback(ex, callback);
+            });
     }
 
     @ReactMethod
@@ -140,7 +142,9 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                     userExceptionCallback(ex, callback);
                   }
                 }
-              });
+            }).addOnFailureListener(new OnFailureListener(Exception ex) {
+              userExceptionCallback(ex, callback);
+            });
     }
 
     @ReactMethod
@@ -175,7 +179,10 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                           userExceptionCallback(ex, callback);
                         }
                       }
-                    });
+                    })
+                .addOnFailureListener(new OnFailureListener(Exception ex) {
+                  userExceptionCallback(ex, callback);
+                });
     }
 
     @ReactMethod
@@ -198,6 +205,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                   userExceptionCallback(ex, callback);
                 }
             }
+        }).addOnFailureListener(new OnFailureListener(Exception ex) {
+          userExceptionCallback(ex, callback);
         });
     }
 
@@ -230,6 +239,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 userExceptionCallback(ex, callback);
               }
             }
+          }).addOnFailureListener(new OnFailureListener(Exception ex) {
+            userExceptionCallback(ex, callback);
           });
       } else {
         WritableMap err = Arguments.createMap();
@@ -261,6 +272,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 userExceptionCallback(ex, callback);
               }
             }
+          }).addOnFailureListener(new OnFailureListener(Exception ex) {
+            userExceptionCallback(ex, callback);
           });
       } else {
         WritableMap err = Arguments.createMap();
@@ -290,7 +303,9 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                         userExceptionCallback(ex, callback);
                       }
                     }
-                });
+              }).addOnFailureListener(new OnFailureListener(Exception ex) {
+                userExceptionCallback(ex, callback);
+              });
     }
 
     @ReactMethod
@@ -316,6 +331,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 userExceptionCallback(ex, callback);
               }
             }
+          }).addOnFailureListener(new OnFailureListener(Exception ex) {
+            userExceptionCallback(ex, callback);
           });
       } else {
         WritableMap err = Arguments.createMap();
@@ -350,6 +367,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
               userExceptionCallback(ex, callback);
             }
           }
+        }).addOnFailureListener(new OnFailureListener(Exception ex) {
+          userExceptionCallback(ex, callback);
         });
     }
 
@@ -390,6 +409,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
               userExceptionCallback(ex, callback);
             }
           }
+        }).addOnFailureListener(new OnFailureListener(Exception ex) {
+          userExceptionCallback(ex, callback);
         });
     }
 
@@ -437,6 +458,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                         userExceptionCallback(ex, callback);
                       }
                     }
+                }).addOnFailureListener(new OnFailureListener(Exception ex) {
+                  userExceptionCallback(ex, callback);
                 });
     }
 
@@ -460,6 +483,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                         userExceptionCallback(ex, callback);
                       }
                     }
+                }).addOnFailureListener(new OnFailureListener(Exception ex) {
+                  userExceptionCallback(ex, callback);
                 });
     }
 
@@ -489,6 +514,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
                 callback.invoke(null, msgMap);
             }
+        }).addOnFailureListener(new OnFailureListener(Exception ex) {
+          userExceptionCallback(ex, callback);
         });
     }
 
@@ -519,6 +546,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
                 callback.invoke(null, msgMap);
             }
+        }).addOnFailureListener(new OnFailureListener(Exception ex) {
+          userExceptionCallback(ex, callback);
         });
     }
 
