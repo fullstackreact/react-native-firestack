@@ -19,8 +19,6 @@ Firestack is a _light-weight_ layer sitting on-top of the native Firebase librar
 * Remote configuration
 * Redux support (not required)
 
-For a detailed discussion of how Firestack works as well as how to contribute, check out our [contribution guide](https://github.com/fullstackreact/react-native-firestack/blob/master/Contributing.md).
-
 ## Firestack vs Firebase JS lib
 
 Although the [Firebase](https://www.npmjs.com/package/firebase) JavaScript library will work with React Native, it's designed for the web and/or server. The native SDKs provide much needed features specifically for mobile applications such as offline persistance. Firestack provides a JavaScript interface into the native SDKs to allow your React Native application to utilise these features, and more!
@@ -28,3 +26,24 @@ Although the [Firebase](https://www.npmjs.com/package/firebase) JavaScript libra
 ## Example app
 
 We have a working application example available in at [fullstackreact/FirestackApp](https://github.com/fullstackreact/FirestackApp). Check it out for more details about how to use Firestack.
+
+## Documentation
+
+* Installation
+  * iOS
+  * Android
+* Firebase Setup
+* API
+  * Authentication
+  * Analytics
+  * Storage
+  * Realtime Database
+  * Presence
+  * ServerValue
+  * Cloud Messaging
+  * Events
+* Redux
+
+## Contributing
+
+For a detailed discussion of how Firestack works as well as how to contribute, check out our [contribution guide](https://github.com/fullstackreact/react-native-firestack/blob/master/Contributing.md).
