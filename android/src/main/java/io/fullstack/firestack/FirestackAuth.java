@@ -185,7 +185,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                           userExceptionCallback(ex, callback);
                         }
                       }
-                    })
               }).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception ex) {
@@ -568,7 +567,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
           this.user = passedUser;
         }
 
-        this.user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+        this.user.getToken(true)
+        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
                 WritableMap msgMap = Arguments.createMap();
