@@ -2,6 +2,10 @@
 
 Firestack makes using the latest [Firebase](http://firebase.com) with React Native straight-forward.
 
+```
+npm i react-native-firestack --save
+```
+
 [![Gitter](https://badges.gitter.im/fullstackreact/react-native-firestack.svg)](https://gitter.im/fullstackreact/react-native-firestack?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 [![npm version](https://img.shields.io/npm/v/react-native-firestack.svg)](https://www.npmjs.com/package/react-native-firestack)
 [![License](https://img.shields.io/npm/l/react-native-firestack.svg)](/LICENSE)
