@@ -432,7 +432,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 WritableMap userMap = getUserMap();
                 if (FirestackAuthModule.this.user != null) {
                     final String token = task.getResult().getToken();
-
                     userMap.putString("token", token);
                     userMap.putBoolean("anonymous", false);
                 }
@@ -509,9 +508,10 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
           userMap.putString("email", email);
           userMap.putString("uid", uid);
           userMap.putString("providerId", provider);
+          userMap.putBoolean("emailVerified", user.isEmailVerified());
 
           if (name != null) {
-            userMap.putString("name", name);
+            userMap.putString("displayName", name);
           }
 
           if (photoUrl != null) {

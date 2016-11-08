@@ -25,7 +25,7 @@ RCT_EXPORT_METHOD(signInAnonymously:
          if (!user) {
              NSDictionary *evt = @{
                                    @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
-                                   @"msg": [error localizedDescription]
+                                   @"errorMessage": [error localizedDescription]
                                    };
 
 
@@ -41,7 +41,7 @@ RCT_EXPORT_METHOD(signInAnonymously:
     } @catch(NSException *ex) {
         NSDictionary *eventError = @{
                                      @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
-                                     @"msg": ex.reason
+                                     @"errorMessage": ex.reason
                                      };
         
         [self sendJSEvent:AUTH_ERROR_EVENT
@@ -144,14 +144,15 @@ RCT_EXPORT_METHOD(listenForAuth)
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"userTokenError",
-                                                      @"msg": [error localizedFailureReason]
+                                                      @"authenticated": @((BOOL)true),
+                                                      @"errorMessage": [error localizedFailureReason]
                                                       }];
                                         } else {
                                             [self
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"user",
-                                                      @"authenticated": @(true),
+                                                      @"authenticated": @((BOOL)true),
                                                       @"user": userProps
                                                       }];
                                         }
@@ -164,7 +165,7 @@ RCT_EXPORT_METHOD(listenForAuth)
             [self sendJSEvent:AUTH_CHANGED_EVENT
                         props:@{
                                 @"eventName": @"no_user",
-                                @"authenticated": @(false),
+                                @"authenticated": @((BOOL)false),
                                 @"error": err
                                 }];
         }
