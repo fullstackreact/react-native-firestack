@@ -1,7 +1,7 @@
-require('react-native-mock/mock');
+// require('react-native-mock');
 
-var { NativeEventEmitter, NativeModules } = require('react-native');
+// var { NativeEventEmitter, NativeModules } = require('react-native');
 
-NativeModules.Firestack = {
+// NativeModules.Firestack = {
 
-}
+// }
