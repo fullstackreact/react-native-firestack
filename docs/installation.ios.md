@@ -28,15 +28,15 @@ cd ios && pod update --verbose
 
 If you prefer not to use `react-native link`, we can manually link the package together with the following steps, after `npm install`:
 
-A. In XCode, right click on `Libraries` and find the `Add Files to [project name]`.
+**A.** In XCode, right click on `Libraries` and find the `Add Files to [project name]`.
 
 ![Add library to project](http://d.pr/i/2gEH.png)
 
-B. Add the `node_modules/react-native-firestack/ios/Firestack.xcodeproj`
+**B.** Add the `node_modules/react-native-firestack/ios/Firestack.xcodeproj`
 
 ![Firebase.xcodeproj in Libraries listing](http://d.pr/i/19ktP.png)
 
-C. Ensure that the `Build Settings` of the `Firestack.xcodeproj` project is ticked to _All_ and it's `Header Search Paths` include both of the following paths _and_ are set to _recursive_:
+**C.** Ensure that the `Build Settings` of the `Firestack.xcodeproj` project is ticked to _All_ and it's `Header Search Paths` include both of the following paths _and_ are set to _recursive_:
 
   1. `$(SRCROOT)/../../react-native/React`
   2. `$(SRCROOT)/../node_modules/react-native/React`
@@ -44,7 +44,7 @@ C. Ensure that the `Build Settings` of the `Firestack.xcodeproj` project is tick
 
 ![Recursive paths](http://d.pr/i/1hAr1.png)
 
-D. Setting up cocoapods
+**D.** Setting up cocoapods
 
 Since we're dependent upon cocoapods (or at least the Firebase libraries being available at the root project -- i.e. your application), we have to make them available for Firestack to find them.
 
