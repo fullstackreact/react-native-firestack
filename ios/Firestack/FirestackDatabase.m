@@ -321,7 +321,8 @@ RCT_EXPORT_METHOD(push:(NSString *) path
                   props:(NSDictionary *) props
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[self getRefAtPath:path] childByAutoId];
+    FIRDatabaseReference *pathRef = [self getRefAtPath:path];
+    FIRDatabaseReference *ref = [pathRef childByAutoId];
 
     NSURL *url = [NSURL URLWithString:ref.URL];
     NSString *newPath = [url path];
@@ -350,11 +351,12 @@ RCT_EXPORT_METHOD(push:(NSString *) path
 
 
 RCT_EXPORT_METHOD(on:(NSString *) path
+                  modifiersString:(NSString *) modifiersString
                   modifiers:(NSArray *) modifiers
                   name:(NSString *) eventName
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FirestackDBReference *r = [self getDBHandle:path];
+  FirestackDBReference *r = [self getDBHandle:path withModifiers:modifiersString];
     FIRDatabaseQuery *query = [r getQueryWithModifiers:modifiers];
 
     if (![r isListeningTo:eventName]) {
@@ -367,6 +369,7 @@ RCT_EXPORT_METHOD(on:(NSString *) path
              props: @{
                       @"eventName": eventName,
                       @"path": path,
+                      @"modifiersString": modifiersString,
                       @"snapshot": props
                       }];
         };
@@ -398,11 +401,12 @@ RCT_EXPORT_METHOD(on:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(onOnce:(NSString *) path
-                  modifiers:(NSArray *) modifiers
-                  name:(NSString *) name
-                  callback:(RCTResponseSenderBlock) callback)
+         modifiersString:(NSString *) modifiersString
+               modifiers:(NSArray *) modifiers
+                    name:(NSString *) name
+                callback:(RCTResponseSenderBlock) callback)
 {
-    FirestackDBReference *r = [self getDBHandle:path];
+    FirestackDBReference *r = [self getDBHandle:path withModifiers:modifiersString];
     int eventType = [r eventTypeFromName:name];
     FIRDatabaseQuery *ref = [r getQueryWithModifiers:modifiers];
 
@@ -425,10 +429,11 @@ RCT_EXPORT_METHOD(onOnce:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(off:(NSString *)path
+                  modifiersString:(NSString *) modifiersString
                   eventName:(NSString *) eventName
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FirestackDBReference *r = [self getDBHandle:path];
+  FirestackDBReference *r = [self getDBHandle:path withModifiers:modifiersString];
     if (eventName == nil || [eventName isEqualToString:@""]) {
         [r cleanup];
         [self removeDBHandle:path];
@@ -537,10 +542,9 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
     return self.ref;
 }
 
-- (FIRDatabaseReference *) getRefAtPath:(NSString *) str
+- (FIRDatabaseReference *) getRefAtPath:(NSString *) path
 {
-    FirestackDBReference *r = [self getDBHandle:str];
-    return [r getRef];
+  return [[FIRDatabase database] referenceWithPath:path];
 }
 
 // Handles
@@ -552,10 +556,18 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
     return __DBHandles;
 }
 
+- (NSString *) getDBListenerKey:(NSString *) path
+                  withModifiers:(NSString *) modifiersString
+{
+    return [NSString stringWithFormat:@"@% | %@", path, modifiersString, nil];
+}
+
 - (FirestackDBReference *) getDBHandle:(NSString *) path
+                         withModifiers:modifiersString
 {
     NSDictionary *stored = [self storedDBHandles];
-    FirestackDBReference *r = [stored objectForKey:path];
+    NSString *key = [self getDBListenerKey:path withModifiers:modifiersString];
+    FirestackDBReference *r = [stored objectForKey:key];
 
     if (r == nil) {
         r = [[FirestackDBReference alloc] initWithPath:path];
