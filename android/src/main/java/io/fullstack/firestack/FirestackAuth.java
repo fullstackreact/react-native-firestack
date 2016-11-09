@@ -223,10 +223,41 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void reauthenticateWithCredentialForProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
-      // TODO:
-      FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
-      // AuthCredential credential;
-      // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
+        AuthCredential credential;
+
+        if (provider.equals("facebook")) {
+            credential = FacebookAuthProvider.getCredential(authToken);
+        } else if (provider.equals("google")) {
+            credential = GoogleAuthProvider.getCredential(authToken, null);
+        } else {
+            // TODO:
+            FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
+            // AuthCredential credential;
+            // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
+            return;
+        }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            user.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User re-authenticated with " + provider);
+                            FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+                            userCallback(u, callback);
+                        } else {
+                            userErrorCallback(task, callback);
+                        }
+                    }
+                });
+        } else {
+            WritableMap err = Arguments.createMap();
+            err.putInt("errorCode", NO_CURRENT_USER);
+            err.putString("errorMessage", "No current user");
+            callback.invoke(err);
+        }
     }
 
     @ReactMethod
@@ -540,7 +571,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 WritableMap userMap = getUserMap();
                 if (FirestackAuthModule.this.user != null) {
                     final String token = task.getResult().getToken();
-
                     userMap.putString("token", token);
                     userMap.putBoolean("anonymous", false);
                 }
@@ -637,9 +667,10 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
           userMap.putString("email", email);
           userMap.putString("uid", uid);
           userMap.putString("providerId", provider);
+          userMap.putBoolean("emailVerified", user.isEmailVerified());
 
           if (name != null) {
-            userMap.putString("name", name);
+            userMap.putString("displayName", name);
           }
 
           if (photoUrl != null) {
