@@ -186,7 +186,8 @@ RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
     FIRUser *user = [FIRAuth auth].currentUser;
 
     if (user != nil) {
-        NSDictionary *userProps = [self userPropsFromFIRUser:user];
+        NSMutableDictionary *userProps = [self userPropsFromFIRUser:user];
+        [userProps setValue: @((BOOL)true) forKey: @"authenticated"];
         callback(@[[NSNull null], userProps]);
     } else {
         // No user is signed in.
