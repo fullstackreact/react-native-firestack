@@ -304,8 +304,12 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   public void enablePersistence(
     final Boolean enable,
     final Callback callback) {
-      FirebaseDatabase.getInstance()
+      try {
+        FirebaseDatabase.getInstance()
           .setPersistenceEnabled(enable);
+      } catch (Throwable t) {
+        Log.e(TAG, "FirebaseDatabase setPersistenceEnabled exception", t);
+      }
 
       WritableMap res = Arguments.createMap();
       res.putString("status", "success");
