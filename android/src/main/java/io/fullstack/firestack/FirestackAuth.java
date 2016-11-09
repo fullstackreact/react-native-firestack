@@ -187,10 +187,41 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void reauthenticateWithCredentialForProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
-      // TODO:
-      FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
-      // AuthCredential credential;
-      // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
+        AuthCredential credential;
+
+        if (provider.equals("facebook")) {
+            credential = FacebookAuthProvider.getCredential(authToken);
+        } else if (provider.equals("google")) {
+            credential = GoogleAuthProvider.getCredential(authToken, null);
+        } else {
+            // TODO:
+            FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
+            // AuthCredential credential;
+            // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
+            return;
+        }
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            user.reauthenticate(credential)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (task.isSuccessful()) {
+                            Log.d(TAG, "User re-authenticated with " + provider);
+                            FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+                            userCallback(u, callback);
+                        } else {
+                            userErrorCallback(task, callback);
+                        }
+                    }
+                });
+        } else {
+            WritableMap err = Arguments.createMap();
+            err.putInt("errorCode", NO_CURRENT_USER);
+            err.putString("errorMessage", "No current user");
+            callback.invoke(err);
+        }
     }
 
     @ReactMethod
