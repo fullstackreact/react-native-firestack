@@ -639,6 +639,3 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         return userMap;
     }
 }
-n userMap;
-    }
-}
