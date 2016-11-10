@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.FirebaseAuthException;
 
 class FirestackAuthModule extends ReactContextBaseJavaModule {
   private final int NO_CURRENT_USER = 100;
@@ -588,19 +589,21 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     }
 
     public void userErrorCallback(Task task, final Callback onFail) {
-        WritableMap error = Arguments.createMap();
-        error.putInt("errorCode", task.getException().hashCode());
-        error.putString("errorMessage", task.getException().getMessage());
-        error.putString("allErrorMessage", task.getException().toString());
-
-        onFail.invoke(error);
+      userExceptionCallback(task.getException(), onFail);
     }
 
-    public void userExceptionCallback(Exception ex, final Callback onFail) {
+    public void userExceptionCallback(Exception exp, final Callback onFail) {
       WritableMap error = Arguments.createMap();
-      error.putInt("errorCode", ex.hashCode());
-      error.putString("errorMessage", ex.getMessage());
-      error.putString("allErrorMessage", ex.toString());
+      error.putString("errorMessage",     exp.getMessage());
+      error.putString("allErrorMessage",  exp.toString());
+
+      try {
+        throw exp;
+      } catch (FirebaseAuthException ex) {
+        error.putString("errorCode", ex.getErrorCode());
+      } catch (Exception ex) {
+        Log.e(TAG, ex.getMessage());
+      }
 
       onFail.invoke(error);
     }
@@ -634,5 +637,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         }
 
         return userMap;
+    }
+}
+n userMap;
     }
 }
