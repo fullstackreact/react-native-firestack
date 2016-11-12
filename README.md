@@ -12,16 +12,7 @@ npm i react-native-firestack --save
 
 Firestack is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the React Native JS api as closely as possible. It features:
 
-* Authentication
-* Storage
-  * upload/download files
-  * download urls
-* Real-time database
-* Presence
-* Analytics
-* Cloud Messaging (currently Android only)
-* Remote configuration
-* Redux support (not required)
+Featuring; authentication, storage, real-time database, presence, analytics, cloud messaging, remote configuration, redux support and more!
 
 ## Firestack vs Firebase JS lib
 
