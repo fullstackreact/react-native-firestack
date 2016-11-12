@@ -34,19 +34,19 @@ We have a working application example available in at [fullstackreact/FirestackA
 ## Documentation
 
 * Installation
-  * iOS
-  * Android
-* Firebase Setup
+  * [iOS](docs/installation.ios.md)
+  * [Android](docs/installation.android.md)
+* [Firebase Setup](docs/firebase-setup.md)
 * API
-  * Authentication
-  * Analytics
-  * Storage
-  * Realtime Database
-  * Presence
-  * ServerValue
-  * Cloud Messaging
-  * Events
-* Redux
+  * [Authentication](docs/api/authentication.md)
+  * [Analytics](docs/api/analytics.md)
+  * [Storage](docs/api/storage.md)
+  * [Realtime Database](docs/api/database.md)
+  * [Presence](docs/api/presence.md)
+  * [ServerValue](docs/api/server-value.md)
+  * [Cloud Messaging](docs/api/cloud-messaging.md)
+  * [Events](docs/api/events.md)
+* [Redux](docs/redux.md)
 
 ## Contributing
 
