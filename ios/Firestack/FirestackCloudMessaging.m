@@ -13,28 +13,7 @@
 #endif
 #import "FirestackCloudMessaging.h"
 #import "FirestackEvents.h"
-#import "RCTConvert.h"
-
-// https://github.com/facebook/react-native/blob/master/Libraries/PushNotificationIOS/RCTPushNotificationManager.m
-@implementation RCTConvert (UILocalNotification)
-
-+ (UILocalNotification *)UILocalNotification:(id)json
-{
-  NSDictionary<NSString *, id> *details = [self NSDictionary:json];
-  UILocalNotification *notification = [UILocalNotification new];
-  notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
-  notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
-  notification.alertAction = [RCTConvert NSString:details[@"alertAction"]];
-  notification.soundName = [RCTConvert NSString:details[@"soundName"]] ?: UILocalNotificationDefaultSoundName;
-  notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]];
-  notification.category = [RCTConvert NSString:details[@"category"]];
-  if (details[@"applicationIconBadgeNumber"]) {
-    notification.applicationIconBadgeNumber = [RCTConvert NSInteger:details[@"applicationIconBadgeNumber"]];
-  }
-  return notification;
-}
-
-@end
+// #import "RCTConvert.h"
 
 @implementation FirestackCloudMessaging
 
