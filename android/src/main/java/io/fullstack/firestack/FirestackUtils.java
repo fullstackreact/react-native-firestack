@@ -50,7 +50,8 @@ public class FirestackUtils {
 
   // snapshot
   public static WritableMap dataSnapshotToMap(String name, 
-    String path, 
+    String path,
+    String modifiersString,
     DataSnapshot dataSnapshot) {
       WritableMap data = Arguments.createMap();
 
@@ -98,6 +99,7 @@ public class FirestackUtils {
       WritableMap eventMap = Arguments.createMap();
       eventMap.putString("eventName", name);
       eventMap.putMap("snapshot", data);
+      eventMap.putString("modifiersString", modifiersString);
       eventMap.putString("path", path);
       return eventMap;
   }
