@@ -530,7 +530,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 }
 
                 msgMap.putMap("user", userMap);
-
+                msgMap.putBoolean("authenticated", true);
                 callback.invoke(null, msgMap);
             }
         }).addOnFailureListener(new OnFailureListener() {
