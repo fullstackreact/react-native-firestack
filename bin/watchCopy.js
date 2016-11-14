@@ -1,4 +1,4 @@
-const { watch } = require('cpx');
+const { watch, copy } = require('cpx');
 const { resolve } = require('path');
 const packageJson = require('./../package.json');
 
@@ -22,15 +22,19 @@ if (!TARGET_DIR.includes('node_modules')) {
   TARGET_DIR = `${TARGET_DIR}/node_modules/${packageJson.name}`;
 }
 
-
 rl.question(`Watch for changes in '${PROJECT_DIR}' and copy to '${TARGET_DIR}'? (y/n): `, (answer) => {
   if (answer.toLowerCase() === 'y') {
-    console.log('For the watch! (watching has begun)');
-    const watcher = watch(PROJECT_DIR + '/{ios,android,lib}/**/*.*', TARGET_DIR, { verbose: true});
-    watcher.on('copy', (e) => {
-     // if (!e.srcPath.startsWith('node_modules')) {
+    // flat copy node_modules as we're not watching it
+    console.log('Copying node_modules directory...');
+    copy(PROJECT_DIR + '/node_modules/**/*.*', TARGET_DIR.replace(`/${packageJson.name}`), { clean: true }, () => {
+      console.log('Copy complete.');
+      console.log('Watching for changes in project directory... (excludes node_modules)');
+      const watcher = watch(PROJECT_DIR + '/{ios,android,lib}/**/*.*', TARGET_DIR, { verbose: true });
+      watcher.on('copy', (e) => {
+        // if (!e.srcPath.startsWith('node_modules')) {
         console.log(`Copied ${e.srcPath} to ${e.dstPath}`);
-      // }
+        // }
+      });
     });
   } else {
     console.log('Aborting watch.');
