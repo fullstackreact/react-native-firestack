@@ -70,7 +70,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         WritableMap msgMap = Arguments.createMap();
         msgMap.putString("eventName", "listenForAuth");
 
-        if (FirestackAuthModule.this.user != null) {
+        if (firebaseAuth.getCurrentUser() != null) {
             WritableMap userMap = getUserMap();
 
             msgMap.putBoolean("authenticated", true);
