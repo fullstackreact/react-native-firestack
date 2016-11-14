@@ -26,11 +26,11 @@ if (!TARGET_DIR.includes('node_modules')) {
 rl.question(`Watch for changes in '${PROJECT_DIR}' and copy to '${TARGET_DIR}'? (y/n): `, (answer) => {
   if (answer.toLowerCase() === 'y') {
     console.log('For the watch! (watching has begun)');
-    const watcher = watch(PROJECT_DIR + '/**/*.*', TARGET_DIR, { verbose: true});
+    const watcher = watch(PROJECT_DIR + '/{ios,android,lib}/**/*.*', TARGET_DIR, { verbose: true});
     watcher.on('copy', (e) => {
-      if (!e.srcPath.startsWith('node_modules')) {
+     // if (!e.srcPath.startsWith('node_modules')) {
         console.log(`Copied ${e.srcPath} to ${e.dstPath}`);
-      }
+      // }
     });
   } else {
     console.log('Aborting watch.');
