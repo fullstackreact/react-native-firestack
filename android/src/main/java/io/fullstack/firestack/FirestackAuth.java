@@ -1,8 +1,11 @@
+
 package io.fullstack.firestack;
 
 import android.content.Context;
 import android.util.Log;
+
 import java.util.Map;
+
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -34,86 +37,96 @@ import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 
 class FirestackAuthModule extends ReactContextBaseJavaModule {
-  private final int NO_CURRENT_USER = 100;
-  private final int ERROR_FETCHING_TOKEN = 101;
+    private final int NO_CURRENT_USER = 100;
+    private final int ERROR_FETCHING_TOKEN = 101;
+    private final int ERROR_SENDING_VERIFICATION_EMAIL = 102;
 
-  private static final String TAG = "FirestackAuth";
+    private static final String TAG = "FirestackAuth";
 
-  private Context context;
-  private ReactContext mReactContext;
-  private FirebaseAuth mAuth;
-  private FirebaseApp app;
-  private FirebaseUser user;
-  private FirebaseAuth.AuthStateListener mAuthListener;
+    private Context context;
+    private ReactContext mReactContext;
+    private FirebaseAuth mAuth;
+    private FirebaseApp app;
+    private FirebaseUser user;
+    private FirebaseAuth.AuthStateListener mAuthListener;
 
-  public FirestackAuthModule(ReactApplicationContext reactContext) {
-    super(reactContext);
-    this.context = reactContext;
-    mReactContext = reactContext;
+    public FirestackAuthModule(ReactApplicationContext reactContext) {
+        super(reactContext);
+        this.context = reactContext;
+        mReactContext = reactContext;
 
-    Log.d(TAG, "New FirestackAuth instance");
-  }
-
-  @Override
-  public String getName() {
-    return TAG;
-  }
-
-  @ReactMethod
-  public void listenForAuth() {
-    mAuthListener = new FirebaseAuth.AuthStateListener() {
+        Log.d(TAG, "New FirestackAuth instance");
+    }
 
     @Override
-    public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        WritableMap msgMap = Arguments.createMap();
-        msgMap.putString("eventName", "listenForAuth");
+    public String getName() {
+        return TAG;
+    }
 
-        if (FirestackAuthModule.this.user != null) {
-            WritableMap userMap = getUserMap();
+    @ReactMethod
+    public void listenForAuth() {
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
 
-            msgMap.putBoolean("authenticated", true);
-            msgMap.putMap("user", userMap);
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                WritableMap msgMap = Arguments.createMap();
+                msgMap.putString("eventName", "listenForAuth");
 
-            FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
-        } else {
-            msgMap.putBoolean("authenticated", false);
-            FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
-        }
-        }
-      };
+                if (FirestackAuthModule.this.user != null) {
+                    WritableMap userMap = getUserMap();
 
-      mAuth = FirebaseAuth.getInstance();
-      mAuth.addAuthStateListener(mAuthListener);
+                    msgMap.putBoolean("authenticated", true);
+                    msgMap.putMap("user", userMap);
+
+                    FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
+                } else {
+                    msgMap.putBoolean("authenticated", false);
+                    FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
+                }
+            }
+        };
+
+        mAuth = FirebaseAuth.getInstance();
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
     @ReactMethod
     public void unlistenForAuth(final Callback callback) {
-      if (mAuthListener != null) {
-        mAuth.removeAuthStateListener(mAuthListener);
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
 
-        WritableMap resp = Arguments.createMap();
-        resp.putString("status", "complete");
+            WritableMap resp = Arguments.createMap();
+            resp.putString("status", "complete");
 
-        callback.invoke(null, resp);
-      }
+            callback.invoke(null, resp);
+        }
     }
 
     @ReactMethod
-    public void createUserWithEmail(final String email, final String password, final Callback onComplete) {
-      mAuth = FirebaseAuth.getInstance();
+    public void createUserWithEmail(final String email, final String password, final Callback callback) {
+        mAuth = FirebaseAuth.getInstance();
 
-      mAuth.createUserWithEmailAndPassword(email, password)
-              .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                  @Override
-                  public void onComplete(@NonNull Task<AuthResult> task) {
-                      if (task.isSuccessful()) {
-                          FirestackAuthModule.this.user = task.getResult().getUser();
-                          userCallback(FirestackAuthModule.this.user, onComplete);
-                      }else{
-                          userErrorCallback(task, onComplete);
-                      }
-                  }
-              });
+        mAuth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        try {
+                            if (task.isSuccessful()) {
+                                FirestackAuthModule.this.user = task.getResult().getUser();
+                                userCallback(FirestackAuthModule.this.user, callback);
+                            } else {
+                                userErrorCallback(task, callback);
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
+            }
+        });
     }
 
     @ReactMethod
@@ -121,28 +134,38 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         mAuth = FirebaseAuth.getInstance();
 
         mAuth.signInWithEmailAndPassword(email, password)
-          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-              @Override
-              public void onComplete(@NonNull Task<AuthResult> task) {
-                  if (task.isSuccessful()) {
-                      FirestackAuthModule.this.user = task.getResult().getUser();
-                      userCallback(FirestackAuthModule.this.user, callback);
-                  } else {
-                      userErrorCallback(task, callback);
-                  }
-              }
-          });
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        try {
+                            if (task.isSuccessful()) {
+                                FirestackAuthModule.this.user = task.getResult().getUser();
+                                userCallback(FirestackAuthModule.this.user, callback);
+                            } else {
+                                userErrorCallback(task, callback);
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception ex) {
+                        userExceptionCallback(ex, callback);
+                    }
+                });
     }
 
     @ReactMethod
     public void signInWithProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
-      if (provider.equals("facebook")) {
-           this.facebookLogin(authToken,callback);
-      } else if (provider.equals("google")) {
-           this.googleLogin(authToken,callback);
-      } else
-      // TODO
-      FirestackUtils.todoNote(TAG, "signInWithProvider", callback);
+        if (provider.equals("facebook")) {
+            this.facebookLogin(authToken, callback);
+        } else if (provider.equals("google")) {
+            this.googleLogin(authToken, callback);
+        } else
+            // TODO
+            FirestackUtils.todoNote(TAG, "signInWithProvider", callback);
     }
 
     @ReactMethod
@@ -155,95 +178,130 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         Log.d(TAG, "signInAnonymously:onComplete:" + task.isSuccessful());
 
-                        if (task.isSuccessful()) {
-                            FirestackAuthModule.this.user = task.getResult().getUser();
-                            anonymousUserCallback(FirestackAuthModule.this.user, callback);
-                        }else{
-                            userErrorCallback(task, callback);
+                        try {
+                            if (task.isSuccessful()) {
+                                FirestackAuthModule.this.user = task.getResult().getUser();
+                                anonymousUserCallback(FirestackAuthModule.this.user, callback);
+                            } else {
+                                userErrorCallback(task, callback);
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
                         }
                     }
-                });
-
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
+            }
+        });
     }
 
     @ReactMethod
     public void signInWithCustomToken(final String customToken, final Callback callback) {
-      mAuth = FirebaseAuth.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
-      mAuth.signInWithCustomToken(customToken)
-        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        mAuth.signInWithCustomToken(customToken)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful());
+                        try {
+                            if (task.isSuccessful()) {
+                                FirestackAuthModule.this.user = task.getResult().getUser();
+                                userCallback(FirestackAuthModule.this.user, callback);
+                            } else {
+                                userErrorCallback(task, callback);
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
-                Log.d(TAG, "signInWithCustomToken:onComplete:" + task.isSuccessful());
-                if (task.isSuccessful()) {
-                    FirestackAuthModule.this.user = task.getResult().getUser();
-                    userCallback(FirestackAuthModule.this.user, callback);
-                } else {
-                    userErrorCallback(task, callback);
-                }
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
             }
         });
     }
 
     @ReactMethod
     public void reauthenticateWithCredentialForProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
-      // TODO:
-      FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
-      // AuthCredential credential;
-      // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
+        // TODO:
+        FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
+        // AuthCredential credential;
+        // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
     }
 
     @ReactMethod
     public void updateUserEmail(final String email, final Callback callback) {
-      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-      if (user != null) {
-        user.updateEmail(email)
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "User email address updated");
-                FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
-                userCallback(u, callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            }
-          });
-      } else {
-        WritableMap err = Arguments.createMap();
-        err.putInt("errorCode", NO_CURRENT_USER);
-        err.putString("errorMessage", "No current user");
-        callback.invoke(err);
-      }
+        if (user != null) {
+            user.updateEmail(email)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            try {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "User email address updated");
+                                    FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+                                    userCallback(u, callback);
+                                } else {
+                                    userErrorCallback(task, callback);
+                                }
+                            } catch (Exception ex) {
+                                userExceptionCallback(ex, callback);
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception ex) {
+                    userExceptionCallback(ex, callback);
+                }
+            });
+        } else {
+            WritableMap err = Arguments.createMap();
+            err.putInt("errorCode", NO_CURRENT_USER);
+            err.putString("errorMessage", "No current user");
+            callback.invoke(err);
+        }
     }
 
     @ReactMethod
     public void updateUserPassword(final String newPassword, final Callback callback) {
-      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-      if (user != null) {
-        user.updatePassword(newPassword)
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "User password updated");
+        if (user != null) {
+            user.updatePassword(newPassword)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            try {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "User password updated");
 
-                FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
-                userCallback(u, callback);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            }
-          });
-      } else {
-        WritableMap err = Arguments.createMap();
-        err.putInt("errorCode", NO_CURRENT_USER);
-        err.putString("errorMessage", "No current user");
-        callback.invoke(err);
-      }
+                                    FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+                                    userCallback(u, callback);
+                                } else {
+                                    userErrorCallback(task, callback);
+                                }
+                            } catch (Exception ex) {
+                                userExceptionCallback(ex, callback);
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception ex) {
+                    userExceptionCallback(ex, callback);
+                }
+            });
+        } else {
+            WritableMap err = Arguments.createMap();
+            err.putInt("errorCode", NO_CURRENT_USER);
+            err.putString("errorMessage", "No current user");
+            callback.invoke(err);
+        }
     }
 
     @ReactMethod
@@ -254,114 +312,188 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            WritableMap resp = Arguments.createMap();
-                            resp.putString("status", "complete");
-                            callback.invoke(null, resp);
-                        }else{
-                            callback.invoke(task.getException().toString());
+                        try {
+                            if (task.isSuccessful()) {
+                                WritableMap resp = Arguments.createMap();
+                                resp.putString("status", "complete");
+                                callback.invoke(null, resp);
+                            } else {
+                                callback.invoke(task.getException().toString());
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
                         }
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
+            }
+        });
     }
 
     @ReactMethod
     public void deleteUser(final Callback callback) {
-      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-      if (user != null) {
-        user.delete()
-          .addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-              if (task.isSuccessful()) {
-                Log.d(TAG, "User account deleted");
-                WritableMap resp = Arguments.createMap();
-                resp.putString("status", "complete");
-                resp.putString("msg", "User account deleted");
-                callback.invoke(null, resp);
-              } else {
-                userErrorCallback(task, callback);
-              }
-            }
-          });
-      } else {
-        WritableMap err = Arguments.createMap();
-        err.putInt("errorCode", NO_CURRENT_USER);
-        err.putString("errorMessage", "No current user");
-        callback.invoke(err);
-      }
+        if (user != null) {
+            user.delete()
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            try {
+                                if (task.isSuccessful()) {
+                                    Log.d(TAG, "User account deleted");
+                                    WritableMap resp = Arguments.createMap();
+                                    resp.putString("status", "complete");
+                                    resp.putString("msg", "User account deleted");
+                                    callback.invoke(null, resp);
+                                } else {
+                                    userErrorCallback(task, callback);
+                                }
+                            } catch (Exception ex) {
+                                userExceptionCallback(ex, callback);
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception ex) {
+                    userExceptionCallback(ex, callback);
+                }
+            });
+        } else {
+            WritableMap err = Arguments.createMap();
+            err.putInt("errorCode", NO_CURRENT_USER);
+            err.putString("errorMessage", "No current user");
+            callback.invoke(err);
+        }
     }
+
+
+    @ReactMethod
+    public void sendEmailVerification(final Callback callback) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        // TODO check user exists
+        user.sendEmailVerification()
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        try {
+                            if (task.isSuccessful()) {
+                                WritableMap resp = Arguments.createMap();
+                                resp.putString("status", "complete");
+                                resp.putString("msg", "User verification email sent");
+                                callback.invoke(null, resp);
+                            } else {
+                                WritableMap err = Arguments.createMap();
+                                err.putInt("errorCode", ERROR_SENDING_VERIFICATION_EMAIL);
+                                err.putString("errorMessage", task.getException().getMessage());
+                                callback.invoke(err);
+                            }
+                        } catch (Exception ex) {
+                           userExceptionCallback(ex, callback);
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception ex) {
+                       //userExceptionCallback(ex, callback);
+                    }
+                });
+    }
+
 
     @ReactMethod
     public void getToken(final Callback callback) {
-      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-      user.getToken(true)
-        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-          @Override
-          public void onComplete(@NonNull Task<GetTokenResult> task) {
-            if (task.isSuccessful()) {
-              String token = task.getResult().getToken();
-              WritableMap resp = Arguments.createMap();
-              resp.putString("status", "complete");
-              resp.putString("token", token);
-              callback.invoke(null, resp);
-            } else {
-              WritableMap err = Arguments.createMap();
-              err.putInt("errorCode", ERROR_FETCHING_TOKEN);
-              err.putString("errorMessage", task.getException().getMessage());
-              callback.invoke(err);
+        // TODO check user exists
+        user.getToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        try {
+                            if (task.isSuccessful()) {
+                                String token = task.getResult().getToken();
+                                WritableMap resp = Arguments.createMap();
+                                resp.putString("status", "complete");
+                                resp.putString("token", token);
+                                callback.invoke(null, resp);
+                            } else {
+                                WritableMap err = Arguments.createMap();
+                                err.putInt("errorCode", ERROR_FETCHING_TOKEN);
+                                err.putString("errorMessage", task.getException().getMessage());
+                                callback.invoke(err);
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
             }
-          }
         });
     }
 
     @ReactMethod
     public void updateUserProfile(ReadableMap props, final Callback callback) {
-      FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-      UserProfileChangeRequest.Builder profileBuilder = new UserProfileChangeRequest.Builder();
+        UserProfileChangeRequest.Builder profileBuilder = new UserProfileChangeRequest.Builder();
 
-      Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+        Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
 
-      if (m.containsKey("displayName")) {
-        String displayName = (String) m.get("displayName");
-        profileBuilder.setDisplayName(displayName);
-      }
+        if (m.containsKey("displayName")) {
+            String displayName = (String) m.get("displayName");
+            profileBuilder.setDisplayName(displayName);
+        }
 
-      if (m.containsKey("photoUri")) {
-        String photoUriStr = (String) m.get("photoUri");
-        Uri uri = Uri.parse(photoUriStr);
-        profileBuilder.setPhotoUri(uri);
-      }
+        if (m.containsKey("photoUri")) {
+            String photoUriStr = (String) m.get("photoUri");
+            Uri uri = Uri.parse(photoUriStr);
+            profileBuilder.setPhotoUri(uri);
+        }
 
-      UserProfileChangeRequest profileUpdates = profileBuilder.build();
+        UserProfileChangeRequest profileUpdates = profileBuilder.build();
 
-      user.updateProfile(profileUpdates)
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(@NonNull Task<Void> task) {
-            if (task.isSuccessful()) {
-              Log.d(TAG, "User profile updated");
-              FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
-              userCallback(u, callback);
-            } else {
-              userErrorCallback(task, callback);
+        // TODO check user exists
+        user.updateProfile(profileUpdates)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        try {
+                            if (task.isSuccessful()) {
+                                Log.d(TAG, "User profile updated");
+                                FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
+                                userCallback(u, callback);
+                            } else {
+                                userErrorCallback(task, callback);
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
             }
-          }
         });
     }
 
     @ReactMethod
     public void signOut(final Callback callback) {
-      FirebaseAuth.getInstance().signOut();
-      this.user = null;
+        FirebaseAuth.getInstance().signOut();
+        this.user = null;
 
-      WritableMap resp = Arguments.createMap();
-      resp.putString("status", "complete");
-      resp.putString("msg", "User signed out");
-      callback.invoke(null, resp);
+        WritableMap resp = Arguments.createMap();
+        resp.putString("status", "complete");
+        resp.putString("msg", "User signed out");
+        callback.invoke(null, resp);
     }
 
     @ReactMethod
@@ -369,9 +501,10 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         mAuth = FirebaseAuth.getInstance();
 
         this.user = mAuth.getCurrentUser();
-        if(this.user == null){
+        if (this.user == null) {
             noUserCallback(callback);
-        }else{
+        } else {
+            Log.d("USRC", this.user.getDisplayName());
             userCallback(this.user, callback);
         }
     }
@@ -386,14 +519,23 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            FirestackAuthModule.this.user = task.getResult().getUser();
-                            userCallback(FirestackAuthModule.this.user, callback);
-                        }else{
-                            userErrorCallback(task, callback);
+                        try {
+                            if (task.isSuccessful()) {
+                                FirestackAuthModule.this.user = task.getResult().getUser();
+                                userCallback(FirestackAuthModule.this.user, callback);
+                            } else {
+                                userErrorCallback(task, callback);
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
                         }
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
+            }
+        });
     }
 
     @ReactMethod
@@ -405,26 +547,36 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            FirestackAuthModule.this.user = task.getResult().getUser();
-                            userCallback(FirestackAuthModule.this.user, callback);
-                        }else{
-                            userErrorCallback(task, callback);
+                        try {
+                            if (task.isSuccessful()) {
+                                FirestackAuthModule.this.user = task.getResult().getUser();
+                                userCallback(FirestackAuthModule.this.user, callback);
+                            } else {
+                                userErrorCallback(task, callback);
+                            }
+                        } catch (Exception ex) {
+                            userExceptionCallback(ex, callback);
                         }
                     }
-                });
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
+            }
+        });
     }
 
     // Internal helpers
-    public void userCallback(FirebaseUser passedUser, final Callback onComplete) {
+    public void userCallback(FirebaseUser passedUser, final Callback callback) {
 
         if (passedUser == null) {
-          mAuth = FirebaseAuth.getInstance();
-          this.user = mAuth.getCurrentUser();
+            mAuth = FirebaseAuth.getInstance();
+            this.user = mAuth.getCurrentUser();
         } else {
-          this.user = passedUser;
+            this.user = passedUser;
         }
 
+        // TODO check user exists
         this.user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
@@ -439,37 +591,48 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
                 msgMap.putMap("user", userMap);
 
-                onComplete.invoke(null, msgMap);
+                callback.invoke(null, msgMap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
             }
         });
     }
 
     // TODO: Reduce to one method
-    public void anonymousUserCallback(FirebaseUser passedUser, final Callback onComplete) {
+    public void anonymousUserCallback(FirebaseUser passedUser, final Callback callback) {
 
         if (passedUser == null) {
-          mAuth = FirebaseAuth.getInstance();
-          this.user = mAuth.getCurrentUser();
+            mAuth = FirebaseAuth.getInstance();
+            this.user = mAuth.getCurrentUser();
         } else {
-          this.user = passedUser;
+            this.user = passedUser;
         }
 
-        this.user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+        this.user.getToken(true)
+                .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        WritableMap msgMap = Arguments.createMap();
+                        WritableMap userMap = getUserMap();
+
+                        if (FirestackAuthModule.this.user != null) {
+                            final String token = task.getResult().getToken();
+
+                            userMap.putString("token", token);
+                            userMap.putBoolean("anonymous", true);
+                        }
+
+                        msgMap.putMap("user", userMap);
+
+                        callback.invoke(null, msgMap);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
             @Override
-            public void onComplete(@NonNull Task<GetTokenResult> task) {
-                WritableMap msgMap = Arguments.createMap();
-                WritableMap userMap = getUserMap();
-
-                if (FirestackAuthModule.this.user != null) {
-                    final String token = task.getResult().getToken();
-
-                    userMap.putString("token", token);
-                    userMap.putBoolean("anonymous", true);
-                }
-
-                msgMap.putMap("user", userMap);
-
-                onComplete.invoke(null, msgMap);
+            public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
             }
         });
     }
@@ -494,31 +657,40 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         onFail.invoke(error);
     }
 
+    public void userExceptionCallback(Exception ex, final Callback onFail) {
+        WritableMap error = Arguments.createMap();
+        error.putInt("errorCode", ex.hashCode());
+        error.putString("errorMessage", ex.getMessage());
+        error.putString("allErrorMessage", ex.toString());
+
+        onFail.invoke(error);
+    }
+
     private WritableMap getUserMap() {
         WritableMap userMap = Arguments.createMap();
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         if (user != null) {
-          final String email = user.getEmail();
-          final String uid   = user.getUid();
-          final String provider = user.getProviderId();
-          final String name = user.getDisplayName();
-          final Uri photoUrl = user.getPhotoUrl();
+            final String email = user.getEmail();
+            final String uid = user.getUid();
+            final String provider = user.getProviderId();
+            final String name = user.getDisplayName();
+            final Uri photoUrl = user.getPhotoUrl();
 
-          userMap.putString("email", email);
-          userMap.putString("uid", uid);
-          userMap.putString("providerId", provider);
+            userMap.putString("email", email);
+            userMap.putString("uid", uid);
+            userMap.putString("providerId", provider);
 
-          if (name != null) {
-            userMap.putString("name", name);
-          }
+            if (name != null) {
+                userMap.putString("name", name);
+            }
 
-          if (photoUrl != null) {
-            userMap.putString("photoUrl", photoUrl.toString());
-          }
+            if (photoUrl != null) {
+                userMap.putString("photoURL", photoUrl.toString());
+            }
         } else {
-          userMap.putString("msg", "no user");
+            userMap.putString("msg", "no user");
         }
 
         return userMap;
