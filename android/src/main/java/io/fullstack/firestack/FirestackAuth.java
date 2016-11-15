@@ -517,7 +517,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
   }
 
   // Internal helpers
-  public void userCallback(FirebaseUser passedUser, final Callback callback) {
+  private void userCallback(FirebaseUser passedUser, final Callback callback) {
 
     if (passedUser == null) {
       mAuth = FirebaseAuth.getInstance();
@@ -556,7 +556,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
   }
 
   // TODO: Reduce to one method
-  public void anonymousUserCallback(FirebaseUser passedUser, final Callback callback) {
+  private void anonymousUserCallback(FirebaseUser passedUser, final Callback callback) {
 
     if (passedUser == null) {
       mAuth = FirebaseAuth.getInstance();
