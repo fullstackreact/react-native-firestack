@@ -52,6 +52,7 @@ android/*.iml
 ehthumbs.db
 Thumbs.dbandroid/gradle
 android/gradlew
+android/build
 android/gradlew.bat
 android/gradle/
 .idea
