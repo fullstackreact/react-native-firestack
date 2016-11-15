@@ -6,12 +6,12 @@ Firestack handles authentication for us out of the box, both with email/password
 
 ## Local Auth
 
-#### [listenForAuth()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onAuthStateChanged)
+#### [onAuthStateChanged()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onAuthStateChanged)
 
 Listen for changes in the users auth state (logging in and out).
 
 ```javascript
-firestack.auth.listenForAuth((evt) => {
+firestack.auth().onAuthStateChanged((evt) => {
   // evt is the authentication event, it contains an `error` key for carrying the
   // error message in case of an error and a `user` key upon successful authentication
   if (!evt.authenticated) {
@@ -25,22 +25,22 @@ firestack.auth.listenForAuth((evt) => {
 .then(() => console.log('Listening for authentication changes'))
 ```
 
-#### unlistenForAuth()
+#### offAuthStateChanged()
 
-Remove the `listenForAuth` listener. 
+Remove the `onAuthStateChanged` listener. 
 This is important to release resources from our app when we don't need to hold on to the listener any longer.
 
 ```javascript
-firestack.auth.unlistenForAuth()
+firestack.auth().offAuthStateChanged()
 ```
 
-#### [createUserWithEmail()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#createUserWithEmailAndPassword)
+#### [createUserWithEmailAndPassword()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#createUserWithEmailAndPassword)
 
-We can create a user by calling the `createUserWithEmail()` function. 
+We can create a user by calling the `createUserWithEmailAndPassword()` function. 
 The method accepts two parameters, an email and a password.
 
 ```javascript
-firestack.auth.createUserWithEmail('ari@fullstack.io', '123456')
+firestack.auth().createUserWithEmailAndPassword('ari@fullstack.io', '123456')
   .then((user) => {
     console.log('user created', user)
   })
@@ -49,13 +49,13 @@ firestack.auth.createUserWithEmail('ari@fullstack.io', '123456')
   })
 ```
 
-#### [signInWithEmail()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithEmailAndPassword)
+#### [signInWithEmailAndPassword()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithEmailAndPassword)
 
-To sign a user in with their email and password, use the `signInWithEmail()` function. 
+To sign a user in with their email and password, use the `signInWithEmailAndPassword()` function. 
 It accepts two parameters, the user's email and password:
 
 ```javascript
-firestack.auth.signInWithEmail('ari@fullstack.io', '123456')
+firestack.auth().signInWithEmailAndPassword('ari@fullstack.io', '123456')
   .then((user) => {
     console.log('User successfully logged in', user)
   })
@@ -69,13 +69,14 @@ firestack.auth.signInWithEmail('ari@fullstack.io', '123456')
 Sign an anonymous user. If the user has already signed in, that user will be returned.
 
 ```javascript
-firestack.auth.signInAnonymously()
+firestack.auth().signInAnonymously()
   .then((user) => {
     console.log('Anonymous user successfully logged in', user)
   })
   .catch((err) => {
     console.error('Anonymous user signin error', err);
   })
+```
 
 #### signInWithProvider()
 
@@ -88,7 +89,7 @@ We can use an external authentication provider, such as twitter/facebook for aut
 To sign a user using a self-signed custom token, use the `signInWithCustomToken()` function. It accepts one parameter, the custom token:
 
 ```javascript
-firestack.auth.signInWithCustomToken(TOKEN)
+firestack.auth().signInWithCustomToken(TOKEN)
   .then((user) => {
     console.log('User successfully logged in', user)
   })
@@ -103,7 +104,7 @@ We can update the current user's email by using the command: `updateUserEmail()`
 It accepts a single argument: the user's new email:
 
 ```javascript
-firestack.auth.updateUserEmail('ari+rocks@fullstack.io')
+firestack.auth().updateUserEmail('ari+rocks@fullstack.io')
   .then((res) => console.log('Updated user email'))
   .catch(err => console.error('There was an error updating user email'))
 ```
@@ -114,7 +115,7 @@ We can update the current user's password using the `updateUserPassword()` metho
 It accepts a single parameter: the new password for the current user
 
 ```javascript
-firestack.auth.updateUserPassword('somethingReallyS3cr3t733t')
+firestack.auth().updateUserPassword('somethingReallyS3cr3t733t')
   .then(res => console.log('Updated user password'))
   .catch(err => console.error('There was an error updating your password'))
 ```
@@ -128,7 +129,7 @@ It accepts a single parameter:
 Possible keys are listed [here](https://firebase.google.com/docs/auth/ios/manage-users#update_a_users_profile).
 
 ```javascript
-firestack.auth
+firestack.auth()
   .updateUserProfile({
     displayName: 'Ari Lerner'
   })
@@ -142,7 +143,7 @@ To send a password reset for a user based upon their email, we can call the `sen
 It accepts a single parameter: the email of the user to send a reset email.
 
 ```javascript
-firestack.auth.sendPasswordResetWithEmail('ari+rocks@fullstack.io')
+firestack.auth().sendPasswordResetWithEmail('ari+rocks@fullstack.io')
   .then(res => console.log('Check your inbox for further instructions'))
   .catch(err => console.error('There was an error :('))
 ```
@@ -152,7 +153,7 @@ It's possible to delete a user completely from your account on Firebase.
 Calling the `deleteUser()` method will take care of this for you.
 
 ```javascript
-firestack.auth
+firestack.auth()
   .deleteUser()
   .then(res => console.log('Sad to see you go'))
   .catch(err => console.error('There was an error - Now you are trapped!'))
@@ -163,7 +164,7 @@ firestack.auth
 If you want user's token, use `getToken()` method.
 
 ```javascript
-firestack.auth
+firestack.auth()
   .getToken()
   .then(res => console.log(res.token))
   .catch(err => console.error('error'))
@@ -175,7 +176,7 @@ To sign the current user out, use the `signOut()` method.
 It accepts no parameters
 
 ```javascript
-firestack.auth
+firestack.auth()
   .signOut()
   .then(res => console.log('You have been signed out'))
   .catch(err => console.error('Uh oh... something weird happened'))
@@ -188,7 +189,7 @@ Although you _can_ get the current user using the `getCurrentUser()` method, it'
 However, if you need to get the current user, call the `getCurrentUser()` method:
 
 ```javascript
-firestack.auth
+firestack.auth()
   .getCurrentUser()
   .then(user => console.log('The currently logged in user', user))
   .catch(err => console.error('An error occurred'))
