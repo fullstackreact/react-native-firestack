@@ -96,8 +96,9 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
           res.putString("bucket", storageRef.getBucket());
           res.putString("fullPath", uri.toString());
           res.putString("path", uri.getPath());
+          res.putString("url", uri.toString());
 
-          storageRef.getMetadata()
+          fileRef.getMetadata()
           .addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
               @Override
               public void onSuccess(final StorageMetadata storageMetadata) {
@@ -230,9 +231,9 @@ Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
       Cursor cursor = context.getContentResolver().query(Uri.parse(uri), proj,  null, null, null);
       int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
       cursor.moveToFirst();
-      String path = cursor.getString(column_index); 
+      String path = cursor.getString(column_index);
       cursor.close();
-  
+
       callback.invoke(null, path);
     } catch (Exception ex) {
       ex.printStackTrace();

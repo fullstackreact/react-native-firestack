@@ -36,8 +36,7 @@
     "firebase"
   ],
   "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
+    "react": "*"
   },
   "rnpm": {
     "commands": {
@@ -54,6 +53,7 @@
   "devDependencies": {
     "babel-jest": "^14.1.0",
     "babel-preset-react-native": "^1.9.0",
+    "cpx": "^1.5.0",
     "debug": "^2.2.0",
     "enzyme": "^2.4.1",
     "jest": "^14.1.0",
@@ -68,7 +68,6 @@
   },
   "dependencies": {
     "bows": "^1.6.0",
-    "cpx": "^1.5.0",
     "es6-symbol": "^3.1.0"
   }
 }
