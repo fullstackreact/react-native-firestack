@@ -354,12 +354,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
               userExceptionCallback(ex, callback);
             }
           }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception ex) {
-            //userExceptionCallback(ex, callback);
-          }
         });
   }
 
