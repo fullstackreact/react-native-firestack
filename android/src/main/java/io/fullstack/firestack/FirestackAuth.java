@@ -1,7 +1,6 @@
 
 package io.fullstack.firestack;
 
-import android.content.Context;
 import android.util.Log;
 
 import java.util.Map;
@@ -57,6 +56,23 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
   @Override
   public String getName() {
     return TAG;
+  }
+
+  /**
+   * Returns a no user error.
+   *
+   * @param callback JS callback
+   */
+  public void callbackNoUser(Callback callback, Boolean isError) {
+    WritableMap err = Arguments.createMap();
+    err.putInt("errorCode", NO_CURRENT_USER);
+    err.putString("errorMessage", "No current user");
+
+    if (isError) {
+      callback.invoke(err);
+    } else {
+      callback.invoke(null, err);
+    }
   }
 
   @ReactMethod
@@ -217,7 +233,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     if (user != null) {
-      user.updateEmail(email)
+      user
+          .updateEmail(email)
           .addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
@@ -235,10 +252,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             }
           });
     } else {
-      WritableMap err = Arguments.createMap();
-      err.putInt("errorCode", NO_CURRENT_USER);
-      err.putString("errorMessage", "No current user");
-      callback.invoke(err);
+      callbackNoUser(callback, true);
     }
   }
 
@@ -266,10 +280,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             }
           });
     } else {
-      WritableMap err = Arguments.createMap();
-      err.putInt("errorCode", NO_CURRENT_USER);
-      err.putString("errorMessage", "No current user");
-      callback.invoke(err);
+      callbackNoUser(callback, true);
     }
   }
 
@@ -299,7 +310,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void deleteUser(final Callback callback) {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
     if (user != null) {
       user.delete()
           .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -321,10 +331,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             }
           });
     } else {
-      WritableMap err = Arguments.createMap();
-      err.putInt("errorCode", NO_CURRENT_USER);
-      err.putString("errorMessage", "No current user");
-      callback.invoke(err);
+      callbackNoUser(callback, true);
     }
   }
 
@@ -445,7 +452,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
     this.user = mAuth.getCurrentUser();
     if (this.user == null) {
-      noUserCallback(callback);
+      callbackNoUser(callback, false);
     } else {
       Log.d("USRC", this.user.getUid());
       userCallback(this.user, callback);
@@ -513,6 +520,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     this.user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
       @Override
       public void onComplete(@NonNull Task<GetTokenResult> task) {
+        // TODO - no task is successful check...
         WritableMap msgMap = Arguments.createMap();
         WritableMap userMap = getUserMap();
         if (FirestackAuthModule.this.user != null) {
@@ -548,6 +556,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
           @Override
           public void onComplete(@NonNull Task<GetTokenResult> task) {
+            // TODO - no task is successful check...
+
             WritableMap msgMap = Arguments.createMap();
             WritableMap userMap = getUserMap();
 
@@ -568,17 +578,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         userExceptionCallback(ex, callback);
       }
     });
-  }
-
-
-  public void noUserCallback(final Callback callback) {
-    WritableMap message = Arguments.createMap();
-
-    message.putString("errorMessage", "no_user");
-    message.putString("eventName", "no_user");
-    message.putBoolean("authenticated", false);
-
-    callback.invoke(null, message);
   }
 
   public void userErrorCallback(Task task, final Callback onFail) {
