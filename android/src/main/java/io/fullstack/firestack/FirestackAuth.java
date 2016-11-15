@@ -31,6 +31,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+@SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 class FirestackAuthModule extends ReactContextBaseJavaModule {
   private final int NO_CURRENT_USER = 100;
   private final int ERROR_FETCHING_TOKEN = 101;
@@ -63,7 +64,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
    *
    * @param callback JS callback
    */
-  public void callbackNoUser(Callback callback, Boolean isError) {
+  private void callbackNoUser(Callback callback, Boolean isError) {
     WritableMap err = Arguments.createMap();
     err.putInt("errorCode", NO_CURRENT_USER);
     err.putString("errorMessage", "No current user");
@@ -596,7 +597,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     }
   }
 
-  public void userErrorCallback(Task task, final Callback onFail) {
+  private void userErrorCallback(Task task, final Callback onFail) {
     WritableMap error = Arguments.createMap();
     error.putInt("errorCode", task.getException().hashCode());
     error.putString("errorMessage", task.getException().getMessage());
@@ -605,7 +606,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     onFail.invoke(error);
   }
 
-  public void userExceptionCallback(Exception ex, final Callback onFail) {
+  private void userExceptionCallback(Exception ex, final Callback onFail) {
     WritableMap error = Arguments.createMap();
     error.putInt("errorCode", ex.hashCode());
     error.putString("errorMessage", ex.getMessage());
