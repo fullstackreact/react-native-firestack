@@ -39,7 +39,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackAuth";
 
-  private Context context;
+  // private Context context;
   private ReactContext mReactContext;
   private FirebaseAuth mAuth;
   private FirebaseApp app;
@@ -48,7 +48,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
   public FirestackAuthModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.context = reactContext;
+    // this.context = reactContext;
     mReactContext = reactContext;
 
     Log.d(TAG, "New FirestackAuth instance");
