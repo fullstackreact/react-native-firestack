@@ -26,7 +26,7 @@ rl.question(`Watch for changes in '${PROJECT_DIR}' and copy to '${TARGET_DIR}'? 
   if (answer.toLowerCase() === 'y') {
     // flat copy node_modules as we're not watching it
     console.log('Copying node_modules directory...');
-    copy(PROJECT_DIR + '/node_modules/**/*.*', TARGET_DIR.replace(`/${packageJson.name}`), { clean: true }, () => {
+    copy(PROJECT_DIR + '/node_modules/**/*.*', TARGET_DIR + '/node_modules', { clean: true }, () => {
       console.log('Copy complete.');
       console.log('Watching for changes in project directory... (excludes node_modules)');
       const watcher = watch(PROJECT_DIR + '/{ios,android,lib}/**/*.*', TARGET_DIR, { verbose: true });
