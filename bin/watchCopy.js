@@ -14,7 +14,7 @@ let TARGET_DIR = process.env.TARGET_DIR;
 
 if (!TARGET_DIR) {
   console.error('Missing TARGET_DIR process env, aborting!');
-  console.error('EXAMPLE USAGE: TARGET_DIR=/Users/YOU/Documents/someproject npm run watchcpx');
+  console.error('EXAMPLE USAGE: TARGET_DIR=/Users/YOU/Documents/SomeReactApp npm run watchcpx');
   process.exit(1);
 }
 
