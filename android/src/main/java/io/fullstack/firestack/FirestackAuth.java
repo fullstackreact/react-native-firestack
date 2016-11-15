@@ -61,29 +61,30 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void listenForAuth() {
-    mAuthListener = new FirebaseAuth.AuthStateListener() {
+    if (mAuthListener == null) {
+      mAuthListener = new FirebaseAuth.AuthStateListener() {
+        @Override
+        public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+          WritableMap msgMap = Arguments.createMap();
+          msgMap.putString("eventName", "listenForAuth");
 
-      @Override
-      public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-        WritableMap msgMap = Arguments.createMap();
-        msgMap.putString("eventName", "listenForAuth");
+          if (FirestackAuthModule.this.user != null) {
+            WritableMap userMap = getUserMap();
 
-        if (FirestackAuthModule.this.user != null) {
-          WritableMap userMap = getUserMap();
+            msgMap.putBoolean("authenticated", true);
+            msgMap.putMap("user", userMap);
 
-          msgMap.putBoolean("authenticated", true);
-          msgMap.putMap("user", userMap);
-
-          FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
-        } else {
-          msgMap.putBoolean("authenticated", false);
-          FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
+            FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
+          } else {
+            msgMap.putBoolean("authenticated", false);
+            FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
+          }
         }
-      }
-    };
+      };
 
-    mAuth = FirebaseAuth.getInstance();
-    mAuth.addAuthStateListener(mAuthListener);
+      mAuth = FirebaseAuth.getInstance();
+      mAuth.addAuthStateListener(mAuthListener);
+    }
   }
 
   @ReactMethod
