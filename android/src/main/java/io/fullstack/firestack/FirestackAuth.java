@@ -61,7 +61,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void listenForAuth() {
-    if (mAuthListener == null) {
+    if (mAuthListener == null || mAuth == null) {
       mAuthListener = new FirebaseAuth.AuthStateListener() {
         @Override
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -69,8 +69,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
           msgMap.putString("eventName", "listenForAuth");
 
           if (FirestackAuthModule.this.user != null) {
+            // TODO move to helper
             WritableMap userMap = getUserMap();
-
             msgMap.putBoolean("authenticated", true);
             msgMap.putMap("user", userMap);
 
@@ -92,6 +92,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     if (mAuthListener != null) {
       mAuth.removeAuthStateListener(mAuthListener);
 
+      // TODO move to helper
       WritableMap resp = Arguments.createMap();
       resp.putString("status", "complete");
 
@@ -139,12 +140,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             } catch (Exception ex) {
               userExceptionCallback(ex, callback);
             }
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception ex) {
-            userExceptionCallback(ex, callback);
           }
         });
   }
