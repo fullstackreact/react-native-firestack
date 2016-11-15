@@ -630,7 +630,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
       userMap.putString("email", email);
       userMap.putString("uid", uid);
       userMap.putString("providerId", provider);
-      userMap.putBoolean("emailVerified", verified || false);
+      userMap.putBoolean("emailVerified", verified);
 
 
       if (name != null) {
