@@ -1,29 +1,19 @@
 package io.fullstack.firestack;
 
-import android.content.Context;
+import java.util.Map;
 import android.util.Log;
 import android.os.Bundle;
 import java.util.Iterator;
-import java.util.Map;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.content.Context;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.analytics.FirebaseAnalytics.Event.*;
-import com.google.firebase.analytics.FirebaseAnalytics.Param;
 
 class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
 
@@ -60,8 +50,8 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
 
   private String getEventName(final String name) {
     if (name == FirebaseAnalytics.Event.ADD_PAYMENT_INFO) {return FirebaseAnalytics.Event.ADD_PAYMENT_INFO; }
-    else if (name == FirebaseAnalytics.Event.ADD_TO_CART) {return FirebaseAnalytics.Event.ADD_TO_CART;} 
-    else if (name == FirebaseAnalytics.Event.ADD_TO_WISHLIST) {return FirebaseAnalytics.Event.ADD_TO_WISHLIST;} 
+    else if (name == FirebaseAnalytics.Event.ADD_TO_CART) {return FirebaseAnalytics.Event.ADD_TO_CART;}
+    else if (name == FirebaseAnalytics.Event.ADD_TO_WISHLIST) {return FirebaseAnalytics.Event.ADD_TO_WISHLIST;}
     else if (name == FirebaseAnalytics.Event.APP_OPEN) {return FirebaseAnalytics.Event.APP_OPEN;}
     else if (name == FirebaseAnalytics.Event.BEGIN_CHECKOUT) {return FirebaseAnalytics.Event.BEGIN_CHECKOUT;}
     else if (name == FirebaseAnalytics.Event.ECOMMERCE_PURCHASE) {return FirebaseAnalytics.Event.ECOMMERCE_PURCHASE;}
