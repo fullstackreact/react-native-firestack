@@ -6,7 +6,7 @@ Firestack handles authentication for us out of the box, both with email/password
 
 ## Local Auth
 
-#### [onAuthStateChanged()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onAuthStateChanged)
+#### [onAuthStateChanged(event: Function)](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onAuthStateChanged)
 
 Listen for changes in the users auth state (logging in and out).
 
@@ -34,7 +34,7 @@ This is important to release resources from our app when we don't need to hold o
 firestack.auth().offAuthStateChanged()
 ```
 
-#### [createUserWithEmailAndPassword()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#createUserWithEmailAndPassword)
+#### [createUserWithEmailAndPassword(email: string, password: string)](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#createUserWithEmailAndPassword)
 
 We can create a user by calling the `createUserWithEmailAndPassword()` function. 
 The method accepts two parameters, an email and a password.
@@ -49,7 +49,7 @@ firestack.auth().createUserWithEmailAndPassword('ari@fullstack.io', '123456')
   })
 ```
 
-#### [signInWithEmailAndPassword()](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithEmailAndPassword)
+#### [signInWithEmailAndPassword(email: string, password: string)](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithEmailAndPassword)
 
 To sign a user in with their email and password, use the `signInWithEmailAndPassword()` function. 
 It accepts two parameters, the user's email and password:
