@@ -202,9 +202,7 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
       bundle.putString(FirebaseAnalytics.Param.FLIGHT_NUMBER, val);
     }
 
-    Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
-    while (entries.hasNext()) {
-      Map.Entry<String, Object> entry = entries.next();
+    for (Map.Entry<String, Object> entry : map.entrySet()) {
       if (bundle.getBundle(entry.getKey()) == null) {
         bundle.putString(entry.getKey(), entry.getValue().toString());
       }
