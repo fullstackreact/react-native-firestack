@@ -1,15 +1,14 @@
 package io.fullstack.firestack;
 
 import java.util.Map;
+
+import android.app.Activity;
 import android.util.Log;
 import android.os.Bundle;
-import java.util.Iterator;
-import android.content.Context;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
@@ -19,13 +18,12 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackAnalytics";
 
-  private Context context;
+  private ReactApplicationContext context;
   private FirebaseAnalytics mFirebaseAnalytics;
 
   public FirestackAnalyticsModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.context = reactContext;
-
+    context = reactContext;
     Log.d(TAG, "New instance");
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this.context);
   }
@@ -36,42 +34,56 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void logEventWithName(final String name, final ReadableMap props, final Callback callback) {
-    // TODO
-    // FirestackUtils.todoNote(TAG, "logEventWithName", callback);
-    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
-    final String eventName = getEventName(name);
+  public void logEvent(final String name, final ReadableMap params) {
+    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(params);
     final Bundle bundle = makeEventBundle(name, m);
-    Log.d(TAG, "Logging event " + eventName);
+    Log.d(TAG, "Logging event " + name);
     mFirebaseAnalytics.logEvent(name, bundle);
   }
 
-  private String getEventName(final String name) {
-    if (name == FirebaseAnalytics.Event.ADD_PAYMENT_INFO) {return FirebaseAnalytics.Event.ADD_PAYMENT_INFO; }
-    else if (name == FirebaseAnalytics.Event.ADD_TO_CART) {return FirebaseAnalytics.Event.ADD_TO_CART;}
-    else if (name == FirebaseAnalytics.Event.ADD_TO_WISHLIST) {return FirebaseAnalytics.Event.ADD_TO_WISHLIST;}
-    else if (name == FirebaseAnalytics.Event.APP_OPEN) {return FirebaseAnalytics.Event.APP_OPEN;}
-    else if (name == FirebaseAnalytics.Event.BEGIN_CHECKOUT) {return FirebaseAnalytics.Event.BEGIN_CHECKOUT;}
-    else if (name == FirebaseAnalytics.Event.ECOMMERCE_PURCHASE) {return FirebaseAnalytics.Event.ECOMMERCE_PURCHASE;}
-    else if (name == FirebaseAnalytics.Event.GENERATE_LEAD) {return FirebaseAnalytics.Event.GENERATE_LEAD;}
-    else if (name == FirebaseAnalytics.Event.JOIN_GROUP) {return FirebaseAnalytics.Event.JOIN_GROUP;}
-    else if (name == FirebaseAnalytics.Event.LEVEL_UP) {return FirebaseAnalytics.Event.LEVEL_UP;}
-    else if (name == FirebaseAnalytics.Event.LOGIN) {return FirebaseAnalytics.Event.LOGIN;}
-    else if (name == FirebaseAnalytics.Event.POST_SCORE) {return FirebaseAnalytics.Event.POST_SCORE;}
-    else if (name == FirebaseAnalytics.Event.PRESENT_OFFER) {return FirebaseAnalytics.Event.PRESENT_OFFER;}
-    else if (name == FirebaseAnalytics.Event.PURCHASE_REFUND) {return FirebaseAnalytics.Event.PURCHASE_REFUND;}
-    else if (name == FirebaseAnalytics.Event.SEARCH) {return FirebaseAnalytics.Event.SEARCH;}
-    else if (name == FirebaseAnalytics.Event.SELECT_CONTENT) {return FirebaseAnalytics.Event.SELECT_CONTENT;}
-    else if (name == FirebaseAnalytics.Event.SHARE) {return FirebaseAnalytics.Event.SHARE;}
-    else if (name == FirebaseAnalytics.Event.SIGN_UP) {return FirebaseAnalytics.Event.SIGN_UP;}
-    else if (name == FirebaseAnalytics.Event.SPEND_VIRTUAL_CURRENCY) {return FirebaseAnalytics.Event.SPEND_VIRTUAL_CURRENCY;}
-    else if (name == FirebaseAnalytics.Event.TUTORIAL_BEGIN) {return FirebaseAnalytics.Event.TUTORIAL_BEGIN;}
-    else if (name == FirebaseAnalytics.Event.TUTORIAL_COMPLETE) {return FirebaseAnalytics.Event.TUTORIAL_COMPLETE;}
-    else if (name == FirebaseAnalytics.Event.UNLOCK_ACHIEVEMENT) {return FirebaseAnalytics.Event.UNLOCK_ACHIEVEMENT;}
-    else if (name == FirebaseAnalytics.Event.VIEW_ITEM) {return FirebaseAnalytics.Event.VIEW_ITEM;}
-    else if (name == FirebaseAnalytics.Event.VIEW_ITEM_LIST) {return FirebaseAnalytics.Event.VIEW_ITEM_LIST;}
-    else if (name == FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS) {return FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS;}
-    else return name;
+  /**
+   *
+   * @param enabled
+   */
+  @ReactMethod
+  public void setAnalyticsCollectionEnabled(final Boolean enabled) {
+    mFirebaseAnalytics.setAnalyticsCollectionEnabled(enabled);
+  }
+
+  @ReactMethod
+  public void setCurrentScreen(final String screenName, final String screenClassOverride) {
+    final Activity activity = getCurrentActivity();
+    if (activity != null) {
+      Log.d(TAG, "setCurrentScreen " + screenName + " " + screenClassOverride);
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          mFirebaseAnalytics.setCurrentScreen(activity, screenName, screenClassOverride);
+        }
+      });
+
+    }
+  }
+
+
+  @ReactMethod
+  public void setMinimumSessionDuration(final double milliseconds) {
+    mFirebaseAnalytics.setMinimumSessionDuration((long) milliseconds);
+  }
+
+  @ReactMethod
+  public void setSessionTimeoutDuration(final double milliseconds) {
+    mFirebaseAnalytics.setSessionTimeoutDuration((long) milliseconds);
+  }
+
+  @ReactMethod
+  public void setUserId(final String id) {
+    mFirebaseAnalytics.setUserId(id);
+  }
+
+  @ReactMethod
+  public void setUserProperty(final String name, final String value) {
+    mFirebaseAnalytics.setUserProperty(name, value);
   }
 
   private Bundle makeEventBundle(final String name, final Map<String, Object> map) {
@@ -207,6 +219,7 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
         bundle.putString(entry.getKey(), entry.getValue().toString());
       }
     }
+
     return bundle;
   }
 }
