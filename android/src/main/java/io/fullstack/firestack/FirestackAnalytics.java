@@ -1,18 +1,15 @@
 package io.fullstack.firestack;
 
 import java.util.Map;
-
-import android.app.Activity;
 import android.util.Log;
 import android.os.Bundle;
+import android.app.Activity;
 
-import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-
-import com.google.firebase.analytics.FirebaseAnalytics;
 
 class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
 
@@ -28,6 +25,10 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this.context);
   }
 
+  /**
+   *
+   * @return
+   */
   @Override
   public String getName() {
     return TAG;
@@ -50,42 +51,64 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
     mFirebaseAnalytics.setAnalyticsCollectionEnabled(enabled);
   }
 
+  /**
+   *
+   * @param screenName
+   * @param screenClassOverride
+   */
   @ReactMethod
   public void setCurrentScreen(final String screenName, final String screenClassOverride) {
     final Activity activity = getCurrentActivity();
     if (activity != null) {
-      Log.d(TAG, "setCurrentScreen " + screenName + " " + screenClassOverride);
+      Log.d(TAG, "setCurrentScreen " + screenName + " - " + screenClassOverride);
+      // needs to be run on main thread
       activity.runOnUiThread(new Runnable() {
         @Override
         public void run() {
           mFirebaseAnalytics.setCurrentScreen(activity, screenName, screenClassOverride);
         }
       });
-
     }
   }
 
-
+  /**
+   *
+   * @param milliseconds
+   */
   @ReactMethod
   public void setMinimumSessionDuration(final double milliseconds) {
     mFirebaseAnalytics.setMinimumSessionDuration((long) milliseconds);
   }
 
+  /**
+   *
+   * @param milliseconds
+   */
   @ReactMethod
   public void setSessionTimeoutDuration(final double milliseconds) {
     mFirebaseAnalytics.setSessionTimeoutDuration((long) milliseconds);
   }
 
+  /**
+   *
+   * @param id
+   */
   @ReactMethod
   public void setUserId(final String id) {
     mFirebaseAnalytics.setUserId(id);
   }
 
+  /**
+   *
+   * @param name
+   * @param value
+   */
   @ReactMethod
   public void setUserProperty(final String name, final String value) {
     mFirebaseAnalytics.setUserProperty(name, value);
   }
 
+  // todo refactor/clean me
   private Bundle makeEventBundle(final String name, final Map<String, Object> map) {
     Bundle bundle = new Bundle();
     // Available from the Analytics event
