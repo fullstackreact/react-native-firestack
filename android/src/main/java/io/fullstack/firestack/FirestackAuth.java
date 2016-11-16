@@ -576,24 +576,14 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
               WritableMap msgMap = Arguments.createMap();
               WritableMap userMap = getUserMap();
-
-              if (FirestackAuthModule.this.user != null) {
-                final String token = task.getResult().getToken();
-
-                userMap.putString("token", token);
-                userMap.putBoolean("anonymous", true);
-              }
-
+              final String token = task.getResult().getToken();
+              userMap.putString("token", token);
+              userMap.putBoolean("anonymous", true);
               msgMap.putMap("user", userMap);
 
               callback.invoke(null, msgMap);
             }
-          }).addOnFailureListener(new OnFailureListener() {
-        @Override
-        public void onFailure(@NonNull Exception ex) {
-          userExceptionCallback(ex, callback);
-        }
-      });
+          });
     } else {
       callbackNoUser(callback, true);
     }
