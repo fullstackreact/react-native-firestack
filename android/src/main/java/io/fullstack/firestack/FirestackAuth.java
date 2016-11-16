@@ -535,6 +535,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
               WritableMap msgMap = Arguments.createMap();
               WritableMap userMap = getUserMap();
               final String token = task.getResult().getToken();
+              // todo clean this up - standardise it
               userMap.putString("token", token);
               userMap.putBoolean("anonymous", false);
               msgMap.putMap("user", userMap);
@@ -568,20 +569,27 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     }
 
     if (this.user != null) {
-      this.user.getToken(true)
+      this.user
+          .getToken(true)
           .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
-              // TODO - no task is successful check...
-
-              WritableMap msgMap = Arguments.createMap();
-              WritableMap userMap = getUserMap();
-              final String token = task.getResult().getToken();
-              userMap.putString("token", token);
-              userMap.putBoolean("anonymous", true);
-              msgMap.putMap("user", userMap);
-
-              callback.invoke(null, msgMap);
+              try {
+                if (task.isSuccessful()) {
+                  WritableMap msgMap = Arguments.createMap();
+                  WritableMap userMap = getUserMap();
+                  final String token = task.getResult().getToken();
+                  // todo clean this up - standardise it
+                  userMap.putString("token", token);
+                  userMap.putBoolean("anonymous", true);
+                  msgMap.putMap("user", userMap);
+                  callback.invoke(null, msgMap);
+                } else {
+                  userErrorCallback(task, callback);
+                }
+              } catch (Exception ex) {
+                userExceptionCallback(ex, callback);
+              }
             }
           });
     } else {
