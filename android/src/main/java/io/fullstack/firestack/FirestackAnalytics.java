@@ -20,13 +20,11 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
   private static final String TAG = "FirestackAnalytics";
 
   private Context context;
-  private ReactContext mReactContext;
   private FirebaseAnalytics mFirebaseAnalytics;
 
   public FirestackAnalyticsModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.context = reactContext;
-    mReactContext = reactContext;
 
     Log.d(TAG, "New instance");
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this.context);
