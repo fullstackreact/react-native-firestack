@@ -1,34 +1,32 @@
 package io.fullstack.firestack;
 
-import android.content.Context;
-import android.text.TextUtils;
+import java.util.Map;
+import java.util.List;
+import android.net.Uri;
 import android.util.Log;
 import java.util.HashMap;
-import java.util.List;
+import android.content.Context;
 import java.util.ListIterator;
-import java.util.Map;
-import android.net.Uri;
 
-import com.facebook.react.bridge.Arguments;
-import com.facebook.react.bridge.ReactApplicationContext;
-import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
-import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.ReadableArray;
+import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactContextBaseJavaModule;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
+import com.google.firebase.database.Query;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.OnDisconnect;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.OnDisconnect;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 
 class FirestackDBReference {
   private static final String TAG = "FirestackDBReference";
