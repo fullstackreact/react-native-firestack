@@ -1,9 +1,8 @@
 package io.fullstack.firestack;
 
-import android.content.Context;
-import android.util.Log;
 import java.util.Map;
-import android.support.annotation.NonNull;
+import android.util.Log;
+import android.content.Context;
 import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
@@ -14,12 +13,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReactContext;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.ServerValue;
@@ -76,43 +71,43 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
       }
     };
 
-    String val = fn.setKeyOrDefault("applicationId", 
+    String val = fn.setKeyOrDefault("applicationId",
                     defaultOptions.getApplicationId());
     if (val != null) {
       builder.setApplicationId(val);
     }
 
-    val = fn.setKeyOrDefault("apiKey", 
+    val = fn.setKeyOrDefault("apiKey",
                     defaultOptions.getApiKey());
     if (val != null) {
       builder.setApiKey(val);
     }
 
-    val = fn.setKeyOrDefault("gcmSenderID", 
+    val = fn.setKeyOrDefault("gcmSenderID",
                     defaultOptions.getGcmSenderId());
     if (val != null) {
       builder.setGcmSenderId(val);
     }
 
-    val = fn.setKeyOrDefault("storageBucket", 
+    val = fn.setKeyOrDefault("storageBucket",
                     defaultOptions.getStorageBucket());
     if (val != null) {
       builder.setStorageBucket(val);
     }
 
-    val = fn.setKeyOrDefault("databaseURL", 
+    val = fn.setKeyOrDefault("databaseURL",
                     defaultOptions.getDatabaseUrl());
     if (val != null) {
       builder.setDatabaseUrl(val);
     }
 
-    val = fn.setKeyOrDefault("databaseUrl", 
+    val = fn.setKeyOrDefault("databaseUrl",
                     defaultOptions.getDatabaseUrl());
     if (val != null) {
       builder.setDatabaseUrl(val);
     }
 
-    val = fn.setKeyOrDefault("clientId", 
+    val = fn.setKeyOrDefault("clientId",
                     defaultOptions.getApplicationId());
     if (val != null) {
       builder.setApplicationId(val);
