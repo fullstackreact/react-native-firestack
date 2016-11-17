@@ -1,22 +1,17 @@
 package io.fullstack.firestack;
 
 import android.os.Environment;
-import android.os.StatFs;
 import android.content.Context;
 import android.util.Log;
 
 import java.util.Map;
 import java.util.HashMap;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.io.FileNotFoundException;
 
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -25,10 +20,8 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.ReactContext;
 
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -164,12 +157,12 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
       StorageMetadata md = metadataBuilder.build();
       UploadTask uploadTask = fileRef.putFile(file, md);
 
-      // Register observers to listen for when the download is done or if it fails
+      // register observers to listen for when the download is done or if it fails
       uploadTask
           .addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-              // Handle unsuccessful uploads
+              // handle unsuccessful uploads
               Log.e(TAG, "Failed to upload file " + exception.getMessage());
 
               WritableMap err = Arguments.createMap();
@@ -265,7 +258,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
     return error;
   }
 
-  // Comes almost directory from react-native-fs
+  // comes almost directly from react-native-fs
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
