@@ -29,7 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
-import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
+
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
 class FirestackAuthModule extends ReactContextBaseJavaModule {
@@ -41,7 +41,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
   // private Context context;
   private ReactContext mReactContext;
-  private FirebaseRemoteConfig mRemoteConfig;
   private FirebaseAuth mAuth;
   private FirebaseApp app;
   private FirebaseUser user;
@@ -52,20 +51,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     // this.context = reactContext;
     mReactContext = reactContext;
 
-    mRemoteConfig.fetch()
-        .addOnCompleteListener(new OnCompleteListener<Void>() {
-          @Override
-          public void onComplete(Task<Void> task) {
-            if (task.isSuccessful()) {
-              // task successful. Activate the fetched data
-              mRemoteConfig.activateFetched();
-
-            } else {
-              //task failed
-            }
-          }
-        });
-    Log.d(TAG, "New FirestackAuth instance");
+   Log.d(TAG, "New FirestackAuth instance");
   }
 
   @Override
