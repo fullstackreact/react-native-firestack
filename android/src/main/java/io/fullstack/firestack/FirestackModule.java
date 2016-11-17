@@ -1,6 +1,7 @@
 package io.fullstack.firestack;
 
 import java.util.Map;
+
 import android.util.Log;
 import android.content.Context;
 import android.support.annotation.Nullable;
@@ -23,6 +24,7 @@ interface KeySetterFn {
   String setKeyOrDefault(String a, String b);
 }
 
+@SuppressWarnings("WeakerAccess")
 class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "Firestack";
   private Context context;
@@ -55,8 +57,8 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
 
     KeySetterFn fn = new KeySetterFn() {
       public String setKeyOrDefault(
-        final String key,
-        final String defaultValue) {
+          final String key,
+          final String defaultValue) {
         if (params.hasKey(key)) {
           // User-set key
           final String val = params.getString(key);
@@ -71,47 +73,26 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
       }
     };
 
-    String val = fn.setKeyOrDefault("applicationId",
-                    defaultOptions.getApplicationId());
-    if (val != null) {
-      builder.setApplicationId(val);
-    }
+    String val = fn.setKeyOrDefault("applicationId", defaultOptions.getApplicationId());
+    if (val != null) builder.setApplicationId(val);
 
-    val = fn.setKeyOrDefault("apiKey",
-                    defaultOptions.getApiKey());
-    if (val != null) {
-      builder.setApiKey(val);
-    }
+    val = fn.setKeyOrDefault("apiKey", defaultOptions.getApiKey());
+    if (val != null) builder.setApiKey(val);
 
-    val = fn.setKeyOrDefault("gcmSenderID",
-                    defaultOptions.getGcmSenderId());
-    if (val != null) {
-      builder.setGcmSenderId(val);
-    }
+    val = fn.setKeyOrDefault("gcmSenderID", defaultOptions.getGcmSenderId());
+    if (val != null) builder.setGcmSenderId(val);
 
-    val = fn.setKeyOrDefault("storageBucket",
-                    defaultOptions.getStorageBucket());
-    if (val != null) {
-      builder.setStorageBucket(val);
-    }
+    val = fn.setKeyOrDefault("storageBucket", defaultOptions.getStorageBucket());
+    if (val != null) builder.setStorageBucket(val);
 
-    val = fn.setKeyOrDefault("databaseURL",
-                    defaultOptions.getDatabaseUrl());
-    if (val != null) {
-      builder.setDatabaseUrl(val);
-    }
+    val = fn.setKeyOrDefault("databaseURL", defaultOptions.getDatabaseUrl());
+    if (val != null) builder.setDatabaseUrl(val);
 
-    val = fn.setKeyOrDefault("databaseUrl",
-                    defaultOptions.getDatabaseUrl());
-    if (val != null) {
-      builder.setDatabaseUrl(val);
-    }
+    val = fn.setKeyOrDefault("databaseUrl", defaultOptions.getDatabaseUrl());
+    if (val != null) builder.setDatabaseUrl(val);
 
-    val = fn.setKeyOrDefault("clientId",
-                    defaultOptions.getApplicationId());
-    if (val != null) {
-      builder.setApplicationId(val);
-    }
+    val = fn.setKeyOrDefault("clientId", defaultOptions.getApplicationId());
+    if (val != null) builder.setApplicationId(val);
 
 
     // if (params.hasKey("applicationId")) {
@@ -151,24 +132,23 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     // }
 
     try {
-        Log.i(TAG, "Configuring app");
-        if (app == null) {
-          app = FirebaseApp.initializeApp(this.context, builder.build());
-        }
-        Log.i(TAG, "Configured");
+      Log.i(TAG, "Configuring app");
+      if (app == null) {
+        app = FirebaseApp.initializeApp(this.context, builder.build());
+      }
+      Log.i(TAG, "Configured");
 
-        WritableMap resp = Arguments.createMap();
-        resp.putString("msg", "success");
-        onComplete.invoke(null, resp);
-    }
-    catch (Exception ex){
-        Log.e(TAG, "ERROR configureWithOptions");
-        Log.e(TAG, ex.getMessage());
+      WritableMap resp = Arguments.createMap();
+      resp.putString("msg", "success");
+      onComplete.invoke(null, resp);
+    } catch (Exception ex) {
+      Log.e(TAG, "ERROR configureWithOptions");
+      Log.e(TAG, ex.getMessage());
 
-        WritableMap resp = Arguments.createMap();
-        resp.putString("msg", ex.getMessage());
+      WritableMap resp = Arguments.createMap();
+      resp.putString("msg", ex.getMessage());
 
-        onComplete.invoke(resp);
+      onComplete.invoke(resp);
     }
   }
 
@@ -181,26 +161,26 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
 
     WritableMap map = Arguments.createMap();
     map.putMap("TIMESTAMP", timestampMap);
-    onComplete.invoke(null, map);
+    if (onComplete != null) onComplete.invoke(null, map);
   }
 
-    // Internal helpers
-    @Override
-    public void onHostResume() {
-        WritableMap params = Arguments.createMap();
-        params.putBoolean("isForground", true);
-        FirestackUtils.sendEvent(mReactContext, "FirestackAppState", params);
-    }
+  // Internal helpers
+  @Override
+  public void onHostResume() {
+    WritableMap params = Arguments.createMap();
+    params.putBoolean("isForground", true);
+    FirestackUtils.sendEvent(mReactContext, "FirestackAppState", params);
+  }
 
-    @Override
-    public void onHostPause() {
-        WritableMap params = Arguments.createMap();
-        params.putBoolean("isForground", false);
-        FirestackUtils.sendEvent(mReactContext, "FirestackAppState", params);
-    }
+  @Override
+  public void onHostPause() {
+    WritableMap params = Arguments.createMap();
+    params.putBoolean("isForground", false);
+    FirestackUtils.sendEvent(mReactContext, "FirestackAppState", params);
+  }
 
-    @Override
-    public void onHostDestroy() {
+  @Override
+  public void onHostDestroy() {
 
-    }
+  }
 }

@@ -34,6 +34,7 @@ import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 
 
+@SuppressWarnings("WeakerAccess")
 class FirestackStorageModule extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackStorage";
@@ -91,7 +92,6 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
                   @Override
                   public void onSuccess(final StorageMetadata storageMetadata) {
                     Log.d(TAG, "getMetadata success " + storageMetadata);
-                    res.putString("name", storageMetadata.getName());
 
                     WritableMap metadata = Arguments.createMap();
                     metadata.putString("getBucket", storageMetadata.getBucket());
@@ -101,9 +101,10 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
                     metadata.putDouble("updated_at", storageMetadata.getUpdatedTimeMillis());
                     metadata.putString("md5hash", storageMetadata.getMd5Hash());
                     metadata.putString("encoding", storageMetadata.getContentEncoding());
-                    res.putString("url", storageMetadata.getDownloadUrl().toString());
 
                     res.putMap("metadata", metadata);
+                    res.putString("name", storageMetadata.getName());
+                    res.putString("url", storageMetadata.getDownloadUrl().toString());
                     callback.invoke(null, res);
                   }
                 })
@@ -254,7 +255,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
     return error;
   }
 
-  // comes almost directly from react-native-fs
+
   @Override
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
