@@ -25,7 +25,12 @@ RCT_EXPORT_METHOD(downloadUrl: (NSString *) storageUrl
                   path:(NSString *) path
     callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:storageUrl];
+    FIRStorageReference *storageRef;
+    if (storageUrl == nil ) {
+        storageRef = [[FIRStorage storage] reference];
+    } else {
+        storageRef = [[FIRStorage storage] referenceForURL:storageUrl];
+    }
     FIRStorageReference *fileRef = [storageRef child:path];
     [fileRef downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
         if (error != nil) {
