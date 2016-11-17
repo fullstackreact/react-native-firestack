@@ -26,7 +26,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
@@ -50,7 +49,6 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
   private static final String FileTypeDirectory = "FILETYPE_DIRECTORY";
 
   private ReactContext mReactContext;
-  private FirebaseApp app;
 
   public FirestackStorageModule(ReactApplicationContext reactContext) {
     super(reactContext);
