@@ -77,7 +77,7 @@
 node_modules/fbjs/lib
 
 [libs]
-js/flow-lib.js
+lib/flow.js
 node_modules/react-native/Libraries/react-native/react-native-interface.js
 node_modules/react-native/flow
 node_modules/fbjs/flow/lib
