@@ -52,14 +52,13 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
                   metadata:(NSDictionary *)metadata
                   callback:(RCTResponseSenderBlock) callback)
 {
+    FIRStorageReference *storageRef;
     if (urlStr == nil) {
-        NSError *err = [[NSError alloc] init];
-        [err setValue:@"Storage configuration error" forKey:@"name"];
-        [err setValue:@"Call setStorageUrl() first" forKey:@"description"];
-        return callback(@[err]);
+        storageRef = [[FIRStorage storage] reference];
+    } else {
+        storageRef = [[FIRStorage storage] referenceForURL:urlStr];
     }
 
-    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:urlStr];
     FIRStorageReference *uploadRef = [storageRef child:name];
     FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
 
