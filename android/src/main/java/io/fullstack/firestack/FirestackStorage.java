@@ -58,14 +58,11 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
   private static final String FileTypeRegular = "FILETYPE_REGULAR";
   private static final String FileTypeDirectory = "FILETYPE_DIRECTORY";
 
-
-  private Context context;
   private ReactContext mReactContext;
   private FirebaseApp app;
 
   public FirestackStorageModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.context = reactContext;
     mReactContext = reactContext;
 
     Log.d(TAG, "New instance");
