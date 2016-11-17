@@ -25,7 +25,12 @@ RCT_EXPORT_METHOD(downloadUrl: (NSString *) storageUrl
                   path:(NSString *) path
     callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:storageUrl];
+    FIRStorageReference *storageRef;
+    if (storageUrl == nil ) {
+        storageRef = [[FIRStorage storage] reference];
+    } else {
+        storageRef = [[FIRStorage storage] referenceForURL:storageUrl];
+    }
     FIRStorageReference *fileRef = [storageRef child:path];
     [fileRef downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
         if (error != nil) {
@@ -52,14 +57,13 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
                   metadata:(NSDictionary *)metadata
                   callback:(RCTResponseSenderBlock) callback)
 {
+    FIRStorageReference *storageRef;
     if (urlStr == nil) {
-        NSError *err = [[NSError alloc] init];
-        [err setValue:@"Storage configuration error" forKey:@"name"];
-        [err setValue:@"Call setStorageUrl() first" forKey:@"description"];
-        return callback(@[err]);
+        storageRef = [[FIRStorage storage] reference];
+    } else {
+        storageRef = [[FIRStorage storage] referenceForURL:urlStr];
     }
 
-    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:urlStr];
     FIRStorageReference *uploadRef = [storageRef child:name];
     FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
 
