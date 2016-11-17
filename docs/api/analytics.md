@@ -21,7 +21,7 @@ own app. The Firebase SDK includes a number of pre-set events which are automati
 
 #### logEvent(event: string, params?: Object)
 
-Log a custom event with optional params. Returns a Promise.
+Log a custom event with optional params. Can be synchronous or return a Promise 
 
 ```javascript
 firestack.analytics()
