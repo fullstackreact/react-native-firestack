@@ -157,6 +157,7 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
                 case FIRStorageErrorCodeUnknown:
                     // Unknown error occurred, inspect the server response
                     [errProps setValue:@"Unknown error" forKey:@"description"];
+                    NSLog(@"Unknown error: %@", snapshot.error);
                     break;
             }
 
