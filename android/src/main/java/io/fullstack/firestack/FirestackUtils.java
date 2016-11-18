@@ -20,6 +20,7 @@ import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
 import com.google.firebase.database.DataSnapshot;
 
+@SuppressWarnings("WeakerAccess")
 public class FirestackUtils {
   private static final String TAG = "FirestackUtils";
 
@@ -168,8 +169,12 @@ public class FirestackUtils {
   }
 
   public static Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
-    ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
     Map<String, Object> deconstructedMap = new HashMap<>();
+    if (readableMap == null) {
+      return deconstructedMap;
+    }
+
+    ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
       ReadableType type = readableMap.getType(key);
