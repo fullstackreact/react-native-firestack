@@ -350,12 +350,13 @@ RCT_EXPORT_METHOD(push:(NSString *) path
 
 
 RCT_EXPORT_METHOD(on:(NSString *) path
-                  modifiers:(NSArray *) modifiers
+                  modifiersString:(NSString *) modifiersString
+                  modifiersArray:(NSArray *) modifiersArray
                   name:(NSString *) eventName
                   callback:(RCTResponseSenderBlock) callback)
 {
     FirestackDBReference *r = [self getDBHandle:path];
-    FIRDatabaseQuery *query = [r getQueryWithModifiers:modifiers];
+    FIRDatabaseQuery *query = [r getQueryWithModifiers:modifiersArray];
 
     if (![r isListeningTo:eventName]) {
         id withBlock = ^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -398,13 +399,14 @@ RCT_EXPORT_METHOD(on:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(onOnce:(NSString *) path
-                  modifiers:(NSArray *) modifiers
+                  modifiersString:(NSString *) modifiersString
+                  modifiersArray:(NSArray *) modifiersArray
                   name:(NSString *) name
                   callback:(RCTResponseSenderBlock) callback)
 {
     FirestackDBReference *r = [self getDBHandle:path];
     int eventType = [r eventTypeFromName:name];
-    FIRDatabaseQuery *ref = [r getQueryWithModifiers:modifiers];
+    FIRDatabaseQuery *ref = [r getQueryWithModifiers:modifiersArray];
 
     [ref observeSingleEventOfType:eventType
                         withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
@@ -425,6 +427,7 @@ RCT_EXPORT_METHOD(onOnce:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(off:(NSString *)path
+                  modifiersString:(NSString *) modifiersString
                   eventName:(NSString *) eventName
                   callback:(RCTResponseSenderBlock) callback)
 {
