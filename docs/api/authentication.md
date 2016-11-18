@@ -8,13 +8,8 @@ Firestack handles authentication for us out of the box, both with email/password
 
 ### Properties
 
-##### `authenticated: boolean`
-
-Returns the current Firebase authentication state.
-
-##### `currentUser: [User](#) | null`
-
-Returns the currently signed-in user (or null).
+##### `authenticated: boolean` - Returns the current Firebase authentication state.
+##### `currentUser: [User](#) | null` - Returns the currently signed-in user (or null).
 
 ### Methods
 
@@ -137,7 +132,7 @@ firestack.auth().signInWithCustomToken('12345')
 
 #### [`sendPasswordResetEmail(email: string): Promise`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#sendPasswordResetEmail)
 
-Sends a password reset email to the given email address.
+Sends a password reset email to the given email address. Unlike the web SDK, the email will contain a password reset link rather than a code.
 
 ```javascript
 firestack.auth().sendPasswordResetEmail('foo@bar.com')
@@ -146,20 +141,6 @@ firestack.auth().sendPasswordResetEmail('foo@bar.com')
   })
   .catch((error) => {
     console.error('Unable send password reset email', error);
-  });
-```
-
-#### [`confirmPasswordReset(code: string, newPassword: string): Promise`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#confirmPasswordReset)
-
-Completes the password reset process, given a confirmation code and new password.
-
-```javascript
-firestack.auth().confirmPasswordReset('1234', 'barfoo4321')
-  .then(() => {
-    console.log('Password reset successfully');
-  })
-  .catch((error) => {
-    console.error('Unable to reset password', error);
   });
 ```
 
