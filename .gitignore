@@ -29,6 +29,7 @@ android/.gradle/
 android/.signing/
 
 # User-specific configurations
+android/.idea/gradle.xml
 android/.idea/libraries/
 android/.idea/workspace.xml
 android/.idea/tasks.xml
@@ -51,8 +52,10 @@ android/*.iml
 ehthumbs.db
 Thumbs.dbandroid/gradle
 android/gradlew
+android/build
 android/gradlew.bat
 android/gradle/
 .idea
 .idea
 coverage
+yarn.lock

@@ -8,10 +8,11 @@ import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
+@SuppressWarnings("unused")
 public class FirestackPackage implements ReactPackage {
     private Context mContext;
 
@@ -24,7 +25,6 @@ public class FirestackPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-
         modules.add(new FirestackModule(reactContext, reactContext.getBaseContext()));
         modules.add(new FirestackAuthModule(reactContext));
         modules.add(new FirestackDatabaseModule(reactContext));

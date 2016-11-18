@@ -1,91 +1,114 @@
 package io.fullstack.firestack;
 
-import android.content.Context;
+import java.util.Map;
 import android.util.Log;
 import android.os.Bundle;
-import java.util.Iterator;
-import java.util.Map;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.app.Activity;
 
-import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableMap;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReactContext;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.analytics.FirebaseAnalytics;
-import com.google.firebase.analytics.FirebaseAnalytics.Event.*;
-import com.google.firebase.analytics.FirebaseAnalytics.Param;
 
 class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackAnalytics";
 
-  private Context context;
-  private ReactContext mReactContext;
+  private ReactApplicationContext context;
   private FirebaseAnalytics mFirebaseAnalytics;
 
   public FirestackAnalyticsModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.context = reactContext;
-    mReactContext = reactContext;
-
+    context = reactContext;
     Log.d(TAG, "New instance");
     mFirebaseAnalytics = FirebaseAnalytics.getInstance(this.context);
   }
 
+  /**
+   *
+   * @return
+   */
   @Override
   public String getName() {
     return TAG;
   }
 
   @ReactMethod
-  public void logEventWithName(final String name, final ReadableMap props, final Callback callback) {
-    // TODO
-    // FirestackUtils.todoNote(TAG, "logEventWithName", callback);
-    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
-    final String eventName = getEventName(name);
+  public void logEvent(final String name, final ReadableMap params) {
+    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(params);
     final Bundle bundle = makeEventBundle(name, m);
-    Log.d(TAG, "Logging event " + eventName);
+    Log.d(TAG, "Logging event " + name);
     mFirebaseAnalytics.logEvent(name, bundle);
   }
 
-  private String getEventName(final String name) {
-    if (name == FirebaseAnalytics.Event.ADD_PAYMENT_INFO) {return FirebaseAnalytics.Event.ADD_PAYMENT_INFO; }
-    else if (name == FirebaseAnalytics.Event.ADD_TO_CART) {return FirebaseAnalytics.Event.ADD_TO_CART;} 
-    else if (name == FirebaseAnalytics.Event.ADD_TO_WISHLIST) {return FirebaseAnalytics.Event.ADD_TO_WISHLIST;} 
-    else if (name == FirebaseAnalytics.Event.APP_OPEN) {return FirebaseAnalytics.Event.APP_OPEN;}
-    else if (name == FirebaseAnalytics.Event.BEGIN_CHECKOUT) {return FirebaseAnalytics.Event.BEGIN_CHECKOUT;}
-    else if (name == FirebaseAnalytics.Event.ECOMMERCE_PURCHASE) {return FirebaseAnalytics.Event.ECOMMERCE_PURCHASE;}
-    else if (name == FirebaseAnalytics.Event.GENERATE_LEAD) {return FirebaseAnalytics.Event.GENERATE_LEAD;}
-    else if (name == FirebaseAnalytics.Event.JOIN_GROUP) {return FirebaseAnalytics.Event.JOIN_GROUP;}
-    else if (name == FirebaseAnalytics.Event.LEVEL_UP) {return FirebaseAnalytics.Event.LEVEL_UP;}
-    else if (name == FirebaseAnalytics.Event.LOGIN) {return FirebaseAnalytics.Event.LOGIN;}
-    else if (name == FirebaseAnalytics.Event.POST_SCORE) {return FirebaseAnalytics.Event.POST_SCORE;}
-    else if (name == FirebaseAnalytics.Event.PRESENT_OFFER) {return FirebaseAnalytics.Event.PRESENT_OFFER;}
-    else if (name == FirebaseAnalytics.Event.PURCHASE_REFUND) {return FirebaseAnalytics.Event.PURCHASE_REFUND;}
-    else if (name == FirebaseAnalytics.Event.SEARCH) {return FirebaseAnalytics.Event.SEARCH;}
-    else if (name == FirebaseAnalytics.Event.SELECT_CONTENT) {return FirebaseAnalytics.Event.SELECT_CONTENT;}
-    else if (name == FirebaseAnalytics.Event.SHARE) {return FirebaseAnalytics.Event.SHARE;}
-    else if (name == FirebaseAnalytics.Event.SIGN_UP) {return FirebaseAnalytics.Event.SIGN_UP;}
-    else if (name == FirebaseAnalytics.Event.SPEND_VIRTUAL_CURRENCY) {return FirebaseAnalytics.Event.SPEND_VIRTUAL_CURRENCY;}
-    else if (name == FirebaseAnalytics.Event.TUTORIAL_BEGIN) {return FirebaseAnalytics.Event.TUTORIAL_BEGIN;}
-    else if (name == FirebaseAnalytics.Event.TUTORIAL_COMPLETE) {return FirebaseAnalytics.Event.TUTORIAL_COMPLETE;}
-    else if (name == FirebaseAnalytics.Event.UNLOCK_ACHIEVEMENT) {return FirebaseAnalytics.Event.UNLOCK_ACHIEVEMENT;}
-    else if (name == FirebaseAnalytics.Event.VIEW_ITEM) {return FirebaseAnalytics.Event.VIEW_ITEM;}
-    else if (name == FirebaseAnalytics.Event.VIEW_ITEM_LIST) {return FirebaseAnalytics.Event.VIEW_ITEM_LIST;}
-    else if (name == FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS) {return FirebaseAnalytics.Event.VIEW_SEARCH_RESULTS;}
-    else return name;
+  /**
+   *
+   * @param enabled
+   */
+  @ReactMethod
+  public void setAnalyticsCollectionEnabled(final Boolean enabled) {
+    mFirebaseAnalytics.setAnalyticsCollectionEnabled(enabled);
   }
 
+  /**
+   *
+   * @param screenName
+   * @param screenClassOverride
+   */
+  @ReactMethod
+  public void setCurrentScreen(final String screenName, final String screenClassOverride) {
+    final Activity activity = getCurrentActivity();
+    if (activity != null) {
+      Log.d(TAG, "setCurrentScreen " + screenName + " - " + screenClassOverride);
+      // needs to be run on main thread
+      activity.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          mFirebaseAnalytics.setCurrentScreen(activity, screenName, screenClassOverride);
+        }
+      });
+    }
+  }
+
+  /**
+   *
+   * @param milliseconds
+   */
+  @ReactMethod
+  public void setMinimumSessionDuration(final double milliseconds) {
+    mFirebaseAnalytics.setMinimumSessionDuration((long) milliseconds);
+  }
+
+  /**
+   *
+   * @param milliseconds
+   */
+  @ReactMethod
+  public void setSessionTimeoutDuration(final double milliseconds) {
+    mFirebaseAnalytics.setSessionTimeoutDuration((long) milliseconds);
+  }
+
+  /**
+   *
+   * @param id
+   */
+  @ReactMethod
+  public void setUserId(final String id) {
+    mFirebaseAnalytics.setUserId(id);
+  }
+
+  /**
+   *
+   * @param name
+   * @param value
+   */
+  @ReactMethod
+  public void setUserProperty(final String name, final String value) {
+    mFirebaseAnalytics.setUserProperty(name, value);
+  }
+
+  // todo refactor/clean me
   private Bundle makeEventBundle(final String name, final Map<String, Object> map) {
     Bundle bundle = new Bundle();
     // Available from the Analytics event
@@ -214,13 +237,12 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
       bundle.putString(FirebaseAnalytics.Param.FLIGHT_NUMBER, val);
     }
 
-    Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
-    while (entries.hasNext()) {
-      Map.Entry<String, Object> entry = entries.next();
+    for (Map.Entry<String, Object> entry : map.entrySet()) {
       if (bundle.getBundle(entry.getKey()) == null) {
         bundle.putString(entry.getKey(), entry.getValue().toString());
       }
     }
+
     return bundle;
   }
 }
