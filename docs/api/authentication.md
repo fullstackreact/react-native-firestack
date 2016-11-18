@@ -4,35 +4,35 @@ Firestack handles authentication for us out of the box, both with email/password
 
 > Android requires the Google Play services to installed for authentication to function.
 
-## Local Auth
+#### [`onAuthStateChanged(event: Function): Function`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onAuthStateChanged)
 
-#### [onAuthStateChanged(event: Function)](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#onAuthStateChanged)
-
-Listen for changes in the users auth state (logging in and out).
+Listen for changes in the users auth state (logging in and out). This method returns a unsubscribe function to stop listening to events. Always ensure you unsubscribe from the listener when no longer needed to prevent updates to components no longer in use.
 
 ```javascript
-firestack.auth().onAuthStateChanged((evt) => {
-  // evt is the authentication event, it contains an `error` key for carrying the
-  // error message in case of an error and a `user` key upon successful authentication
-  if (!evt.authenticated) {
-    // There was an error or there is no user
-    console.error(evt.error)
-  } else {
-    // evt.user contains the user details
-    console.log('User details', evt.user);
+class Example extends React.Component {
+
+  constructor() {
+    super();
+    this.unsubscribe = null;
   }
-})
-.then(() => console.log('Listening for authentication changes'))
+  
+  componentDidMount() {
+    this.unsubscribe = firebase.auth().onAuthStateChanged(function(user) {
+      if (user) {
+        // User is signed in.
+      }
+    });
+  }
+  
+  componentWillUnmount() {
+    if (this.listener) {
+      this.unsubscribe();
+    }
+  }
+
+}
 ```
 
-#### offAuthStateChanged()
-
-Remove the `onAuthStateChanged` listener. 
-This is important to release resources from our app when we don't need to hold on to the listener any longer.
-
-```javascript
-firestack.auth().offAuthStateChanged()
-```
 
 #### [createUserWithEmailAndPassword(email: string, password: string)](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#createUserWithEmailAndPassword)
 
