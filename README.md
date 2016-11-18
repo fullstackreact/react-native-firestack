@@ -16,7 +16,11 @@ Featuring; authentication, storage, real-time database, presence, analytics, clo
 
 ## Firestack vs Firebase JS lib
 
-Although the [Firebase](https://www.npmjs.com/package/firebase) JavaScript library will work with React Native, it's designed for the web and/or server. The native SDKs provide much needed features specifically for mobile applications such as offline persistance. Firestack provides a JavaScript interface into the native SDKs to allow your React Native application to utilise these features, and more!
+Although the [Firebase](https://www.npmjs.com/package/firebase) JavaScript library will work with React Native, it is mainly designed for the web. 
+
+The native SDK's are much better for performance compared to the web SDK. The web SDK will run on the same thread as your apps ([JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate)) therefore limiting your JS framerate, potentially affecting things touch events and transitions/animations.
+
+The native SDK's also contains functionality that the web SDK's do not, for example [Analytics](/docs/api/analytics.md).
 
 ## Example app
 
