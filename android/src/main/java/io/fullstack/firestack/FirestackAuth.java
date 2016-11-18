@@ -72,7 +72,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     if (isError) {
       callback.invoke(err);
     } else {
-      callback.invoke(null, err);
+      callback.invoke(null, null);
     }
   }
 
