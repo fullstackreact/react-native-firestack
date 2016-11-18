@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		544B47041DDE64610057E78B /* FirestackRemoteConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 544B47031DDE64610057E78B /* FirestackRemoteConfig.m */; };
 		D90882D61D89C18C00FB6742 /* FirestackCloudMessaging.m in Sources */ = {isa = PBXBuildFile; fileRef = D90882D51D89C18C00FB6742 /* FirestackCloudMessaging.m */; };
 		D950369E1D19C77400F7094D /* Firestack.m in Sources */ = {isa = PBXBuildFile; fileRef = D950369D1D19C77400F7094D /* Firestack.m */; };
 		D962903F1D6D15B00099A3EC /* FirestackErrors.m in Sources */ = {isa = PBXBuildFile; fileRef = D962903E1D6D15B00099A3EC /* FirestackErrors.m */; };
@@ -30,6 +31,8 @@
 
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libFirestack.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libFirestack.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		544B47031DDE64610057E78B /* FirestackRemoteConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackRemoteConfig.m; path = Firestack/FirestackRemoteConfig.m; sourceTree = "<group>"; };
+		544B47051DDE647E0057E78B /* FirestackRemoteConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackRemoteConfig.h; path = Firestack/FirestackRemoteConfig.h; sourceTree = "<group>"; };
 		D90882D41D89C18C00FB6742 /* FirestackCloudMessaging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FirestackCloudMessaging.h; path = Firestack/FirestackCloudMessaging.h; sourceTree = "<group>"; };
 		D90882D51D89C18C00FB6742 /* FirestackCloudMessaging.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = FirestackCloudMessaging.m; path = Firestack/FirestackCloudMessaging.m; sourceTree = "<group>"; };
 		D950369C1D19C77400F7094D /* Firestack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Firestack.h; path = Firestack/Firestack.h; sourceTree = "<group>"; };
@@ -92,6 +95,8 @@
 				D96290841D6D28B80099A3EC /* FirestackDatabase.m */,
 				D9D62E7A1D6D86FD003D826D /* FirestackStorage.h */,
 				D9D62E7B1D6D86FD003D826D /* FirestackStorage.m */,
+				544B47031DDE64610057E78B /* FirestackRemoteConfig.m */,
+				544B47051DDE647E0057E78B /* FirestackRemoteConfig.h */,
 			);
 			name = Modules;
 			sourceTree = "<group>";
@@ -158,6 +163,7 @@
 				D962903F1D6D15B00099A3EC /* FirestackErrors.m in Sources */,
 				D950369E1D19C77400F7094D /* Firestack.m in Sources */,
 				D90882D61D89C18C00FB6742 /* FirestackCloudMessaging.m in Sources */,
+				544B47041DDE64610057E78B /* FirestackRemoteConfig.m in Sources */,
 				D96290851D6D28B80099A3EC /* FirestackDatabase.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
