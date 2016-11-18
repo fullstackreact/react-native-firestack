@@ -21,38 +21,48 @@
 RCT_EXPORT_MODULE(FirestackAnalytics);
 
 // Implementation
-RCT_EXPORT_METHOD(logEventWithName:(NSString *)name
-                  props:(NSDictionary *)props
-                  callback:(RCTResponseSenderBlock) callback)
+RCT_EXPORT_METHOD(logEvent:(NSString *)name
+                  props:(NSDictionary *)props)
 {
   NSString *debugMsg = [NSString stringWithFormat:@"%@: %@ with %@", 
                           @"FirestackAnalytics", name, props];
   [[Firestack sharedInstance] debugLog:@"logEventWithName called"
                                    msg:debugMsg];
 
-    [FIRAnalytics logEventWithName:name parameters:props];
-    callback(@[[NSNull null], @YES]);
+  [FIRAnalytics logEventWithName:name parameters:props];
 }
 
-RCT_EXPORT_METHOD(setEnabled:(BOOL) enabled
-  callback:(RCTResponseSenderBlock) callback)
+RCT_EXPORT_METHOD(setAnalyticsCollectionEnabled:(BOOL) enabled)
 {
   [[FIRAnalyticsConfiguration sharedInstance] setAnalyticsCollectionEnabled:enabled];
-  callback(@[[NSNull null], @YES]);
 }
 
-RCT_EXPORT_METHOD(setUser: (NSString *) id
-  props:(NSDictionary *) props
-  callback:(RCTResponseSenderBlock) callback)
+RCT_EXPORT_METHOD(setCurrentScreen:(NSString *) screenName
+                       screenClass:(NSString *) screenClassOverriew)
+{
+  [FIRAnalytics setScreenName:screenName screenClass:screenClassOverriew];
+}
+
+RCT_EXPORT_METHOD(setMinimumSessionDuration:(NSNumber *) milliseconds)
+{
+  //Not implemented on iOS
+}
+
+RCT_EXPORT_METHOD(setSessionTimeoutDuration:(NSNumber *) milliseconds)
+{
+  //Not implemented on iOS
+}
+
+RCT_EXPORT_METHOD(setUserId: (NSString *) id
+  props:(NSDictionary *) props)
 {
   [FIRAnalytics setUserID:id];
-  NSMutableArray *allKeys = [[props allKeys] mutableCopy];
-  for (NSString *key in allKeys) {
-    NSString *val = [props valueForKey:key];
-    [FIRAnalytics setUserPropertyString:val forName:key];
-  }
+}
 
-  callback(@[[NSNull null], @YES]);
+RCT_EXPORT_METHOD(setUserProperty: (NSString *) name
+  value:(NSString *) value)
+{
+  [FIRAnalytics setUserPropertyString:value forName:name];
 }
 
 @end
