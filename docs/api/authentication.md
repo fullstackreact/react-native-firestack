@@ -9,7 +9,7 @@ Firestack handles authentication for us out of the box, both with email/password
 ### Properties
 
 ##### `authenticated: boolean` - Returns the current Firebase authentication state.
-##### `currentUser: [User](#) | null` - Returns the currently signed-in user (or null).
+##### `currentUser: [User](#user) | null` - Returns the currently signed-in user (or null).
 
 ### Methods
 
