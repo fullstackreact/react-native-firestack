@@ -19,70 +19,62 @@ own app. The Firebase SDK includes a number of pre-set events which are automati
   'user_engagement',
 ```
 
-#### logEvent(event: string, params?: Object)
+#### `logEvent(event: string, params?: Object): void`
 
-Log a custom event with optional params. Can be synchronous or return a Promise 
+Log a custom event with optional params.
 
 ```javascript
-firestack.analytics()
-  .logEvent('clicked_advert', { id: 1337 })
-  .then(() => {
-    console.log('Event has been logged successfully'); 
-  });
+firestack.analytics().logEvent('clicked_advert', { id: 1337 });
 ```
 
-#### setAnalyticsCollectionEnabled(enabled: boolean)
+#### `setAnalyticsCollectionEnabled(enabled: boolean): void`
 
 Sets whether analytics collection is enabled for this app on this device.
 
 ```javascript
-firestack.analytics()
-  .setAnalyticsCollectionEnabled(false);
+firestack.analytics().setAnalyticsCollectionEnabled(false);
 ```
 
-#### setCurrentScreen(screenName: string, screenClassOverride: string)
+#### `setCurrentScreen(screenName: string, screenClassOverride?: string): void`
 
 Sets the current screen name, which specifies the current visual context in your app.
 
+> Whilst `screenClassOverride` is optional, it is recommended it is always sent as your current class name, for example on Android it will always show as 'MainActivity' if not specified.
+
 ```javascript
-firestack.analytics()
-  .setCurrentScreen('user_profile');
+firestack.analytics().setCurrentScreen('user_profile');
 ```
 
-#### setMinimumSessionDuration(miliseconds: number)
+#### `setMinimumSessionDuration(miliseconds: number): void`
 
 Sets the minimum engagement time required before starting a session. The default value is 10000 (10 seconds).
 
 ```javascript
-firestack.analytics()
-  .setMinimumSessionDuration(15000);
+firestack.analytics().setMinimumSessionDuration(15000);
 ```
 
-#### setSessionTimeoutDuration(miliseconds: number)
+#### `setSessionTimeoutDuration(miliseconds: number): void`
 
 Sets the duration of inactivity that terminates the current session. The default value is 1800000 (30 minutes).
 
 ```javascript
-firestack.analytics()
-  .setSessionTimeoutDuration(900000);
+firestack.analytics().setSessionTimeoutDuration(900000);
 ```
 
-#### setUserId(id: string)
+#### `setUserId(id: string): void`
 
 Gives a user a uniqiue identificaition.
 
 ```javascript
 const id = firestack.auth().currentUser.uid;
 
-firestack.analytics()
-  .setUserId(id);
+firestack.analytics().setUserId(id);
 ```
 
-#### setUserProperty(name: string, value: string)
+#### `setUserProperty(name: string, value: string): void`
 
 Sets a key/value pair of data on the current user.
 
 ```javascript
-firestack.analytics()
-  .setUserProperty('nickname', 'foobar');
+firestack.analytics().setUserProperty('nickname', 'foobar');
 ```
