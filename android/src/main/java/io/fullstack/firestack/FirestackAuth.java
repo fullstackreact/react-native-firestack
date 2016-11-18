@@ -187,7 +187,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             try {
               if (task.isSuccessful()) {
                 FirestackAuthModule.this.user = task.getResult().getUser();
-                anonymousUserCallback(FirestackAuthModule.this.user, callback);
+                userCallback(FirestackAuthModule.this.user, callback);
               } else {
                 userErrorCallback(task, callback);
               }
@@ -532,14 +532,10 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         public void onComplete(@NonNull Task<GetTokenResult> task) {
           try {
             if (task.isSuccessful()) {
-              WritableMap msgMap = Arguments.createMap();
               WritableMap userMap = getUserMap();
               final String token = task.getResult().getToken();
-              // todo clean this up - standardise it
               userMap.putString("token", token);
-              userMap.putBoolean("anonymous", false);
-              msgMap.putMap("user", userMap);
-              callback.invoke(null, msgMap);
+              callback.invoke(null, userMap);
             } else {
               userErrorCallback(task, callback);
             }
@@ -548,45 +544,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
           }
         }
       });
-    } else {
-      callbackNoUser(callback, true);
-    }
-  }
-
-  // TODO: Reduce to one method
-  private void anonymousUserCallback(FirebaseUser passedUser, final Callback callback) {
-
-    if (passedUser == null) {
-      mAuth = FirebaseAuth.getInstance();
-      this.user = mAuth.getCurrentUser();
-    } else {
-      this.user = passedUser;
-    }
-
-    if (this.user != null) {
-      this.user
-          .getToken(true)
-          .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-            @Override
-            public void onComplete(@NonNull Task<GetTokenResult> task) {
-              try {
-                if (task.isSuccessful()) {
-                  WritableMap msgMap = Arguments.createMap();
-                  WritableMap userMap = getUserMap();
-                  final String token = task.getResult().getToken();
-                  // todo clean this up - standardise it
-                  userMap.putString("token", token);
-                  userMap.putBoolean("anonymous", true);
-                  msgMap.putMap("user", userMap);
-                  callback.invoke(null, msgMap);
-                } else {
-                  userErrorCallback(task, callback);
-                }
-              } catch (Exception ex) {
-                userExceptionCallback(ex, callback);
-              }
-            }
-          });
     } else {
       callbackNoUser(callback, true);
     }
