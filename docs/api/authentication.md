@@ -26,7 +26,7 @@ class Example extends React.Component {
   }
   
   componentDidMount() {
-    this.unsubscribe = firebase.auth().onAuthStateChanged(function(user) {
+    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
       }
@@ -34,7 +34,7 @@ class Example extends React.Component {
   }
   
   componentWillUnmount() {
-    if (this.listener) {
+    if (this.unsubscribe) {
       this.unsubscribe();
     }
   }
@@ -48,7 +48,7 @@ We can create a user by calling the `createUserWithEmailAndPassword()` function.
 The method accepts two parameters, an email and a password.
 
 ```javascript
-firestack.auth().createUserWithEmailAndPassword('ari@fullstack.io', '123456')
+firestack.auth().createUserWithEmailAndPassword('foo@bar.com', '123456')
   .then((user) => {
     console.log('user created', user)
   })
@@ -63,7 +63,7 @@ To sign a user in with their email and password, use the `signInWithEmailAndPass
 It accepts two parameters, the user's email and password:
 
 ```javascript
-firestack.auth().signInWithEmailAndPassword('ari@fullstack.io', '123456')
+firestack.auth().signInWithEmailAndPassword('foo@bar.com', '123456')
   .then((user) => {
     console.log('User successfully logged in', user)
   })
@@ -111,7 +111,7 @@ firestack.auth().signInWithCredential(credential)
   })
   .catch((err) => {
     console.error('User signin error', err);
-  })
+  });
 ```
 
 #### [`signInWithCustomToken(token: string): Promise`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithCustomToken)
