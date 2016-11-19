@@ -20,7 +20,7 @@ Although the [Firebase](https://www.npmjs.com/package/firebase) JavaScript libra
 
 The native SDK's are much better for performance compared to the web SDK. The web SDK will run on the same thread as your apps ([JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate)) therefore limiting your JS framerate, potentially affecting things touch events and transitions/animations.
 
-The native SDK's also contains functionality that the web SDK's do not, for example [Analytics](/docs/api/analytics.md).
+The native SDK's also contains functionality that the web SDK's do not, for example [Analytics](/docs/api/analytics.md) and [Remote Config](/docs/api/remote-config.md).
 
 ## Example app
 
@@ -40,6 +40,7 @@ We have a working application example available in at [fullstackreact/FirestackA
   * [Presence](docs/api/presence.md)
   * [ServerValue](docs/api/server-value.md)
   * [Cloud Messaging](docs/api/cloud-messaging.md)
+  * [Remote Config](docs/api/remote-config.md)
   * [Events](docs/api/events.md)
 * [Redux](docs/redux.md)
 
