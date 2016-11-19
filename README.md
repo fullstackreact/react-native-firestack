@@ -10,7 +10,7 @@ npm i react-native-firestack --save
 [![npm version](https://img.shields.io/npm/v/react-native-firestack.svg)](https://www.npmjs.com/package/react-native-firestack)
 [![License](https://img.shields.io/npm/l/react-native-firestack.svg)](/LICENSE)
 
-Firestack is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the React Native JS api as closely as possible. It features:
+Firestack is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the React Native JS api as closely as possible.
 
 Featuring; authentication, storage, real-time database, presence, analytics, cloud messaging, remote configuration, redux support and more!
 
