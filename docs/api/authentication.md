@@ -2,7 +2,7 @@
 
 Firestack handles authentication for us out of the box, both with email/password-based authentication and through oauth providers (with a separate library to handle oauth providers).
 
-> Android requires the Google Play services to installed for authentication to function.
+> Authentication requires Google Play services to be installed on Android.
 
 ## Auth
 
