@@ -229,7 +229,8 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
                   @Override
                   public void onFailure(@NonNull Exception exception) {
                     Log.e(TAG, "Failure in download " + exception);
-                    callback.invoke(makeErrorPayload(1, exception));
+                    final int errorCode = 1;
+                    callback.invoke(makeErrorPayload(errorCode, exception));
                   }
                 });
 
@@ -336,13 +337,14 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
               StorageMetadata d = taskSnapshot.getMetadata();
               String bucket = d.getBucket();
               WritableMap data = Arguments.createMap();
-              data.putString("eventName", "upload_paused");
+              data.putString("eventName", STORAGE_UPLOAD_PAUSED);
               data.putString("ref", bucket);
-              FirestackUtils.sendEvent(getReactApplicationContext(), "upload_paused", data);
+              FirestackUtils.sendEvent(getReactApplicationContext(), STORAGE_UPLOAD_PAUSED, data);
             }
           });
     } catch (Exception ex) {
-      callback.invoke(makeErrorPayload(2, ex));
+      final int errorCode = 2;
+      callback.invoke(makeErrorPayload(errorCode, ex));
     }
   }
 
@@ -353,7 +355,8 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
       callback.invoke(null, path);
     } catch (Exception ex) {
       ex.printStackTrace();
-      callback.invoke(makeErrorPayload(1, ex));
+      final int errorCode = 1;
+      callback.invoke(makeErrorPayload(errorCode, ex));
     }
   }
 
