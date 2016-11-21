@@ -1,4 +1,4 @@
-package io.fullstack.firestack;
+package io.fullstack.firestack.storage;
 
 import android.util.Log;
 import android.os.Environment;
@@ -31,9 +31,11 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.OnPausedListener;
 import com.google.firebase.storage.OnProgressListener;
 
+import io.fullstack.firestack.Utils;
+
 
 @SuppressWarnings("WeakerAccess")
-class Storage extends ReactContextBaseJavaModule {
+public class FirestackStorage extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackStorage";
   private static final String DocumentDirectoryPath = "DOCUMENT_DIRECTORY_PATH";
@@ -47,7 +49,7 @@ class Storage extends ReactContextBaseJavaModule {
   private static final String FileTypeRegular = "FILETYPE_REGULAR";
   private static final String FileTypeDirectory = "FILETYPE_DIRECTORY";
 
-  public Storage(ReactApplicationContext reactContext) {
+  public FirestackStorage(ReactApplicationContext reactContext) {
     super(reactContext);
 
     Log.d(TAG, "New instance");
@@ -65,7 +67,7 @@ class Storage extends ReactContextBaseJavaModule {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     String storageBucket = storage.getApp().getOptions().getStorageBucket();
     String storageUrl = "gs://" + storageBucket;
-    Log.d(TAG, "Storage url " + storageUrl + path);
+    Log.d(TAG, "FirestackStorage url " + storageUrl + path);
     final StorageReference storageRef = storage.getReferenceFromUrl(storageUrl);
     final StorageReference fileRef = storageRef.child(path);
 

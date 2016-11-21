@@ -7,7 +7,9 @@ import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.google.firebase.messaging.SendException;
 
-public class MessagingService extends FirebaseMessagingService {
+import io.fullstack.firestack.messaging.FirestackMessaging;
+
+public class FirestackMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "FSMessagingService";
 
@@ -25,7 +27,7 @@ public class MessagingService extends FirebaseMessagingService {
         if (remoteMessage.getNotification() != null) {
 
         }
-        Intent i = new Intent(Messaging.INTENT_NAME_NOTIFICATION);
+        Intent i = new Intent(FirestackMessaging.INTENT_NAME_NOTIFICATION);
         i.putExtra("data", remoteMessage);
         sendOrderedBroadcast(i, null);
 
@@ -35,7 +37,7 @@ public class MessagingService extends FirebaseMessagingService {
     public void onMessageSent(String msgId) {
         // Called when an upstream message has been successfully sent to the GCM connection server.
         Log.d(TAG, "upstream message has been successfully sent");
-        Intent i = new Intent(Messaging.INTENT_NAME_SEND);
+        Intent i = new Intent(FirestackMessaging.INTENT_NAME_SEND);
         i.putExtra("msgId", msgId);
         sendOrderedBroadcast(i, null);
     }
@@ -44,7 +46,7 @@ public class MessagingService extends FirebaseMessagingService {
     public void onSendError(String msgId, Exception exception) {
         // Called when there was an error sending an upstream message.
         Log.d(TAG, "error sending an upstream message");
-        Intent i = new Intent(Messaging.INTENT_NAME_SEND);
+        Intent i = new Intent(FirestackMessaging.INTENT_NAME_SEND);
         i.putExtra("msgId", msgId);
         i.putExtra("hasError", true);
         SendException sendException = (SendException) exception;

@@ -1,5 +1,5 @@
 
-package io.fullstack.firestack;
+package io.fullstack.firestack.auth;
 
 import android.util.Log;
 
@@ -29,9 +29,11 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import io.fullstack.firestack.Utils;
+
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-class Auth extends ReactContextBaseJavaModule {
+public class FirestackAuth extends ReactContextBaseJavaModule {
   private final int NO_CURRENT_USER = 100;
   private final int ERROR_FETCHING_TOKEN = 101;
   private final int ERROR_SENDING_VERIFICATION_EMAIL = 102;
@@ -43,7 +45,7 @@ class Auth extends ReactContextBaseJavaModule {
   private FirebaseAuth mAuth;
   private FirebaseAuth.AuthStateListener mAuthListener;
 
-  public Auth(ReactApplicationContext reactContext) {
+  public FirestackAuth(ReactApplicationContext reactContext) {
     super(reactContext);
     mReactContext = reactContext;
     mAuth = FirebaseAuth.getInstance();

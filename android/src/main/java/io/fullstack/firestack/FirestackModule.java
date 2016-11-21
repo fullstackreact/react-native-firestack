@@ -27,13 +27,13 @@ interface KeySetterFn {
 }
 
 @SuppressWarnings("WeakerAccess")
-class Module extends ReactContextBaseJavaModule implements LifecycleEventListener {
+class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "Firestack";
   private Context context;
   private ReactContext mReactContext;
   private FirebaseApp app;
 
-  public Module(ReactApplicationContext reactContext, Context context) {
+  public FirestackModule(ReactApplicationContext reactContext, Context context) {
     super(reactContext);
     this.context = context;
     mReactContext = reactContext;

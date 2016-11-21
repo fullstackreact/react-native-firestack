@@ -1,4 +1,4 @@
-package io.fullstack.firestack;
+package io.fullstack.firestack.analytics;
 
 import java.util.Map;
 import android.util.Log;
@@ -11,14 +11,16 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
-class Analytics extends ReactContextBaseJavaModule {
+import io.fullstack.firestack.Utils;
+
+public class FirestackAnalytics extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackAnalytics";
 
   private ReactApplicationContext context;
   private FirebaseAnalytics mFirebaseAnalytics;
 
-  public Analytics(ReactApplicationContext reactContext) {
+  public FirestackAnalytics(ReactApplicationContext reactContext) {
     super(reactContext);
     context = reactContext;
     Log.d(TAG, "New instance");
@@ -111,7 +113,7 @@ class Analytics extends ReactContextBaseJavaModule {
   // todo refactor/clean me
   private Bundle makeEventBundle(final String name, final Map<String, Object> map) {
     Bundle bundle = new Bundle();
-    // Available from the Analytics event
+    // Available from the FirestackAnalytics event
     if (map.containsKey("id")) {
       String id = (String) map.get("id");
       bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);

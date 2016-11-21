@@ -1,4 +1,4 @@
-package io.fullstack.firestack;
+package io.fullstack.firestack.messaging;
 
 import java.util.Map;
 
@@ -23,12 +23,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
-/**
- * Created by nori on 2016/09/12.
- */
-public class Messaging extends ReactContextBaseJavaModule {
+import io.fullstack.firestack.Utils;
 
-    private static final String TAG = "Messaging";
+public class FirestackMessaging extends ReactContextBaseJavaModule {
+
+    private static final String TAG = "FirestackMessaging";
     private static final String EVENT_NAME_TOKEN = "FirestackRefreshToken";
     private static final String EVENT_NAME_NOTIFICATION = "FirestackReceiveNotification";
     private static final String EVENT_NAME_SEND = "FirestackUpstreamSend";
@@ -37,14 +36,12 @@ public class Messaging extends ReactContextBaseJavaModule {
     public static final String INTENT_NAME_NOTIFICATION = "io.fullstack.firestack.ReceiveNotification";
     public static final String INTENT_NAME_SEND = "io.fullstack.firestack.Upstream";
 
-    private ReactContext mReactContext;
     private IntentFilter mRefreshTokenIntentFilter;
     private IntentFilter mReceiveNotificationIntentFilter;
     private IntentFilter mReceiveSendIntentFilter;
 
-    public Messaging(ReactApplicationContext reactContext) {
+    public FirestackMessaging(ReactApplicationContext reactContext) {
         super(reactContext);
-        mReactContext = reactContext;
         mRefreshTokenIntentFilter = new IntentFilter(INTENT_NAME_TOKEN);
         mReceiveNotificationIntentFilter = new IntentFilter(INTENT_NAME_NOTIFICATION);
         mReceiveSendIntentFilter = new IntentFilter(INTENT_NAME_SEND);
