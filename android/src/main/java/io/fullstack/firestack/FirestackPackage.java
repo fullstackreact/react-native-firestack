@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 @SuppressWarnings("unused")
-public class Package implements ReactPackage {
+public class FirestackPackage implements ReactPackage {
     private Context mContext;
 
-    public Package() {
+    public FirestackPackage() {
     }
     /**
      * @param reactContext react application context that can be used to create modules
