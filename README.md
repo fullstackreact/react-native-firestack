@@ -10,13 +10,17 @@ npm i react-native-firestack --save
 [![npm version](https://img.shields.io/npm/v/react-native-firestack.svg)](https://www.npmjs.com/package/react-native-firestack)
 [![License](https://img.shields.io/npm/l/react-native-firestack.svg)](/LICENSE)
 
-Firestack is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the React Native JS api as closely as possible. It features:
+Firestack is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the React Native JS api as closely as possible.
 
 Featuring; authentication, storage, real-time database, presence, analytics, cloud messaging, remote configuration, redux support and more!
 
 ## Firestack vs Firebase JS lib
 
-Although the [Firebase](https://www.npmjs.com/package/firebase) JavaScript library will work with React Native, it's designed for the web and/or server. The native SDKs provide much needed features specifically for mobile applications such as offline persistance. Firestack provides a JavaScript interface into the native SDKs to allow your React Native application to utilise these features, and more!
+Although the [Firebase](https://www.npmjs.com/package/firebase) JavaScript library will work with React Native, it is mainly designed for the web. 
+
+The native SDK's are much better for performance compared to the web SDK. The web SDK will run on the same thread as your apps ([JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate)) therefore limiting your JS framerate, potentially affecting things touch events and transitions/animations.
+
+The native SDK's also contains functionality that the web SDK's do not, for example [Analytics](/docs/api/analytics.md) and [Remote Config](/docs/api/remote-config.md).
 
 ## Example app
 
@@ -36,6 +40,7 @@ We have a working application example available in at [fullstackreact/FirestackA
   * [Presence](docs/api/presence.md)
   * [ServerValue](docs/api/server-value.md)
   * [Cloud Messaging](docs/api/cloud-messaging.md)
+  * [Remote Config](docs/api/remote-config.md)
   * [Events](docs/api/events.md)
 * [Redux](docs/redux.md)
 

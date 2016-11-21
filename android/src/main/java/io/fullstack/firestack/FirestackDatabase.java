@@ -10,6 +10,7 @@ import java.util.ListIterator;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactMethod;
@@ -79,11 +80,9 @@ class FirestackDBReference {
           self.handleDatabaseError(name, mPath, error);
         }
       };
+      Query ref = this.getDatabaseQueryAtPathAndModifiers(modifiersArray);
+      ref.addChildEventListener(mEventListener);
     }
-
-    Query ref = this.getDatabaseQueryAtPathAndModifiers(modifiersArray);
-    ref.addChildEventListener(mEventListener);
-    //this.setListeningTo(mPath, modifiersString, name);
   }
 
   public void addValueEventListener(final String name, final ReadableArray modifiersArray, final String modifiersString) {
@@ -617,55 +616,5 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   private DatabaseReference getDatabaseReferenceAtPath(final String path) {
     DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(path);
     return mDatabase;
-  }
-
-
-  //private WritableMap dataSnapshotToMap(String name, String path, DataSnapshot dataSnapshot) {
-  //  return FirestackUtils.dataSnapshotToMap(name, path, dataSnapshot);
-  //}
-
-  private <Any> Any castSnapshotValue(DataSnapshot snapshot) {
-    if (snapshot.hasChildren()) {
-      WritableMap data = Arguments.createMap();
-      for (DataSnapshot child : snapshot.getChildren()) {
-        Any castedChild = castSnapshotValue(child);
-        switch (castedChild.getClass().getName()) {
-          case "java.lang.Boolean":
-            data.putBoolean(child.getKey(), (Boolean) castedChild);
-            break;
-          case "java.lang.Long":
-            data.putDouble(child.getKey(), (Long) castedChild);
-            break;
-          case "java.lang.Double":
-            data.putDouble(child.getKey(), (Double) castedChild);
-            break;
-          case "java.lang.String":
-            data.putString(child.getKey(), (String) castedChild);
-            break;
-          case "com.facebook.react.bridge.WritableNativeMap":
-            data.putMap(child.getKey(), (WritableMap) castedChild);
-            break;
-        }
-      }
-      return (Any) data;
-    } else {
-      if (snapshot.getValue() != null) {
-        String type = snapshot.getValue().getClass().getName();
-        switch (type) {
-          case "java.lang.Boolean":
-            return (Any)((Boolean) snapshot.getValue());
-          case "java.lang.Long":
-            return (Any) ((Long) snapshot.getValue());
-          case "java.lang.Double":
-            return (Any)((Double) snapshot.getValue());
-          case "java.lang.String":
-            return (Any)((String) snapshot.getValue());
-          default:
-            return (Any) null;
-        }
-      } else {
-        return (Any) null;
-      }
-    }
   }
 }

@@ -2,14 +2,14 @@
 
 Firestack handles authentication for us out of the box, both with email/password-based authentication and through oauth providers (with a separate library to handle oauth providers).
 
-> Android requires the Google Play services to installed for authentication to function.
+> Authentication requires Google Play services to be installed on Android.
 
 ## Auth
 
 ### Properties
 
 ##### `authenticated: boolean` - Returns the current Firebase authentication state.
-##### `currentUser: User | null` - Returns the currently signed-in user (or null). See the [User](/docs/api/authentication#user) class documentation for further usage.
+##### `currentUser: User | null` - Returns the currently signed-in user (or null). See the [User](/docs/api/authentication.md#user) class documentation for further usage.
 
 ### Methods
 
@@ -26,7 +26,7 @@ class Example extends React.Component {
   }
   
   componentDidMount() {
-    this.unsubscribe = firebase.auth().onAuthStateChanged(function(user) {
+    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
       }
@@ -34,7 +34,7 @@ class Example extends React.Component {
   }
   
   componentWillUnmount() {
-    if (this.listener) {
+    if (this.unsubscribe) {
       this.unsubscribe();
     }
   }
@@ -48,7 +48,7 @@ We can create a user by calling the `createUserWithEmailAndPassword()` function.
 The method accepts two parameters, an email and a password.
 
 ```javascript
-firestack.auth().createUserWithEmailAndPassword('ari@fullstack.io', '123456')
+firestack.auth().createUserWithEmailAndPassword('foo@bar.com', '123456')
   .then((user) => {
     console.log('user created', user)
   })
@@ -63,7 +63,7 @@ To sign a user in with their email and password, use the `signInWithEmailAndPass
 It accepts two parameters, the user's email and password:
 
 ```javascript
-firestack.auth().signInWithEmailAndPassword('ari@fullstack.io', '123456')
+firestack.auth().signInWithEmailAndPassword('foo@bar.com', '123456')
   .then((user) => {
     console.log('User successfully logged in', user)
   })
@@ -111,7 +111,7 @@ firestack.auth().signInWithCredential(credential)
   })
   .catch((err) => {
     console.error('User signin error', err);
-  })
+  });
 ```
 
 #### [`signInWithCustomToken(token: string): Promise`](https://firebase.google.com/docs/reference/js/firebase.auth.Auth#signInWithCustomToken)
@@ -258,7 +258,7 @@ firestack.auth().updateUserEmail('foo@bar.com')
 Important: this is a security sensitive operation that requires the user to have recently signed in. If this requirement isn't met, ask the user to authenticate again and then call firebase.User#reauthenticate.  This will Promise reject is the user is anonymous.
 
 ```javascript
-firestack.auth().updateUserPassword('foobar1234')
+firestack.auth().updatePassword('foobar1234')
   .then()
   .catch();
 ```
