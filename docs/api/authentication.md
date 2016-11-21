@@ -26,7 +26,7 @@ class Example extends React.Component {
   }
   
   componentDidMount() {
-    this.unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+    this.unsubscribe = firestack.auth().onAuthStateChanged((user) => {
       if (user) {
         // User is signed in.
       }
