@@ -7,22 +7,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.ReadableArray;
 import com.google.firebase.database.DataSnapshot;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 @SuppressWarnings("WeakerAccess")
-public class FirestackUtils {
-  private static final String TAG = "FirestackUtils";
+public class Utils {
+  private static final String TAG = "Utils";
 
   // TODO NOTE
   public static void todoNote(final String tag, final String name, final Callback callback) {
@@ -84,12 +84,12 @@ public class FirestackUtils {
           data.putString("value", null);
       }
     } else {
-      WritableMap valueMap = FirestackUtils.castSnapshotValue(dataSnapshot);
+      WritableMap valueMap = Utils.castSnapshotValue(dataSnapshot);
       data.putMap("value", valueMap);
     }
 
     // Child keys
-    WritableArray childKeys = FirestackUtils.getChildKeys(dataSnapshot);
+    WritableArray childKeys = Utils.getChildKeys(dataSnapshot);
     data.putArray("childKeys", childKeys);
 
     Object priority = dataSnapshot.getPriority();
@@ -253,10 +253,10 @@ public class FirestackUtils {
           deconstructedMap.put(key, readableMap.getString(key));
           break;
         case Map:
-          deconstructedMap.put(key, FirestackUtils.recursivelyDeconstructReadableMap(readableMap.getMap(key)));
+          deconstructedMap.put(key, Utils.recursivelyDeconstructReadableMap(readableMap.getMap(key)));
           break;
         case Array:
-          deconstructedMap.put(key, FirestackUtils.recursivelyDeconstructReadableArray(readableMap.getArray(key)));
+          deconstructedMap.put(key, Utils.recursivelyDeconstructReadableArray(readableMap.getArray(key)));
           break;
         default:
           throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
@@ -284,10 +284,10 @@ public class FirestackUtils {
           deconstructedList.add(i, readableArray.getString(i));
           break;
         case Map:
-          deconstructedList.add(i, FirestackUtils.recursivelyDeconstructReadableMap(readableArray.getMap(i)));
+          deconstructedList.add(i, Utils.recursivelyDeconstructReadableMap(readableArray.getMap(i)));
           break;
         case Array:
-          deconstructedList.add(i, FirestackUtils.recursivelyDeconstructReadableArray(readableArray.getArray(i)));
+          deconstructedList.add(i, Utils.recursivelyDeconstructReadableArray(readableArray.getArray(i)));
           break;
         default:
           throw new IllegalArgumentException("Could not convert object at index " + i + ".");

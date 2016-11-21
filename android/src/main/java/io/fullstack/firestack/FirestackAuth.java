@@ -31,7 +31,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 
 
 @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-class FirestackAuthModule extends ReactContextBaseJavaModule {
+class Auth extends ReactContextBaseJavaModule {
   private final int NO_CURRENT_USER = 100;
   private final int ERROR_FETCHING_TOKEN = 101;
   private final int ERROR_SENDING_VERIFICATION_EMAIL = 102;
@@ -43,7 +43,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
   private FirebaseAuth mAuth;
   private FirebaseAuth.AuthStateListener mAuthListener;
 
-  public FirestackAuthModule(ReactApplicationContext reactContext) {
+  public Auth(ReactApplicationContext reactContext) {
     super(reactContext);
     mReactContext = reactContext;
     mAuth = FirebaseAuth.getInstance();
@@ -89,10 +89,10 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             msgMap.putBoolean("authenticated", true);
             msgMap.putMap("user", userMap);
 
-            FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
+            Utils.sendEvent(mReactContext, "listenForAuth", msgMap);
           } else {
             msgMap.putBoolean("authenticated", false);
-            FirestackUtils.sendEvent(mReactContext, "listenForAuth", msgMap);
+            Utils.sendEvent(mReactContext, "listenForAuth", msgMap);
           }
         }
       };
@@ -160,7 +160,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
       this.googleLogin(authToken, callback);
     } else
       // TODO
-      FirestackUtils.todoNote(TAG, "signInWithProvider", callback);
+      Utils.todoNote(TAG, "signInWithProvider", callback);
   }
 
   @ReactMethod
@@ -208,7 +208,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void reauthenticateWithCredentialForProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
     // TODO:
-    FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
+    Utils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
     // AuthCredential credential;
     // Log.d(TAG, "reauthenticateWithCredentialForProvider called with: " + provider);
   }
@@ -387,7 +387,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
     if (user != null) {
       UserProfileChangeRequest.Builder profileBuilder = new UserProfileChangeRequest.Builder();
 
-      Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
 
       if (m.containsKey("displayName")) {
         String displayName = (String) m.get("displayName");

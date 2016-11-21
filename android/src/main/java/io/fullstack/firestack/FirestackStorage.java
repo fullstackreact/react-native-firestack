@@ -35,7 +35,7 @@ import com.google.firebase.storage.OnProgressListener;
 
 
 @SuppressWarnings("WeakerAccess")
-class FirestackStorageModule extends ReactContextBaseJavaModule {
+class Storage extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackStorage";
   private static final String DocumentDirectoryPath = "DOCUMENT_DIRECTORY_PATH";
@@ -51,7 +51,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
 
   private ReactContext mReactContext;
 
-  public FirestackStorageModule(ReactApplicationContext reactContext) {
+  public Storage(ReactApplicationContext reactContext) {
     super(reactContext);
     mReactContext = reactContext;
 
@@ -145,7 +145,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
       Uri file = Uri.fromFile(new File(filepath));
 
       StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
-      Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(metadata);
+      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(metadata);
 
       for (Map.Entry<String, Object> entry : m.entrySet()) {
         metadataBuilder.setCustomMetadata(entry.getKey(), entry.getValue().toString());
@@ -190,7 +190,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
                 WritableMap data = Arguments.createMap();
                 data.putString("eventName", "upload_progress");
                 data.putDouble("progress", progress);
-                FirestackUtils.sendEvent(mReactContext, "upload_progress", data);
+                Utils.sendEvent(mReactContext, "upload_progress", data);
               }
             }
           })
@@ -203,7 +203,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
               WritableMap data = Arguments.createMap();
               data.putString("eventName", "upload_paused");
               data.putString("ref", bucket);
-              FirestackUtils.sendEvent(mReactContext, "upload_paused", data);
+              Utils.sendEvent(mReactContext, "upload_paused", data);
             }
           });
     } catch (Exception ex) {

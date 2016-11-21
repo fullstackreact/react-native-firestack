@@ -16,6 +16,8 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactContext;
 
+import com.google.android.gms.common.ConnectionResult;
+//import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.ServerValue;
@@ -25,13 +27,13 @@ interface KeySetterFn {
 }
 
 @SuppressWarnings("WeakerAccess")
-class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+class Module extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "Firestack";
   private Context context;
   private ReactContext mReactContext;
   private FirebaseApp app;
 
-  public FirestackModule(ReactApplicationContext reactContext, Context context) {
+  public Module(ReactApplicationContext reactContext, Context context) {
     super(reactContext);
     this.context = context;
     mReactContext = reactContext;
@@ -43,6 +45,19 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
   public String getName() {
     return TAG;
   }
+
+//  private static Boolean hasValidPlayServices() {
+//    final int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this.context);
+//    if (status != ConnectionResult.SUCCESS) {
+//      Log.e(TAG, GooglePlayServicesUtil.getErrorString(status));
+//      Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, 1);
+//      dialog.show();
+//      return false;
+//    } else {
+//      Log.i(TAG, GooglePlayServicesUtil.getErrorString(status));
+//      return true;
+//    }
+//  }
 
   @ReactMethod
   public void configureWithOptions(final ReadableMap params, @Nullable final Callback onComplete) {
@@ -169,14 +184,14 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
   public void onHostResume() {
     WritableMap params = Arguments.createMap();
     params.putBoolean("isForground", true);
-    FirestackUtils.sendEvent(mReactContext, "FirestackAppState", params);
+    Utils.sendEvent(mReactContext, "FirestackAppState", params);
   }
 
   @Override
   public void onHostPause() {
     WritableMap params = Arguments.createMap();
     params.putBoolean("isForground", false);
-    FirestackUtils.sendEvent(mReactContext, "FirestackAppState", params);
+    Utils.sendEvent(mReactContext, "FirestackAppState", params);
   }
 
   @Override

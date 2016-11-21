@@ -10,7 +10,7 @@ import android.util.Log;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-public class FirestackInstanceIdService extends FirebaseInstanceIdService {
+public class InstanceIdService extends FirebaseInstanceIdService {
 
     private static final String TAG = "FSInstanceIdService";
 
@@ -21,10 +21,7 @@ public class FirestackInstanceIdService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
         Log.d(TAG, "Refreshed token: " + refreshedToken);
-
-
-        // send Intent
-        Intent i = new Intent(FirestackCloudMessaging.INTENT_NAME_TOKEN);
+        Intent i = new Intent(Messaging.INTENT_NAME_TOKEN);
         Bundle bundle = new Bundle();
         bundle.putString("token", refreshedToken);
         i.putExtras(bundle);

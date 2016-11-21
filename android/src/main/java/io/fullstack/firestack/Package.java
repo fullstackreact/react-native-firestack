@@ -13,10 +13,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 @SuppressWarnings("unused")
-public class FirestackPackage implements ReactPackage {
+public class Package implements ReactPackage {
     private Context mContext;
 
-    public FirestackPackage() {
+    public Package() {
     }
     /**
      * @param reactContext react application context that can be used to create modules
@@ -25,12 +25,12 @@ public class FirestackPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new FirestackModule(reactContext, reactContext.getBaseContext()));
-        modules.add(new FirestackAuthModule(reactContext));
-        modules.add(new FirestackDatabaseModule(reactContext));
-        modules.add(new FirestackAnalyticsModule(reactContext));
-        modules.add(new FirestackStorageModule(reactContext));
-        modules.add(new FirestackCloudMessaging(reactContext));
+        modules.add(new Module(reactContext, reactContext.getBaseContext()));
+        modules.add(new Auth(reactContext));
+        modules.add(new Database(reactContext));
+        modules.add(new Analytics(reactContext));
+        modules.add(new Storage(reactContext));
+        modules.add(new Messaging(reactContext));
         return modules;
     }
 

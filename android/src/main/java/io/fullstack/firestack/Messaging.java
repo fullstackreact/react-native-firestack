@@ -13,7 +13,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -27,9 +26,9 @@ import com.google.firebase.messaging.RemoteMessage;
 /**
  * Created by nori on 2016/09/12.
  */
-public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
+public class Messaging extends ReactContextBaseJavaModule {
 
-    private static final String TAG = "FirestackCloudMessaging";
+    private static final String TAG = "Messaging";
     private static final String EVENT_NAME_TOKEN = "FirestackRefreshToken";
     private static final String EVENT_NAME_NOTIFICATION = "FirestackReceiveNotification";
     private static final String EVENT_NAME_SEND = "FirestackUpstreamSend";
@@ -43,7 +42,7 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
     private IntentFilter mReceiveNotificationIntentFilter;
     private IntentFilter mReceiveSendIntentFilter;
 
-    public FirestackCloudMessaging(ReactApplicationContext reactContext) {
+    public Messaging(ReactApplicationContext reactContext) {
         super(reactContext);
         mReactContext = reactContext;
         mRefreshTokenIntentFilter = new IntentFilter(INTENT_NAME_TOKEN);
@@ -85,7 +84,7 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                 params.putString("token", intent.getStringExtra("token"));
                 ReactContext ctx = getReactApplicationContext();
                 Log.d(TAG, "initRefreshTokenHandler received event " + EVENT_NAME_TOKEN);
-                FirestackUtils.sendEvent(ctx, EVENT_NAME_TOKEN, params);
+                Utils.sendEvent(ctx, EVENT_NAME_TOKEN, params);
             }
 
             ;
@@ -151,7 +150,7 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                     params.putNull("notification");
                 }
                 ReactContext ctx = getReactApplicationContext();
-                FirestackUtils.sendEvent(ctx, EVENT_NAME_NOTIFICATION, params);
+                Utils.sendEvent(ctx, EVENT_NAME_NOTIFICATION, params);
             }
         }, mReceiveNotificationIntentFilter);
     }
@@ -200,7 +199,7 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                     params.putNull("err");
                 }
                 ReactContext ctx = getReactApplicationContext();
-                FirestackUtils.sendEvent(ctx, EVENT_NAME_SEND, params);
+                Utils.sendEvent(ctx, EVENT_NAME_SEND, params);
             }
         }, mReceiveSendIntentFilter);
     }

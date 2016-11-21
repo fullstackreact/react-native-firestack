@@ -24,33 +24,32 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.ValueEventListener;
 
-class FirestackDBReference {
-  private static final String TAG = "FirestackDBReference";
+class DatabaseReference {
+  private static final String TAG = "DatabaseReference";
 
   private String mPath;
-  private ReadableArray mModifiers;
+//  private ReadableArray mModifiers;
   private HashMap<String, Boolean> mListeners = new HashMap<String, Boolean>();
-  private FirestackDatabaseModule mDatabase;
+  private Database mDatabase;
   private ChildEventListener mEventListener;
   private ValueEventListener mValueListener;
   private ValueEventListener mOnceValueListener;
   private ReactContext mReactContext;
 
-  public FirestackDBReference(final ReactContext context, final String path) {
+  public DatabaseReference(final ReactContext context, final String path) {
     mReactContext = context;
     mPath = path;
   }
 
-  public void setModifiers(final ReadableArray modifiers) {
-    mModifiers = modifiers;
-  }
+//  public void setModifiers(final ReadableArray modifiers) {
+//    mModifiers = modifiers;
+//  }
 
   public void addChildEventListener(final String name, final ReadableArray modifiersArray, final String modifiersString) {
-    final FirestackDBReference self = this;
+    final DatabaseReference self = this;
 
     if (mEventListener == null) {
       mEventListener = new ChildEventListener() {
@@ -87,7 +86,7 @@ class FirestackDBReference {
   }
 
   public void addValueEventListener(final String name, final ReadableArray modifiersArray, final String modifiersString) {
-    final FirestackDBReference self = this;
+    final DatabaseReference self = this;
 
     mValueListener = new ValueEventListener() {
       @Override
@@ -109,12 +108,12 @@ class FirestackDBReference {
   public void addOnceValueEventListener(final ReadableArray modifiersArray,
                                         final String modifiersString,
                                         final Callback callback) {
-    final FirestackDBReference self = this;
+    final DatabaseReference self = this;
 
     mOnceValueListener = new ValueEventListener() {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
-        WritableMap data = FirestackUtils.dataSnapshotToMap("value", mPath, modifiersString, dataSnapshot);
+        WritableMap data = Utils.dataSnapshotToMap("value", mPath, modifiersString, dataSnapshot);
         callback.invoke(null, data);
       }
 
@@ -162,7 +161,7 @@ class FirestackDBReference {
 
   public void removeChildEventListener() {
     if (mEventListener != null) {
-      DatabaseReference ref = this.getDatabaseRef();
+      com.google.firebase.database.DatabaseReference ref = this.getDatabaseRef();
       ref.removeEventListener(mEventListener);
       //this.notListeningTo(mPath, "child_added");
       //this.notListeningTo(mPath, "child_changed");
@@ -173,7 +172,7 @@ class FirestackDBReference {
   }
 
   public void removeValueEventListener() {
-    DatabaseReference ref = this.getDatabaseRef();
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseRef();
     if (mValueListener != null) {
       ref.removeEventListener(mValueListener);
       //this.notListeningTo(mPath, "value");
@@ -186,17 +185,17 @@ class FirestackDBReference {
   }
 
   private void handleDatabaseEvent(final String name, final String path, final String modifiersString, final DataSnapshot dataSnapshot) {
-    //if (!FirestackDBReference.this.isListeningTo(path, modifiersString, name)) {
+    //if (!DatabaseReference.this.isListeningTo(path, modifiersString, name)) {
       //return;
     //}
-    WritableMap data = FirestackUtils.dataSnapshotToMap(name, path, modifiersString, dataSnapshot);
+    WritableMap data = Utils.dataSnapshotToMap(name, path, modifiersString, dataSnapshot);
     WritableMap evt = Arguments.createMap();
     evt.putString("eventName", name);
     evt.putString("path", path);
     evt.putString("modifiersString", modifiersString);
     evt.putMap("body", data);
 
-    FirestackUtils.sendEvent(mReactContext, "database_event", evt);
+    Utils.sendEvent(mReactContext, "database_event", evt);
   }
 
   private void handleDatabaseError(final String name, final String path, final DatabaseError error) {
@@ -210,17 +209,17 @@ class FirestackDBReference {
     evt.putString("path", path);
     evt.putMap("body", err);
 
-    FirestackUtils.sendEvent(mReactContext, "database_error", evt);
+    Utils.sendEvent(mReactContext, "database_error", evt);
   }
 
-  public DatabaseReference getDatabaseRef() {
+  public com.google.firebase.database.DatabaseReference getDatabaseRef() {
     return FirebaseDatabase.getInstance().getReference(mPath);
   }
 
   private Query getDatabaseQueryAtPathAndModifiers(final ReadableArray modifiers) {
-    DatabaseReference ref = this.getDatabaseRef();
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseRef();
 
-    List<Object> strModifiers = FirestackUtils.recursivelyDeconstructReadableArray(modifiers);
+    List<Object> strModifiers = Utils.recursivelyDeconstructReadableArray(modifiers);
     ListIterator<Object> it = strModifiers.listIterator();
     Query query = ref.orderByKey();
 
@@ -282,15 +281,15 @@ class FirestackDBReference {
 
 }
 
-class FirestackDatabaseModule extends ReactContextBaseJavaModule {
+class Database extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackDatabase";
 
   private Context context;
   private ReactContext mReactContext;
-  private HashMap<String, FirestackDBReference> mDBListeners = new HashMap<String, FirestackDBReference>();
+  private HashMap<String, DatabaseReference> mDBListeners = new HashMap<String, DatabaseReference>();
 
-  public FirestackDatabaseModule(ReactApplicationContext reactContext) {
+  public Database(ReactApplicationContext reactContext) {
     super(reactContext);
     this.context = reactContext;
     mReactContext = reactContext;
@@ -323,7 +322,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     final String path,
     final Boolean enable,
     final Callback callback) {
-      DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+      com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
       ref.keepSynced(enable);
 
       WritableMap res = Arguments.createMap();
@@ -338,14 +337,14 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
           final String path,
           final ReadableMap props,
           final Callback callback) {
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
 
-    final FirestackDatabaseModule self = this;
-    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+    final Database self = this;
+    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
 
-    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+    com.google.firebase.database.DatabaseReference.CompletionListener listener = new com.google.firebase.database.DatabaseReference.CompletionListener() {
       @Override
-      public void onComplete(DatabaseError error, DatabaseReference ref) {
+      public void onComplete(DatabaseError error, com.google.firebase.database.DatabaseReference ref) {
         handleCallback("set", callback, error, ref);
       }
     };
@@ -357,13 +356,13 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   public void update(final String path,
                      final ReadableMap props,
                      final Callback callback) {
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
-    final FirestackDatabaseModule self = this;
-    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    final Database self = this;
+    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
 
-    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+    com.google.firebase.database.DatabaseReference.CompletionListener listener = new com.google.firebase.database.DatabaseReference.CompletionListener() {
       @Override
-      public void onComplete(DatabaseError error, DatabaseReference ref) {
+      public void onComplete(DatabaseError error, com.google.firebase.database.DatabaseReference ref) {
         handleCallback("update", callback, error, ref);
       }
     };
@@ -374,11 +373,11 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   @ReactMethod
   public void remove(final String path,
                      final Callback callback) {
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
-    final FirestackDatabaseModule self = this;
-    DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    final Database self = this;
+    com.google.firebase.database.DatabaseReference.CompletionListener listener = new com.google.firebase.database.DatabaseReference.CompletionListener() {
       @Override
-      public void onComplete(DatabaseError error, DatabaseReference ref) {
+      public void onComplete(DatabaseError error, com.google.firebase.database.DatabaseReference ref) {
         handleCallback("remove", callback, error, ref);
       }
     };
@@ -392,8 +391,8 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
                    final Callback callback) {
 
     Log.d(TAG, "Called push with " + path);
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
-    DatabaseReference newRef = ref.push();
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    com.google.firebase.database.DatabaseReference newRef = ref.push();
 
     final Uri url = Uri.parse(newRef.toString());
     final String newPath = url.getPath();
@@ -402,12 +401,12 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     if (iterator.hasNextKey()) {
       Log.d(TAG, "Passed value to push");
       // lame way to check if the `props` are empty
-      final FirestackDatabaseModule self = this;
-      Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+      final Database self = this;
+      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
 
-      DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
+      com.google.firebase.database.DatabaseReference.CompletionListener listener = new com.google.firebase.database.DatabaseReference.CompletionListener() {
         @Override
-        public void onComplete(DatabaseError error, DatabaseReference ref) {
+        public void onComplete(DatabaseError error, com.google.firebase.database.DatabaseReference ref) {
           if (error != null) {
             WritableMap err = Arguments.createMap();
             err.putInt("errorCode", error.getCode());
@@ -439,7 +438,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
                  final ReadableArray modifiersArray,
                  final String name,
                  final Callback callback) {
-    FirestackDBReference ref = this.getDBHandle(path, modifiersString);
+    DatabaseReference ref = this.getDBHandle(path, modifiersString);
 
     WritableMap resp = Arguments.createMap();
 
@@ -464,7 +463,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
                      final String name,
                      final Callback callback) {
     Log.d(TAG, "Setting one-time listener on event: " + name + " for path " + path);
-    FirestackDBReference ref = this.getDBHandle(path, modifiersString);
+    DatabaseReference ref = this.getDBHandle(path, modifiersString);
     ref.addOnceValueEventListener(modifiersArray, modifiersString, callback);
   }
 
@@ -491,13 +490,13 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   // On Disconnect
   @ReactMethod
   public void onDisconnectSetObject(final String path, final ReadableMap props, final Callback callback) {
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
-    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(props);
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
 
     OnDisconnect od = ref.onDisconnect();
-    od.setValue(m, new DatabaseReference.CompletionListener() {
+    od.setValue(m, new com.google.firebase.database.DatabaseReference.CompletionListener() {
       @Override
-      public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+      public void onComplete(DatabaseError databaseError, com.google.firebase.database.DatabaseReference databaseReference) {
         handleCallback("onDisconnectSetObject", callback, databaseError, databaseReference);
       }
     });
@@ -505,12 +504,12 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void onDisconnectSetString(final String path, final String value, final Callback callback) {
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
 
     OnDisconnect od = ref.onDisconnect();
-    od.setValue(value, new DatabaseReference.CompletionListener() {
+    od.setValue(value, new com.google.firebase.database.DatabaseReference.CompletionListener() {
       @Override
-      public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+      public void onComplete(DatabaseError databaseError, com.google.firebase.database.DatabaseReference databaseReference) {
         handleCallback("onDisconnectSetString", callback, databaseError, databaseReference);
       }
     });
@@ -518,24 +517,24 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void onDisconnectRemove(final String path, final Callback callback) {
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
 
     OnDisconnect od = ref.onDisconnect();
-    od.removeValue(new DatabaseReference.CompletionListener() {
+    od.removeValue(new com.google.firebase.database.DatabaseReference.CompletionListener() {
       @Override
-      public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+      public void onComplete(DatabaseError databaseError, com.google.firebase.database.DatabaseReference databaseReference) {
         handleCallback("onDisconnectRemove", callback, databaseError, databaseReference);
       }
     });
   }
   @ReactMethod
   public void onDisconnectCancel(final String path, final Callback callback) {
-    DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
+    com.google.firebase.database.DatabaseReference ref = this.getDatabaseReferenceAtPath(path);
 
     OnDisconnect od = ref.onDisconnect();
-    od.cancel(new DatabaseReference.CompletionListener() {
+    od.cancel(new com.google.firebase.database.DatabaseReference.CompletionListener() {
       @Override
-      public void onComplete(DatabaseError databaseError, DatabaseReference databaseReference) {
+      public void onComplete(DatabaseError databaseError, com.google.firebase.database.DatabaseReference databaseReference) {
         handleCallback("onDisconnectCancel", callback, databaseError, databaseReference);
       }
     });
@@ -547,7 +546,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   //   WritableMap evt  = Arguments.createMap();
   //   evt.putString("eventName", name);
   //   evt.putMap("body", data);
-  //   FirestackUtils.sendEvent(mReactContext, "database_event", evt);
+  //   Utils.sendEvent(mReactContext, "database_event", evt);
   // }
 
   // private void handleDatabaseError(final String name, final DatabaseError error) {
@@ -559,14 +558,14 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   //   WritableMap evt  = Arguments.createMap();
   //   evt.putString("eventName", name);
   //   evt.putMap("body", err);
-  //   FirestackUtils.sendEvent(mReactContext, "database_error", evt);
+  //   Utils.sendEvent(mReactContext, "database_error", evt);
   // }
 
   private void handleCallback(
           final String methodName,
           final Callback callback,
           final DatabaseError databaseError,
-          final DatabaseReference databaseReference) {
+          final com.google.firebase.database.DatabaseReference databaseReference) {
     if (databaseError != null) {
       WritableMap err = Arguments.createMap();
       err.putInt("errorCode", databaseError.getCode());
@@ -581,17 +580,17 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     }
   }
 
-  private FirestackDBReference getDBHandle(final String path, final String modifiersString) {
+  private DatabaseReference getDBHandle(final String path, final String modifiersString) {
     String key = this.getDBListenerKey(path, modifiersString);
     if (!mDBListeners.containsKey(key)) {
       ReactContext ctx = getReactApplicationContext();
-      mDBListeners.put(key, new FirestackDBReference(ctx, path));
+      mDBListeners.put(key, new DatabaseReference(ctx, path));
     }
 
     return mDBListeners.get(key);
   }
 
-  private void saveDBHandle(final String path, String modifiersString, final FirestackDBReference dbRef) {
+  private void saveDBHandle(final String path, String modifiersString, final DatabaseReference dbRef) {
     String key = this.getDBListenerKey(path, modifiersString);
     mDBListeners.put(key, dbRef);
   }
@@ -603,7 +602,7 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
   private void removeDBHandle(final String path, String modifiersString) {
     String key = this.getDBListenerKey(path, modifiersString);
     if (mDBListeners.containsKey(key)) {
-      FirestackDBReference r = mDBListeners.get(key);
+      DatabaseReference r = mDBListeners.get(key);
       r.cleanup();
       mDBListeners.remove(key);
     }
@@ -613,9 +612,9 @@ class FirestackDatabaseModule extends ReactContextBaseJavaModule {
     return path + "-" + eventName;
   }
 
-  // TODO: move to FirestackDBReference?
-  private DatabaseReference getDatabaseReferenceAtPath(final String path) {
-    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(path);
+  // TODO: move to DatabaseReference?
+  private com.google.firebase.database.DatabaseReference getDatabaseReferenceAtPath(final String path) {
+    com.google.firebase.database.DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReference(path);
     return mDatabase;
   }
 }

@@ -11,14 +11,14 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
-class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
+class Analytics extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackAnalytics";
 
   private ReactApplicationContext context;
   private FirebaseAnalytics mFirebaseAnalytics;
 
-  public FirestackAnalyticsModule(ReactApplicationContext reactContext) {
+  public Analytics(ReactApplicationContext reactContext) {
     super(reactContext);
     context = reactContext;
     Log.d(TAG, "New instance");
@@ -36,7 +36,7 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void logEvent(final String name, final ReadableMap params) {
-    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(params);
+    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(params);
     final Bundle bundle = makeEventBundle(name, m);
     Log.d(TAG, "Logging event " + name);
     mFirebaseAnalytics.logEvent(name, bundle);
