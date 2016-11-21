@@ -109,32 +109,11 @@ public class FirestackUtils {
 
   public static <Any> Any castSnapshotValue(DataSnapshot snapshot) {
     if (snapshot.hasChildren()) {
-      WritableMap data = Arguments.createMap();
-      for (DataSnapshot child : snapshot.getChildren()) {
-        Any castedChild = castSnapshotValue(child);
-        switch (castedChild.getClass().getName()) {
-          case "java.lang.Boolean":
-            data.putBoolean(child.getKey(), (Boolean) castedChild);
-            break;
-          case "java.lang.Long":
-            Long longVal = (Long) castedChild;
-            data.putDouble(child.getKey(), (double) longVal);
-            break;
-          case "java.lang.Double":
-            data.putDouble(child.getKey(), (Double) castedChild);
-            break;
-          case "java.lang.String":
-            data.putString(child.getKey(), (String) castedChild);
-            break;
-          case "com.facebook.react.bridge.WritableNativeMap":
-            data.putMap(child.getKey(), (WritableMap) castedChild);
-            break;
-          default:
-            Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
-            break;
-        }
+      if (isArray(snapshot)) {
+        return (Any) buildArray(snapshot);
+      } else {
+        return (Any) buildMap(snapshot);
       }
-      return (Any) data;
     } else {
       if (snapshot.getValue() != null) {
         String type = snapshot.getValue().getClass().getName();
@@ -154,6 +133,88 @@ public class FirestackUtils {
       }
       return (Any) null;
     }
+  }
+
+  private static boolean isArray(DataSnapshot snapshot) {
+    long expectedKey = 0;
+    for (DataSnapshot child : snapshot.getChildren()) {
+      try {
+        long key = Long.parseLong(child.getKey());
+        if (key == expectedKey) {
+          expectedKey++;
+        } else {
+          return false;
+        }
+      } catch (NumberFormatException ex) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static <Any> WritableArray buildArray(DataSnapshot snapshot) {
+    WritableArray array = Arguments.createArray();
+    for (DataSnapshot child : snapshot.getChildren()) {
+      Any castedChild = castSnapshotValue(child);
+      switch (castedChild.getClass().getName()) {
+        case "java.lang.Boolean":
+          array.pushBoolean((Boolean) castedChild);
+          break;
+        case "java.lang.Long":
+          Long longVal = (Long) castedChild;
+          array.pushDouble((double) longVal);
+          break;
+        case "java.lang.Double":
+          array.pushDouble((Double) castedChild);
+          break;
+        case "java.lang.String":
+          array.pushString((String) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeMap":
+          array.pushMap((WritableMap) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeArray":
+          array.pushArray((WritableArray) castedChild);
+          break;
+        default:
+          Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
+          break;
+      }
+    }
+    return array;
+  }
+
+  private static <Any> WritableMap buildMap(DataSnapshot snapshot) {
+    WritableMap map = Arguments.createMap();
+    for (DataSnapshot child : snapshot.getChildren()) {
+      Any castedChild = castSnapshotValue(child);
+
+      switch (castedChild.getClass().getName()) {
+        case "java.lang.Boolean":
+          map.putBoolean(child.getKey(), (Boolean) castedChild);
+          break;
+        case "java.lang.Long":
+          Long longVal = (Long) castedChild;
+          map.putDouble(child.getKey(), (double) longVal);
+          break;
+        case "java.lang.Double":
+          map.putDouble(child.getKey(), (Double) castedChild);
+          break;
+        case "java.lang.String":
+          map.putString(child.getKey(), (String) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeMap":
+          map.putMap(child.getKey(), (WritableMap) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeArray":
+          map.putArray(child.getKey(), (WritableArray) castedChild);
+          break;
+        default:
+          Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
+          break;
+      }
+    }
+    return map;
   }
 
   public static WritableArray getChildKeys(DataSnapshot snapshot) {
