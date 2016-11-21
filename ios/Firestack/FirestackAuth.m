@@ -137,7 +137,7 @@ RCT_EXPORT_METHOD(listenForAuth)
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"userTokenError",
-                                                      @"msg": [error localizedFailureReason]
+                                                      @"msg": [error localizedDescription]
                                                       }];
                                         } else {
                                             [self
