@@ -156,17 +156,17 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             callback.invoke(null, data);
           }
         })
-            .addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception exception) {
-                final int errorCode = 1;
-                WritableMap data = Arguments.createMap();
-                StorageException storageException = StorageException.fromException(exception);
-                data.putString("description", storageException.getMessage());
-                data.putInt("code", errorCode);
-                callback.invoke(makeErrorPayload(errorCode, exception));
-              }
-            });
+        .addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception exception) {
+            final int errorCode = 1;
+            WritableMap data = Arguments.createMap();
+            StorageException storageException = StorageException.fromException(exception);
+            data.putString("description", storageException.getMessage());
+            data.putInt("code", errorCode);
+            callback.invoke(makeErrorPayload(errorCode, exception));
+          }
+        });
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override
