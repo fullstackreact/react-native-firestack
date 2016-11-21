@@ -10,6 +10,7 @@ import java.util.ListIterator;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactMethod;
@@ -78,11 +79,9 @@ class DatabaseReference {
           self.handleDatabaseError(name, mPath, error);
         }
       };
+      Query ref = this.getDatabaseQueryAtPathAndModifiers(modifiersArray);
+      ref.addChildEventListener(mEventListener);
     }
-
-    Query ref = this.getDatabaseQueryAtPathAndModifiers(modifiersArray);
-    ref.addChildEventListener(mEventListener);
-    //this.setListeningTo(mPath, modifiersString, name);
   }
 
   public void addValueEventListener(final String name, final ReadableArray modifiersArray, final String modifiersString) {

@@ -258,7 +258,7 @@ firestack.auth().updateUserEmail('foo@bar.com')
 Important: this is a security sensitive operation that requires the user to have recently signed in. If this requirement isn't met, ask the user to authenticate again and then call firebase.User#reauthenticate.  This will Promise reject is the user is anonymous.
 
 ```javascript
-firestack.auth().updateUserPassword('foobar1234')
+firestack.auth().updatePassword('foobar1234')
   .then()
   .catch();
 ```

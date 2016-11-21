@@ -2,7 +2,6 @@ package io.fullstack.firestack;
 
 import android.util.Log;
 import android.os.Environment;
-import android.content.Context;
 
 import java.io.File;
 import java.util.Map;
@@ -18,7 +17,6 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
@@ -49,11 +47,8 @@ class Storage extends ReactContextBaseJavaModule {
   private static final String FileTypeRegular = "FILETYPE_REGULAR";
   private static final String FileTypeDirectory = "FILETYPE_DIRECTORY";
 
-  private ReactContext mReactContext;
-
   public Storage(ReactApplicationContext reactContext) {
     super(reactContext);
-    mReactContext = reactContext;
 
     Log.d(TAG, "New instance");
   }
@@ -142,7 +137,13 @@ class Storage extends ReactContextBaseJavaModule {
     Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
 
     try {
-      Uri file = Uri.fromFile(new File(filepath));
+      Uri file;
+      if (filepath.startsWith("content://")) {
+        String realPath = getRealPathFromURI(filepath);
+        file = Uri.fromFile(new File(realPath));
+      } else {
+        file = Uri.fromFile(new File(filepath));
+      }
 
       StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
       Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(metadata);
@@ -190,7 +191,7 @@ class Storage extends ReactContextBaseJavaModule {
                 WritableMap data = Arguments.createMap();
                 data.putString("eventName", "upload_progress");
                 data.putDouble("progress", progress);
-                Utils.sendEvent(mReactContext, "upload_progress", data);
+                Utils.sendEvent(getReactApplicationContext(), "upload_progress", data);
               }
             }
           })
@@ -203,7 +204,7 @@ class Storage extends ReactContextBaseJavaModule {
               WritableMap data = Arguments.createMap();
               data.putString("eventName", "upload_paused");
               data.putString("ref", bucket);
-              Utils.sendEvent(mReactContext, "upload_paused", data);
+              Utils.sendEvent(getReactApplicationContext(), "upload_paused", data);
             }
           });
     } catch (Exception ex) {
@@ -214,18 +215,26 @@ class Storage extends ReactContextBaseJavaModule {
   @ReactMethod
   public void getRealPathFromURI(final String uri, final Callback callback) {
     try {
-      Context context = getReactApplicationContext();
-      String[] proj = {MediaStore.Images.Media.DATA};
-      Cursor cursor = context.getContentResolver().query(Uri.parse(uri), proj, null, null, null);
-      int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-      cursor.moveToFirst();
-      String path = cursor.getString(column_index);
-      cursor.close();
-
+      String path = getRealPathFromURI(uri);
       callback.invoke(null, path);
     } catch (Exception ex) {
       ex.printStackTrace();
       callback.invoke(makeErrorPayload(1, ex));
+    }
+  }
+
+  private String getRealPathFromURI(final String uri) {
+    Cursor cursor = null;
+    try {
+      String[] proj = {MediaStore.Images.Media.DATA};
+      cursor = getReactApplicationContext().getContentResolver().query(Uri.parse(uri), proj, null, null, null);
+      int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+      cursor.moveToFirst();
+      return cursor.getString(column_index);
+    } finally {
+      if (cursor != null) {
+        cursor.close();
+      }
     }
   }
 
