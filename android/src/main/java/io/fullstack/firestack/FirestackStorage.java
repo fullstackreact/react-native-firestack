@@ -113,8 +113,8 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
       @Override
       public void doInBackground(StreamDownloadTask.TaskSnapshot taskSnapshot, InputStream inputStream) throws IOException {
         int indexOfLastSlash = localFile.lastIndexOf("/");
-        String pathMinusFileName = localFile.substring(0, indexOfLastSlash) + "/";
-        String filename = localFile.substring(indexOfLastSlash+1);
+        String pathMinusFileName = indexOfLastSlash>0 ? localFile.substring(0, indexOfLastSlash) + "/" : "/";
+        String filename = indexOfLastSlash>0 ? localFile.substring(indexOfLastSlash+1) : localFile;
         File fileWithJustPath = new File(pathMinusFileName);
         if (!fileWithJustPath.mkdirs()) {
           Log.e(TAG, "Directory not created");
