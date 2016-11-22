@@ -116,13 +116,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
         String pathMinusFileName = indexOfLastSlash>0 ? localFile.substring(0, indexOfLastSlash) + "/" : "/";
         String filename = indexOfLastSlash>0 ? localFile.substring(indexOfLastSlash+1) : localFile;
         File fileWithJustPath = new File(pathMinusFileName);
-        if (!fileWithJustPath.mkdirs()) {
-          Log.e(TAG, "Directory not created");
-          WritableMap error = Arguments.createMap();
-          error.putString("message", "Directory not created");
-          callback.invoke(error);
-          return;
-        }
+        fileWithJustPath.mkdirs();
         File fileWithFullPath = new File(pathMinusFileName, filename);
         FileOutputStream output = new FileOutputStream(fileWithFullPath);
         int bufferSize = 1024;
