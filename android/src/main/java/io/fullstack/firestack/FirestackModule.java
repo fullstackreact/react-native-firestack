@@ -1,5 +1,6 @@
 package io.fullstack.firestack;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import android.util.Log;
@@ -17,7 +18,8 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactContext;
 
 import com.google.android.gms.common.ConnectionResult;
-//import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.GoogleApiAvailability;
+
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.ServerValue;
@@ -27,7 +29,7 @@ interface KeySetterFn {
 }
 
 @SuppressWarnings("WeakerAccess")
-class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+public class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "Firestack";
   private Context context;
   private ReactContext mReactContext;
@@ -46,18 +48,20 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     return TAG;
   }
 
-//  private static Boolean hasValidPlayServices() {
-//    final int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this.context);
-//    if (status != ConnectionResult.SUCCESS) {
-//      Log.e(TAG, GooglePlayServicesUtil.getErrorString(status));
-//      Dialog dialog = GooglePlayServicesUtil.getErrorDialog(status, this, 1);
-//      dialog.show();
-//      return false;
-//    } else {
-//      Log.i(TAG, GooglePlayServicesUtil.getErrorString(status));
-//      return true;
-//    }
-//  }
+  private WritableMap getPlayServicesStatus() {
+    GoogleApiAvailability gapi = GoogleApiAvailability.getInstance();
+    final int status = gapi.isGooglePlayServicesAvailable(getReactApplicationContext());
+    WritableMap result = Arguments.createMap();
+    result.putInt("status", status);
+    if (status == ConnectionResult.SUCCESS) {
+      result.putBoolean("isAvailable", true);
+    } else {
+      result.putBoolean("isAvailable", false);
+      result.putBoolean("isUserResolvableError", gapi.isUserResolvableError(status));
+      result.putString("error", gapi.getErrorString(status));
+    }
+    return result;
+  }
 
   @ReactMethod
   public void configureWithOptions(final ReadableMap params, @Nullable final Callback onComplete) {
@@ -197,5 +201,12 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
   @Override
   public void onHostDestroy() {
 
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("googleApiAvailability", getPlayServicesStatus());
+    return constants;
   }
 }
