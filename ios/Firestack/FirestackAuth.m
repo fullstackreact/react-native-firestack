@@ -29,7 +29,7 @@ RCT_EXPORT_METHOD(signInAnonymously:
                                    };
 
 
-             [self sendJSEvent:AUTH_CHANGED_EVENT 
+             [self sendJSEvent:AUTH_CHANGED_EVENT
                   props: evt];
 
              callBack(@[evt]);
@@ -43,7 +43,7 @@ RCT_EXPORT_METHOD(signInAnonymously:
                                      @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
                                      @"errorMessage": ex.reason
                                      };
-        
+
         [self sendJSEvent:AUTH_ERROR_EVENT
                     props:eventError];
         NSLog(@"An exception occurred: %@", ex);
@@ -186,9 +186,12 @@ RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
     FIRUser *user = [FIRAuth auth].currentUser;
 
     if (user != nil) {
-        NSMutableDictionary *userProps = [self userPropsFromFIRUser:user];
-        [userProps setValue: @((BOOL)true) forKey: @"authenticated"];
-        callback(@[[NSNull null], userProps]);
+        NSDictionary *userProps = [self userPropsFromFIRUser:user];
+        NSMutableDictionary *responseProps = @{
+                                            @"authenticated": @((BOOL) true),
+                                            @"user": userProps
+                                            };
+        callback(@[[NSNull null], responseProps]);
     } else {
         // No user is signed in.
         NSDictionary *err = @{
