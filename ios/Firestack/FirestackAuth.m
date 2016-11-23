@@ -187,7 +187,7 @@ RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
 
     if (user != nil) {
         NSDictionary *userProps = [self userPropsFromFIRUser:user];
-        NSMutableDictionary *responseProps = @{
+        NSDictionary *responseProps = @{
                                             @"authenticated": @((BOOL) true),
                                             @"user": userProps
                                             };
@@ -195,6 +195,7 @@ RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
     } else {
         // No user is signed in.
         NSDictionary *err = @{
+                              @"authenticated": @((BOOL) false),
                               @"user": @"No user logged in"
                               };
         callback(@[err]);
