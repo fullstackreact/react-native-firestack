@@ -111,16 +111,10 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
       @Override
       public void doInBackground(StreamDownloadTask.TaskSnapshot taskSnapshot, InputStream inputStream) throws IOException {
         int indexOfLastSlash = localFile.lastIndexOf("/");
-        String pathMinusFileName = localFile.substring(0, indexOfLastSlash) + "/";
-        String filename = localFile.substring(indexOfLastSlash + 1);
+        String pathMinusFileName = indexOfLastSlash>0 ? localFile.substring(0, indexOfLastSlash) + "/" : "/";
+        String filename = indexOfLastSlash>0 ? localFile.substring(indexOfLastSlash+1) : localFile;
         File fileWithJustPath = new File(pathMinusFileName);
-        if (!fileWithJustPath.mkdirs()) {
-          Log.e(TAG, "Directory not created");
-          WritableMap error = Arguments.createMap();
-          error.putString("message", "Directory not created");
-          callback.invoke(error);
-          return;
-        }
+        fileWithJustPath.mkdirs();
         File fileWithFullPath = new File(pathMinusFileName, filename);
         FileOutputStream output = new FileOutputStream(fileWithFullPath);
         int bufferSize = 1024;
@@ -162,17 +156,17 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             callback.invoke(null, data);
           }
         })
-            .addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception exception) {
-                final int errorCode = 1;
-                WritableMap data = Arguments.createMap();
-                StorageException storageException = StorageException.fromException(exception);
-                data.putString("description", storageException.getMessage());
-                data.putInt("code", errorCode);
-                callback.invoke(makeErrorPayload(errorCode, exception));
-              }
-            });
+        .addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception exception) {
+            final int errorCode = 1;
+            WritableMap data = Arguments.createMap();
+            StorageException storageException = StorageException.fromException(exception);
+            data.putString("description", storageException.getMessage());
+            data.putInt("code", errorCode);
+            callback.invoke(makeErrorPayload(errorCode, exception));
+          }
+        });
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override

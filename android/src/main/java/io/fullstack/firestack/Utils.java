@@ -38,7 +38,7 @@ public class Utils {
    * send a JS event
    **/
   public static void sendEvent(final ReactContext context, final String eventName, final WritableMap params) {
-    if (context.hasActiveCatalystInstance()) {
+    if (context != null && context.hasActiveCatalystInstance()) {
       context
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
