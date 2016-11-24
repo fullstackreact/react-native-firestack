@@ -518,7 +518,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
           this.user = passedUser;
         }
 
-        this.user.getToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+        this.user.getToken(false).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
             @Override
             public void onComplete(@NonNull Task<GetTokenResult> task) {
                 WritableMap msgMap = Arguments.createMap();
