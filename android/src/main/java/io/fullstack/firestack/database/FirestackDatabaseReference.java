@@ -11,6 +11,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -151,7 +152,7 @@ public class FirestackDatabaseReference {
 
   public void removeChildEventListener() {
     if (mEventListener != null) {
-      com.google.firebase.database.DatabaseReference ref = this.getDatabaseRef();
+      DatabaseReference ref = this.getDatabaseRef();
       ref.removeEventListener(mEventListener);
       //this.notListeningTo(mPath, "child_added");
       //this.notListeningTo(mPath, "child_changed");
@@ -162,7 +163,7 @@ public class FirestackDatabaseReference {
   }
 
   public void removeValueEventListener() {
-    com.google.firebase.database.DatabaseReference ref = this.getDatabaseRef();
+    DatabaseReference ref = this.getDatabaseRef();
     if (mValueListener != null) {
       ref.removeEventListener(mValueListener);
       //this.notListeningTo(mPath, "value");
@@ -202,12 +203,12 @@ public class FirestackDatabaseReference {
     Utils.sendEvent(mReactContext, "database_error", evt);
   }
 
-  public com.google.firebase.database.DatabaseReference getDatabaseRef() {
+  public DatabaseReference getDatabaseRef() {
     return FirebaseDatabase.getInstance().getReference(mPath);
   }
 
   private Query getDatabaseQueryAtPathAndModifiers(final ReadableArray modifiers) {
-    com.google.firebase.database.DatabaseReference ref = this.getDatabaseRef();
+    DatabaseReference ref = this.getDatabaseRef();
 
     List<Object> strModifiers = Utils.recursivelyDeconstructReadableArray(modifiers);
     ListIterator<Object> it = strModifiers.listIterator();
