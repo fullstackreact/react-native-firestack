@@ -135,6 +135,7 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
                                 @"fullPath": ref.fullPath,
                                 @"bucket": ref.bucket,
                                 @"name": ref.name,
+                                @"downloadUrl": snapshot.metadata.downloadURLs[0].absoluteString,
                                 @"metadata": [snapshot.metadata dictionaryRepresentation]
                                 };
 
