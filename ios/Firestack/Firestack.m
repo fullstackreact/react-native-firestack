@@ -8,7 +8,7 @@
 #import "FirestackErrors.h"
 #import "FirestackEvents.h"
 // #import "FirestackAnalytics.h"
-// #import "FirestackCloudMessaging.h"
+#import "FirestackCloudMessaging.h"
 
 static Firestack *_sharedInstance = nil;
 static dispatch_once_t onceToken;
@@ -239,6 +239,8 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
             
             // if (!self.configured) {
             
+            //If you want this method could replace all of the above for the option setting for firebase
+            //FIROptions *options = [[FIROptions alloc] initWithContentsOfFile:plistPath];
             if ([FIRApp defaultApp] == NULL) {
                 [FIRApp configureWithOptions:finalOptions];
             }            
