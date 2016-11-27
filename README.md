@@ -16,7 +16,11 @@ For a detailed discussion of how Firestack works as well as how to contribute, c
 * Covers lots of awesome features of Firebase:
   * authentication
     * username and password
-    * social auth (implemented, but need to add providers)
+    * social auth (implemented in conjunction with [react-native-oauth](https://github.com/fullstackreact/react-native-oauth))
+      * Facebook
+      * Github
+      * Google
+      * Twitter
   * storage handling
     * upload files
     * download urls
@@ -25,6 +29,7 @@ For a detailed discussion of how Firestack works as well as how to contribute, c
   * presence out-of-the-box
   * analytics
   * Remote configuration
+  * FCM (in-progress)
 * Redux support built-in (but not required)
 * Android and iOS support
 * Community supported and professionally backed
