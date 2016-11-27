@@ -97,6 +97,8 @@ RCT_EXPORT_METHOD(signInWithProvider:
                                           callback(@[[NSNull null], userProps]);
                                       } else {
                                           NSLog(@"An error occurred: %@", [error localizedDescription]);
+                                          NSLog(@"[Error signInWithProvider]: %@", [error userInfo]);
+                                          NSLog(@"%@", [NSThread callStackSymbols]);
                                           // No user is signed in.
                                           NSDictionary *err = @{
                                                                 @"error": @"No user signed in",
