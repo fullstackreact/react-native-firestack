@@ -1,10 +1,8 @@
 package io.fullstack.firestack.database;
 
-import java.util.HashSet;
 import java.util.List;
 import android.util.Log;
 import java.util.ListIterator;
-import java.util.Set;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
@@ -29,7 +27,6 @@ public class FirestackDatabaseReference {
   private String mModifiersString;
   private ChildEventListener mEventListener;
   private ValueEventListener mValueListener;
-  private Set<ValueEventListener> mOnceValueListeners = new HashSet<>();
   private ReactContext mReactContext;
 
   public FirestackDatabaseReference(final ReactContext context,
@@ -104,7 +101,6 @@ public class FirestackDatabaseReference {
       @Override
       public void onDataChange(DataSnapshot dataSnapshot) {
         WritableMap data = Utils.dataSnapshotToMap("value", mPath, mModifiersString, dataSnapshot);
-        mOnceValueListeners.remove(this);
         callback.invoke(null, data);
       }
 
@@ -114,14 +110,9 @@ public class FirestackDatabaseReference {
         err.putInt("errorCode", error.getCode());
         err.putString("errorDetails", error.getDetails());
         err.putString("description", error.getMessage());
-        mOnceValueListeners.remove(this);
         callback.invoke(err);
       }
     };
-
-    //TODO ? Is it really necessary to track this type of event listener as they are automatically
-    //removed by Firebase when the event is fired. Very slim chance of memory leak.
-    mOnceValueListeners.add(onceValueEventListener);
     mQuery.addListenerForSingleValueEvent(onceValueEventListener);
     Log.d(TAG, "Added OnceValueEventListener for path: " + mPath + " with modifiers " + mModifiersString);
   }
@@ -129,7 +120,7 @@ public class FirestackDatabaseReference {
   public void cleanup() {
     Log.d(TAG, "cleaning up database reference " + this);
     this.removeChildEventListener();
-    this.removeValueEventListeners();
+    this.removeValueEventListener();
   }
 
   private void removeChildEventListener() {
@@ -139,15 +130,11 @@ public class FirestackDatabaseReference {
     }
   }
 
-  private void removeValueEventListeners() {
+  private void removeValueEventListener() {
     if (mValueListener != null) {
       mQuery.removeEventListener(mValueListener);
       mValueListener = null;
     }
-    for (ValueEventListener onceValueListener : mOnceValueListeners) {
-      mQuery.removeEventListener(onceValueListener);
-    }
-    mOnceValueListeners = new HashSet<>();
   }
 
   private void handleDatabaseEvent(final String name, final DataSnapshot dataSnapshot) {
