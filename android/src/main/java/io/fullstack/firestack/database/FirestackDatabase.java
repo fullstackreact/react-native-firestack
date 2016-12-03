@@ -159,7 +159,7 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
     } else {
       Log.d(TAG, "No value passed to push: " + newPath);
       WritableMap res = Arguments.createMap();
-      res.putString("result", "success");
+      res.putString("status", "success");
       res.putString("ref", newPath);
       callback.invoke(null, res);
     }
@@ -180,7 +180,7 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
     }
 
     WritableMap resp = Arguments.createMap();
-    resp.putString("result", "success");
+    resp.putString("status", "success");
     resp.putString("handle", path);
     callback.invoke(null, resp);
   }
@@ -205,13 +205,31 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
   public void off(
           final String path,
           final String modifiersString,
-          @Deprecated final String name,
+          final String name,
           final Callback callback) {
-    this.removeDBHandle(path, modifiersString);
+
+    String key = this.getDBListenerKey(path, modifiersString);
+    FirestackDatabaseReference r = mDBListeners.get(key);
+
+    if (r != null) {
+      if (name == null || "".equals(name)) {
+        r.cleanup();
+        mDBListeners.remove(key);
+      } else {
+        //TODO: Remove individual listeners as per iOS code
+        //1) Remove event handler
+        //2) If no more listeners, remove from listeners map
+        r.cleanup();
+        mDBListeners.remove(key);
+      }
+    }
+
     Log.d(TAG, "Removed listener " + path + "/" + modifiersString);
     WritableMap resp = Arguments.createMap();
     resp.putString("handle", path);
-    resp.putString("result", "success");
+    resp.putString("status", "success");
+    resp.putString("modifiersString", modifiersString);
+    //TODO: Remaining listeners
     callback.invoke(null, resp);
   }
 
@@ -303,15 +321,5 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
 
   private String getDBListenerKey(String path, String modifiersString) {
     return path + " | " + modifiersString;
-  }
-
-  private void removeDBHandle(final String path, String modifiersString) {
-    String key = this.getDBListenerKey(path, modifiersString);
-    FirestackDatabaseReference r = mDBListeners.get(key);
-
-    if (r != null) {
-      r.cleanup();
-      mDBListeners.remove(key);
-    }
   }
 }

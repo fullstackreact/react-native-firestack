@@ -92,7 +92,7 @@ public class FirestackDatabaseReference {
       Log.d(TAG, "Added ValueEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
       //this.setListeningTo(mPath, modifiersString, "value");
     } else {
-      Log.w(TAG, "trying to add duplicate ValueEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
+      Log.w(TAG, "Trying to add duplicate ValueEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
     }
   }
 
