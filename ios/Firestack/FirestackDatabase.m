@@ -368,7 +368,6 @@ RCT_EXPORT_MODULE(FirestackDatabase);
 {
     self = [super init];
     if (self != nil) {
-        _database = [FIRDatabase database];
         _dbReferences = [[NSMutableDictionary alloc] init];
     }
     return self;
@@ -378,10 +377,7 @@ RCT_EXPORT_METHOD(enablePersistence:(BOOL) enable
   callback:(RCTResponseSenderBlock) callback)
 {
 
-  BOOL isEnabled = _database.persistenceEnabled;
-  if ( isEnabled != enable) {
-      _database.persistenceEnabled = enable;
-  }
+  [FIRDatabase database].persistenceEnabled = enable;
   callback(@[[NSNull null], @{
                  @"result": @"success"
                  }]);
@@ -391,7 +387,7 @@ RCT_EXPORT_METHOD(keepSynced:(NSString *) path
   withEnable:(BOOL) enable
   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
+    FIRDatabaseReference *ref = [self getPathRef:path];
     [ref keepSynced:enable];
     callback(@[[NSNull null], @{
                             @"status": @"success",
@@ -403,8 +399,7 @@ RCT_EXPORT_METHOD(set:(NSString *) path
                   value:(NSDictionary *)value
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
-
+    FIRDatabaseReference *ref = [self getPathRef:path];
     [ref setValue:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         [self handleCallback:@"set" callback:callback databaseError:error];
     }];
@@ -414,8 +409,7 @@ RCT_EXPORT_METHOD(update:(NSString *) path
                   value:(NSDictionary *)value
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
-
+    FIRDatabaseReference *ref = [self getPathRef:path];
     [ref updateChildValues:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         [self handleCallback:@"update" callback:callback databaseError:error];
     }];
@@ -424,7 +418,7 @@ RCT_EXPORT_METHOD(update:(NSString *) path
 RCT_EXPORT_METHOD(remove:(NSString *) path
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
+    FIRDatabaseReference *ref = [self getPathRef:path];
     [ref removeValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         [self handleCallback:@"remove" callback:callback databaseError:error];
     }];
@@ -434,7 +428,7 @@ RCT_EXPORT_METHOD(push:(NSString *) path
                   props:(NSDictionary *) props
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
+    FIRDatabaseReference *ref = [self getPathRef:path];
     FIRDatabaseReference *newRef = [ref childByAutoId];
 
     NSURL *url = [NSURL URLWithString:ref.URL];
@@ -526,7 +520,7 @@ RCT_EXPORT_METHOD(onDisconnectSetObject:(NSString *) path
                   props:(NSDictionary *) props
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
+    FIRDatabaseReference *ref = [self getPathRef:path];
     [ref onDisconnectSetValue:props
           withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
               [self handleCallback:@"onDisconnectSetObject" callback:callback databaseError:error];
@@ -537,7 +531,7 @@ RCT_EXPORT_METHOD(onDisconnectSetString:(NSString *) path
                   val:(NSString *) val
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
+    FIRDatabaseReference *ref = [self getPathRef:path];
     [ref onDisconnectSetValue:val
           withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
               [self handleCallback:@"onDisconnectSetString" callback:callback databaseError:error];
@@ -547,7 +541,7 @@ RCT_EXPORT_METHOD(onDisconnectSetString:(NSString *) path
 RCT_EXPORT_METHOD(onDisconnectRemove:(NSString *) path
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
+    FIRDatabaseReference *ref = [self getPathRef:path];
     [ref onDisconnectRemoveValueWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         [self handleCallback:@"onDisconnectRemove" callback:callback databaseError:error];
     }];
@@ -558,10 +552,15 @@ RCT_EXPORT_METHOD(onDisconnectRemove:(NSString *) path
 RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRDatabaseReference *ref = [[_database reference] child:path];
+    FIRDatabaseReference *ref = [self getPathRef:path];
     [ref cancelDisconnectOperationsWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         [self handleCallback:@"onDisconnectCancel" callback:callback databaseError:error];
     }];
+}
+
+- (FIRDatabaseReference *) getPathRef:(NSString *) path
+{
+    return [[[FIRDatabase database] reference] child:path];
 }
 
 - (void) handleCallback:(NSString *) methodName
@@ -592,7 +591,7 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
 
     if (ref == nil) {
         ref = [[FirestackDBReference alloc] initWithPathAndModifiers:self
-                                                            database:_database
+                                                            database:[FIRDatabase database]
                                                                 path:path
                                                            modifiers:modifiers
                                                      modifiersString:modifiersString];

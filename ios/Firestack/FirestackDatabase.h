@@ -18,7 +18,6 @@
 }
 
 @property NSMutableDictionary *dbReferences;
-@property FIRDatabase *database;
 
 @end
 
