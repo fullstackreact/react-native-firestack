@@ -85,11 +85,9 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void downloadFile(final String urlStr,
-                           final String fbPath,
+  public void downloadFile(final String remotePath,
                            final String localFile,
                            final Callback callback) {
-    Log.d(TAG, "downloadFile: " + urlStr + ", " + localFile);
     if (!isExternalStorageWritable()) {
       Log.w(TAG, "downloadFile failed: external storage not writable");
       WritableMap error = Arguments.createMap();
@@ -99,13 +97,9 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
       callback.invoke(error);
       return;
     }
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    String storageBucket = storage.getApp().getOptions().getStorageBucket();
-    String storageUrl = "gs://" + storageBucket;
-    Log.d(TAG, "Storage url " + storageUrl + fbPath);
+    Log.d(TAG, "downloadFile from remote path: " + remotePath);
 
-    StorageReference storageRef = storage.getReferenceFromUrl(storageUrl);
-    StorageReference fileRef = storageRef.child(fbPath);
+    StorageReference fileRef = FirebaseStorage.getInstance().getReference(remotePath);
 
     fileRef.getStream(new StreamDownloadTask.StreamProcessor() {
       @Override
@@ -182,15 +176,10 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void downloadUrl(final String javascriptStorageBucket,
-                          final String path,
+  public void downloadUrl(final String remotePath,
                           final Callback callback) {
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    String storageBucket = storage.getApp().getOptions().getStorageBucket();
-    String storageUrl = "gs://" + storageBucket;
-    Log.d(TAG, "Storage url " + storageUrl + path);
-    final StorageReference storageRef = storage.getReferenceFromUrl(storageUrl);
-    final StorageReference fileRef = storageRef.child(path);
+    Log.d(TAG, "Download url for remote path: " + remotePath);
+    final StorageReference fileRef = FirebaseStorage.getInstance().getReference(remotePath);
 
     Task<Uri> downloadTask = fileRef.getDownloadUrl();
     downloadTask
@@ -200,7 +189,7 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             final WritableMap res = Arguments.createMap();
 
             res.putString("status", "success");
-            res.putString("bucket", storageRef.getBucket());
+            res.putString("bucket", FirebaseStorage.getInstance().getApp().getOptions().getStorageBucket());
             res.putString("fullPath", uri.toString());
             res.putString("path", uri.getPath());
             res.putString("url", uri.toString());
@@ -256,12 +245,10 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
 
   // STORAGE
   @ReactMethod
-  public void uploadFile(final String urlStr, final String name, final String filepath, final ReadableMap metadata, final Callback callback) {
-    FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference storageRef = storage.getReferenceFromUrl(urlStr);
-    StorageReference fileRef = storageRef.child(name);
+  public void uploadFile(final String remotePath, final String filepath, final ReadableMap metadata, final Callback callback) {
+    StorageReference fileRef = FirebaseStorage.getInstance().getReference(remotePath);
 
-    Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
+    Log.i(TAG, "Upload file: " + filepath + " to " + remotePath);
 
     try {
       Uri file;
