@@ -431,7 +431,7 @@ RCT_EXPORT_METHOD(push:(NSString *) path
     FIRDatabaseReference *ref = [self getPathRef:path];
     FIRDatabaseReference *newRef = [ref childByAutoId];
 
-    NSURL *url = [NSURL URLWithString:ref.URL];
+    NSURL *url = [NSURL URLWithString:newRef.URL];
     NSString *newPath = [url path];
 
     if ([props count] > 0) {
