@@ -1,6 +1,6 @@
 ## Firestack
 
-Firestack makes using the latest [Firebase](http://firebase.com) straight-forward.
+Firestack makes using the latest [Firebase](https://firebase.google.com/) straight-forward.
 
 [![Gitter](https://badges.gitter.im/fullstackreact/react-native-firestack.svg)](https://gitter.im/fullstackreact/react-native-firestack?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
