@@ -193,14 +193,14 @@ class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEve
     @Override
     public void onHostResume() {
         WritableMap params = Arguments.createMap();
-        params.putBoolean("isForground", true);
+        params.putBoolean("isForeground", true);
         FirestackUtils.sendEvent(mReactContext, "FirestackAppState", params);
     }
 
     @Override
     public void onHostPause() {
         WritableMap params = Arguments.createMap();
-        params.putBoolean("isForground", false);
+        params.putBoolean("isForeground", false);
         FirestackUtils.sendEvent(mReactContext, "FirestackAppState", params);
     }
 
