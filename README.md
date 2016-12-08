@@ -64,7 +64,7 @@ To use Firestack, we'll need to have a development environment that includes the
 
 ### iOS (with cocoapods)
 
-Unfortunately, due to AppStore restrictions, we currently do _not_ package Firebase libraries in with Firestack. However, the good news is we've automated the process (with many thanks to the Auth0 team for inspiration) of setting up with cocoapods. This will happen automatically upon linking the package with `react-native-cli`. 
+Unfortunately, due to AppStore restrictions, we currently do _not_ package Firebase libraries in with Firestack. However, the good news is we've automated the process (with many thanks to the Auth0 team for inspiration) of setting up with cocoapods. This will happen automatically upon linking the package with `react-native-cli`.
 
 **Remember to use the `ios/[YOUR APP NAME].xcworkspace` instead of the `ios/[YOUR APP NAME].xcproj` file from now on**.
 
@@ -198,7 +198,7 @@ Each platform uses a different setup method after creating the project.
 
 ### iOS
 
-After creating a Firebase project, click on the [Add Firebase to your iOS app](http://d.pr/i/3sEL.png) and follow the steps from there to add the configuration file. You do _not_ need to set up a cocoapods project (this is already done through firestack). Make sure not to forget the `Copy Files` phase in iOS. 
+After creating a Firebase project, click on the [Add Firebase to your iOS app](http://d.pr/i/3sEL.png) and follow the steps from there to add the configuration file. You do _not_ need to set up a cocoapods project (this is already done through firestack). Make sure not to forget the `Copy Files` phase in iOS.
 
 [Download the Firebase config file](https://support.google.com/firebase/answer/7015592) and place it in your app directory next to your app source code:
 
@@ -206,7 +206,7 @@ After creating a Firebase project, click on the [Add Firebase to your iOS app](h
 
 Once you download the configuration file, make sure you place it in the root of your Xcode project. Every different Bundle ID (aka, even different project variants needs their own configuration file).
 
-Lastly, due to some dependencies requirements, Firestack supports iOS versions 8.0 and up. Make sure to update the minimum version of your iOS app to `8.0`. 
+Lastly, due to some dependencies requirements, Firestack supports iOS versions 8.0 and up. Make sure to update the minimum version of your iOS app to `8.0`.
 
 ### Android
 
@@ -369,7 +369,7 @@ We can use an external authentication provider, such as twitter/facebook for aut
 [Currently undergoing updates]
 
 ### socialLogin with custom Library
-If you don't want to use [react-native-oauth](https://github.com/fullstackreact/react-native-oauth), you can use other library such as [react-native-facebook-login](https://github.com/magus/react-native-facebook-login). 
+If you don't want to use [react-native-oauth](https://github.com/fullstackreact/react-native-oauth), you can use other library such as [react-native-facebook-login](https://github.com/magus/react-native-facebook-login).
 
 ```javascript
 var {FBLogin, FBLoginManager} = require('react-native-facebook-login');
@@ -377,7 +377,7 @@ var {FBLogin, FBLoginManager} = require('react-native-facebook-login');
 var Login = React.createClass({
   render: function() {
     return (
-      <FBLogin 
+      <FBLogin
         onLogin={function(data){
           console.log("Logged in!");
           console.log(data);
@@ -641,7 +641,7 @@ And we also export the filetype constants as well:
 * FILETYPE_REGULAR
 * FILETYPE_DIRECTORY
 
-> Note: this idea comes almost directory from [react-native-fs](https://github.com/johanneslumpe/react-native-fs), so we don't claim credit for coming up with this fantastic idea. 
+> Note: this idea comes almost directory from [react-native-fs](https://github.com/johanneslumpe/react-native-fs), so we don't claim credit for coming up with this fantastic idea.
 
 ### Realtime Database
 
@@ -651,6 +651,7 @@ Ranking strategy
 
 Add a new record with timestamp using this solution:
 
+```js
 firebaseApp.database.ref('posts').push().then((res) => {
  let newPostKey = res.key;
  firebaseApp.ServerValue.then(map => {
@@ -673,15 +674,18 @@ firebaseApp.database.ref('posts').push().then((res) => {
     })
   })
 })
+```
 
 Then retrieve the feed using this:
 
+```js
 firebaseApp.database.ref('posts').orderByChild('timestamp').limitToLast(30).once('value')
 .then((snapshot) => {
   this.props.savePosts(snapshot.val())
   const val = snapshot.val();
   console.log(val);
 })
+```
 
 #### DatabaseRef
 
@@ -719,7 +723,7 @@ For handling offline operations, you can enable persistence by using the `setPer
 firestack.database.setPersistence(true);
 ```
 
-The database refs has a `keepSynced()` function to tell the firestack library to keep the data at the `ref` in sync. 
+The database refs has a `keepSynced()` function to tell the firestack library to keep the data at the `ref` in sync.
 
 ```javascript
 const ref = firestack.database
@@ -799,7 +803,7 @@ Monitor token generation
   firestack.cloudMessaging.listenForTokenRefresh(function (token) {
     console.log('refresh device token', token);
   });
-  
+
   // remove listener
   firestack.cloudMessaging.unlistenForTokenRefresh();
 ```
@@ -872,14 +876,14 @@ After the `npm` version is installed, you can either clone the repo directly int
 git clone https://github.com/fullstackreact/react-native-firestack.git ./node_modules/react-native-firestack
 ```
 
-Alternatively, you can clone the repo somewhere else and `rsync` the directory over to the `node_modules/` directory. 
+Alternatively, you can clone the repo somewhere else and `rsync` the directory over to the `node_modules/` directory.
 
 > This is the method I use as it allows me to separate the codebases:
 
 ```bash
 git clone https://github.com/fullstackreact/react-native-firestack.git \
       ~/Development/react-native/mine/react-native-firestack/
-      
+
 ## And rsync
 rsync -avhW --delete \
       --exclude='node_modules' \
