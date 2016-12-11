@@ -286,6 +286,16 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
     });
   }
 
+  @ReactMethod
+  public void goOnline() {
+    mFirebaseDatabase.goOnline();
+  }
+
+  @ReactMethod
+  public void goOffline() {
+    mFirebaseDatabase.goOffline();
+  }
+
   private void handleCallback(
           final String methodName,
           final Callback callback,

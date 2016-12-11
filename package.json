@@ -1,56 +1,72 @@
 {
-  "name": "react-native-firestack",
-  "version": "2.3.3",
-  "author": "Ari Lerner <ari@fullstack.io> (https://fullstackreact.com)",
-  "description": "A firebase v3 adapter",
-  "main": "index",
-  "scripts": {
-    "start": "node node_modules/react-native/local-cli/cli.js start",
-    "build": "./node_modules/.bin/babel --source-maps=true --out-dir=dist .",
-    "dev": "npm run compile -- --watch",
-    "lint": "eslint ./src",
-    "publish_pages": "gh-pages -d public/",
-    "test": "./node_modules/.bin/mocha",
-    "watchcpx": "node ./bin/watchCopy"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/fullstackreact/react-native-firestack.git"
-  },
-  "jest": {
-    "preset": "jest-react-native",
-    "setupFiles": [],
-    "unmockedModulePathPatterns": [
-      "./node_modules/react",
-      "./node_modules/react-native",
-      "./node_modules/react-native-mock",
-      "./node_modules/react-addons-test-utils"
+  "_args": [
+    [
+      {
+        "raw": "https://github.com/Salakar/react-native-firestack",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "https://github.com/Salakar/react-native-firestack",
+        "spec": "git+https://github.com/Salakar/react-native-firestack.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:Salakar/react-native-firestack.git",
+          "sshUrl": "git+ssh://git@github.com/Salakar/react-native-firestack.git",
+          "httpsUrl": "git+https://github.com/Salakar/react-native-firestack.git",
+          "gitUrl": "git://github.com/Salakar/react-native-firestack.git",
+          "shortcut": "github:Salakar/react-native-firestack",
+          "directUrl": "https://raw.githubusercontent.com/Salakar/react-native-firestack/master/package.json"
+        }
+      },
+      "/Users/floriannorbertbepunkt/Dropbox/Dropbox Arbeit/Mister Bishop Studios/Roomary/roomary"
     ]
-  },
-  "license": "ISC",
-  "keywords": [
-    "react",
-    "react-native",
-    "react-native-firestack",
-    "firestack",
-    "firebase"
   ],
-  "peerDependencies": {
-    "react": "*",
-    "react-native": "*"
-  },
-  "rnpm": {
-    "commands": {
-      "prelink": "node_modules/react-native-firestack/bin/prepare.sh",
-      "postlink": "node_modules/react-native-firestack/bin/cocoapods.sh"
-    },
-    "ios": {
-      "project": "ios/Firestack.xcodeproj"
-    },
-    "android": {
-      "packageInstance": "new FirestackPackage()"
+  "_from": "git+https://github.com/Salakar/react-native-firestack.git",
+  "_id": "react-native-firestack@2.3.3",
+  "_inCache": true,
+  "_location": "/react-native-firestack",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "https://github.com/Salakar/react-native-firestack",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "https://github.com/Salakar/react-native-firestack",
+    "spec": "git+https://github.com/Salakar/react-native-firestack.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:Salakar/react-native-firestack.git",
+      "sshUrl": "git+ssh://git@github.com/Salakar/react-native-firestack.git",
+      "httpsUrl": "git+https://github.com/Salakar/react-native-firestack.git",
+      "gitUrl": "git://github.com/Salakar/react-native-firestack.git",
+      "shortcut": "github:Salakar/react-native-firestack",
+      "directUrl": "https://raw.githubusercontent.com/Salakar/react-native-firestack/master/package.json"
     }
   },
+  "_requiredBy": [
+    "#USER",
+    "/"
+  ],
+  "_resolved": "git+https://github.com/Salakar/react-native-firestack.git#50b709f91cf4e9fd141ef94964405f88d4d2779d",
+  "_shasum": "05959e918292eeb9d6a3c39d9afb493ad11d5348",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/Salakar/react-native-firestack",
+  "_where": "/Users/floriannorbertbepunkt/Dropbox/Dropbox Arbeit/Mister Bishop Studios/Roomary/roomary",
+  "author": {
+    "name": "Ari Lerner",
+    "email": "ari@fullstack.io",
+    "url": "https://fullstackreact.com"
+  },
+  "bugs": {
+    "url": "https://github.com/fullstackreact/react-native-firestack/issues"
+  },
+  "dependencies": {
+    "bows": "^1.6.0",
+    "es6-symbol": "^3.1.0"
+  },
+  "description": "A firebase v3 adapter",
   "devDependencies": {
     "babel-eslint": "^7.0.0",
     "babel-jest": "^14.1.0",
@@ -75,8 +91,59 @@
     "should": "^11.1.0",
     "sinon": "^2.0.0-pre.2"
   },
-  "dependencies": {
-    "bows": "^1.6.0",
-    "es6-symbol": "^3.1.0"
-  }
+  "gitHead": "50b709f91cf4e9fd141ef94964405f88d4d2779d",
+  "homepage": "https://github.com/fullstackreact/react-native-firestack#readme",
+  "jest": {
+    "preset": "jest-react-native",
+    "setupFiles": [],
+    "unmockedModulePathPatterns": [
+      "./node_modules/react",
+      "./node_modules/react-native",
+      "./node_modules/react-native-mock",
+      "./node_modules/react-addons-test-utils"
+    ]
+  },
+  "keywords": [
+    "react",
+    "react-native",
+    "react-native-firestack",
+    "firestack",
+    "firebase"
+  ],
+  "license": "ISC",
+  "main": "index",
+  "name": "react-native-firestack",
+  "optionalDependencies": {},
+  "peerDependencies": {
+    "react": "*",
+    "react-native": "*"
+  },
+  "readme": "# Firestack\n\nFirestack makes using the latest [Firebase](http://firebase.com) with React Native straight-forward.\n\n```\nnpm i react-native-firestack --save\n```\n\n[![Gitter](https://badges.gitter.im/fullstackreact/react-native-firestack.svg)](https://gitter.im/fullstackreact/react-native-firestack?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)\n[![npm version](https://img.shields.io/npm/v/react-native-firestack.svg)](https://www.npmjs.com/package/react-native-firestack)\n[![License](https://img.shields.io/npm/l/react-native-firestack.svg)](/LICENSE)\n\nFirestack is a _light-weight_ layer sitting on-top of the native Firebase libraries for both iOS and Android which mirrors the React Native JS api as closely as possible.\n\nFeaturing; authentication, storage, real-time database, presence, analytics, cloud messaging, remote configuration, redux support and more!\n\n## Firestack vs Firebase JS lib\n\nAlthough the [Firebase](https://www.npmjs.com/package/firebase) JavaScript library will work with React Native, it is mainly designed for the web. \n\nThe native SDK's are much better for performance compared to the web SDK. The web SDK will run on the same thread as your apps ([JS thread](https://facebook.github.io/react-native/docs/performance.html#javascript-frame-rate)) therefore limiting your JS framerate, potentially affecting things touch events and transitions/animations.\n\nThe native SDK's also contains functionality that the web SDK's do not, for example [Analytics](/docs/api/analytics.md) and [Remote Config](/docs/api/remote-config.md).\n\n## Example app\n\nWe have a working application example available in at [fullstackreact/FirestackApp](https://github.com/fullstackreact/FirestackApp). Check it out for more details about how to use Firestack.\n\n## Documentation\n\n* Installation\n  * [iOS](docs/installation.ios.md)\n  * [Android](docs/installation.android.md)\n* [Firebase Setup](docs/firebase-setup.md)\n* API\n  * [Authentication](docs/api/authentication.md)\n  * [Analytics](docs/api/analytics.md)\n  * [Storage](docs/api/storage.md)\n  * [Realtime Database](docs/api/database.md)\n  * [Presence](docs/api/presence.md)\n  * [ServerValue](docs/api/server-value.md)\n  * [Cloud Messaging](docs/api/cloud-messaging.md)\n  * [Remote Config](docs/api/remote-config.md)\n  * [Events](docs/api/events.md)\n* [Redux](docs/redux.md)\n\n## Contributing\n\nFor a detailed discussion of how Firestack works as well as how to contribute, check out our [contribution guide](https://github.com/fullstackreact/react-native-firestack/blob/master/Contributing.md).\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fullstackreact/react-native-firestack.git"
+  },
+  "rnpm": {
+    "commands": {
+      "prelink": "node_modules/react-native-firestack/bin/prepare.sh",
+      "postlink": "node_modules/react-native-firestack/bin/cocoapods.sh"
+    },
+    "ios": {
+      "project": "ios/Firestack.xcodeproj"
+    },
+    "android": {
+      "packageInstance": "new FirestackPackage()"
+    }
+  },
+  "scripts": {
+    "build": "babel --source-maps=true --out-dir=dist .",
+    "dev": "npm run compile -- --watch",
+    "lint": "eslint ./src",
+    "publish_pages": "gh-pages -d public/",
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "mocha",
+    "watchcpx": "node ./bin/watchCopy"
+  },
+  "version": "2.3.3"
 }
