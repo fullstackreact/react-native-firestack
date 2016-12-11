@@ -17,8 +17,7 @@
 
 }
 
-@property (nonatomic) NSDictionary *_DBHandles;
-@property (nonatomic, weak) FIRDatabaseReference *ref;
+@property NSMutableDictionary *dbReferences;
 
 @end
 

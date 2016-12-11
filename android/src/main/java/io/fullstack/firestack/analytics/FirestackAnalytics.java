@@ -1,4 +1,4 @@
-package io.fullstack.firestack;
+package io.fullstack.firestack.analytics;
 
 import java.util.Map;
 import android.util.Log;
@@ -11,14 +11,16 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 
-class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
+import io.fullstack.firestack.Utils;
+
+public class FirestackAnalytics extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackAnalytics";
 
   private ReactApplicationContext context;
   private FirebaseAnalytics mFirebaseAnalytics;
 
-  public FirestackAnalyticsModule(ReactApplicationContext reactContext) {
+  public FirestackAnalytics(ReactApplicationContext reactContext) {
     super(reactContext);
     context = reactContext;
     Log.d(TAG, "New instance");
@@ -36,7 +38,7 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void logEvent(final String name, final ReadableMap params) {
-    Map<String, Object> m = FirestackUtils.recursivelyDeconstructReadableMap(params);
+    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(params);
     final Bundle bundle = makeEventBundle(name, m);
     Log.d(TAG, "Logging event " + name);
     mFirebaseAnalytics.logEvent(name, bundle);
@@ -111,7 +113,7 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
   // todo refactor/clean me
   private Bundle makeEventBundle(final String name, final Map<String, Object> map) {
     Bundle bundle = new Bundle();
-    // Available from the Analytics event
+    // Available from the FirestackAnalytics event
     if (map.containsKey("id")) {
       String id = (String) map.get("id");
       bundle.putString(FirebaseAnalytics.Param.ITEM_ID, id);
@@ -125,16 +127,16 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
       bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, val);
     }
     if (map.containsKey("quantity")) {
-      long val = (long) map.get("quantity");
-      bundle.putLong(FirebaseAnalytics.Param.QUANTITY, val);
+      double val = (double) map.get("quantity");
+      bundle.putDouble(FirebaseAnalytics.Param.QUANTITY, val);
     }
     if (map.containsKey("price")) {
-      long val = (long) map.get("price");
-      bundle.putLong(FirebaseAnalytics.Param.PRICE, val);
+      double val = (double) map.get("price");
+      bundle.putDouble(FirebaseAnalytics.Param.PRICE, val);
     }
     if (map.containsKey("value")) {
-      long val = (long) map.get("value");
-      bundle.putLong(FirebaseAnalytics.Param.VALUE, val);
+      double val = (double) map.get("value");
+      bundle.putDouble(FirebaseAnalytics.Param.VALUE, val);
     }
     if (map.containsKey("currency")) {
       String val = (String) map.get("currency");
@@ -194,7 +196,7 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
     }
     if (map.containsKey("shipping")) {
       double val = (double) map.get("shipping");
-      bundle.putDouble(FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS, val);
+      bundle.putDouble(FirebaseAnalytics.Param.SHIPPING, val);
     }
     if (map.containsKey("group_id")) {
       String val = (String) map.get("group_id");

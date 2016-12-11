@@ -1,4 +1,4 @@
-package io.fullstack.firestack;
+package io.fullstack.firestack.messaging;
 
 import java.util.Map;
 
@@ -13,7 +13,6 @@ import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
@@ -24,12 +23,11 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.RemoteMessage;
 
-/**
- * Created by nori on 2016/09/12.
- */
-public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
+import io.fullstack.firestack.Utils;
 
-    private static final String TAG = "FirestackCloudMessaging";
+public class FirestackMessaging extends ReactContextBaseJavaModule {
+
+    private static final String TAG = "FirestackMessaging";
     private static final String EVENT_NAME_TOKEN = "FirestackRefreshToken";
     private static final String EVENT_NAME_NOTIFICATION = "FirestackReceiveNotification";
     private static final String EVENT_NAME_SEND = "FirestackUpstreamSend";
@@ -38,14 +36,12 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
     public static final String INTENT_NAME_NOTIFICATION = "io.fullstack.firestack.ReceiveNotification";
     public static final String INTENT_NAME_SEND = "io.fullstack.firestack.Upstream";
 
-    private ReactContext mReactContext;
     private IntentFilter mRefreshTokenIntentFilter;
     private IntentFilter mReceiveNotificationIntentFilter;
     private IntentFilter mReceiveSendIntentFilter;
 
-    public FirestackCloudMessaging(ReactApplicationContext reactContext) {
+    public FirestackMessaging(ReactApplicationContext reactContext) {
         super(reactContext);
-        mReactContext = reactContext;
         mRefreshTokenIntentFilter = new IntentFilter(INTENT_NAME_TOKEN);
         mReceiveNotificationIntentFilter = new IntentFilter(INTENT_NAME_NOTIFICATION);
         mReceiveSendIntentFilter = new IntentFilter(INTENT_NAME_SEND);
@@ -85,7 +81,7 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                 params.putString("token", intent.getStringExtra("token"));
                 ReactContext ctx = getReactApplicationContext();
                 Log.d(TAG, "initRefreshTokenHandler received event " + EVENT_NAME_TOKEN);
-                FirestackUtils.sendEvent(ctx, EVENT_NAME_TOKEN, params);
+                Utils.sendEvent(ctx, EVENT_NAME_TOKEN, params);
             }
 
             ;
@@ -151,7 +147,7 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                     params.putNull("notification");
                 }
                 ReactContext ctx = getReactApplicationContext();
-                FirestackUtils.sendEvent(ctx, EVENT_NAME_NOTIFICATION, params);
+                Utils.sendEvent(ctx, EVENT_NAME_NOTIFICATION, params);
             }
         }, mReceiveNotificationIntentFilter);
     }
@@ -200,7 +196,7 @@ public class FirestackCloudMessaging extends ReactContextBaseJavaModule {
                     params.putNull("err");
                 }
                 ReactContext ctx = getReactApplicationContext();
-                FirestackUtils.sendEvent(ctx, EVENT_NAME_SEND, params);
+                Utils.sendEvent(ctx, EVENT_NAME_SEND, params);
             }
         }, mReceiveSendIntentFilter);
     }

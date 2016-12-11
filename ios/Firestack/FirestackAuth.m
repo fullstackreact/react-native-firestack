@@ -137,7 +137,7 @@ RCT_EXPORT_METHOD(listenForAuth)
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"userTokenError",
-                                                      @"msg": [error localizedFailureReason]
+                                                      @"msg": [error localizedDescription]
                                                       }];
                                         } else {
                                             [self
@@ -480,9 +480,7 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 
 - (void) userCallback:(RCTResponseSenderBlock) callback
                  user:(FIRUser *) user {
-    NSDictionary *userProps = @{
-                                @"user": [self userPropsFromFIRUser:user]
-                                };
+    NSDictionary *userProps = [self userPropsFromFIRUser:user];
     callback(@[[NSNull null], userProps]);
 }
 
