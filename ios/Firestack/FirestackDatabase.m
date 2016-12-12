@@ -56,12 +56,10 @@
                                  @"snapshot": props
                                  }];
         };
-        
         id errorBlock = ^(NSError * _Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
             [self getAndSendDatabaseError:error withPath: _path];
         };
-        
         int eventType = [self eventTypeFromName:eventName];
         FIRDatabaseHandle handle = [_query observeEventType:eventType
                                                   withBlock:withBlock
@@ -139,7 +137,6 @@
     [dict setValue:snapshot.key forKey:@"key"];
     NSDictionary *val = snapshot.value;
     [dict setObject:val forKey:@"value"];
-    
     // Snapshot ordering
     NSMutableArray *childKeys = [NSMutableArray array];
     if (snapshot.childrenCount > 0) {
@@ -152,13 +149,11 @@
             [childKeys addObject:child.key];
         }
     }
-    
     [dict setObject:childKeys forKey:@"childKeys"];
     [dict setValue:@(snapshot.hasChildren) forKey:@"hasChildren"];
     [dict setValue:@(snapshot.exists) forKey:@"exists"];
     [dict setValue:@(snapshot.childrenCount) forKey:@"childrenCount"];
     [dict setValue:snapshot.priority forKey:@"priority"];
-    
     return dict;
 }
 
@@ -171,7 +166,6 @@
                           @"msg": [error debugDescription]
                           };
     [self sendJSEvent:DATABASE_ERROR_EVENT title:DATABASE_ERROR_EVENT props: evt];
-    
     return evt;
 }
 
@@ -471,7 +465,6 @@ RCT_EXPORT_METHOD(on:(NSString *) path
 {
     FirestackDBReference *ref = [self getDBHandle:path modifiers:modifiers modifiersString:modifiersString];
     [ref addEventHandler:eventName];
-    
     callback(@[[NSNull null], @{
                    @"status": @"success",
                    @"handle": path
@@ -495,7 +488,6 @@ RCT_EXPORT_METHOD(off:(NSString *)path
 {
     NSString *key = [self getDBListenerKey:path withModifiers:modifiersString];
     FirestackDBReference *ref = [_dbReferences objectForKey:key];
-    
     if (ref != nil) {
         if (eventName == nil || [eventName isEqualToString:@""]) {
             [ref cleanup];
@@ -507,7 +499,6 @@ RCT_EXPORT_METHOD(off:(NSString *)path
             }
         }
     }
-    
     callback(@[[NSNull null], @{
                    @"result": @"success",
                    @"handle": path,
@@ -557,6 +548,16 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
     [ref cancelDisconnectOperationsWithCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         [self handleCallback:@"onDisconnectCancel" callback:callback databaseError:error];
     }];
+}
+
+RCT_EXPORT_METHOD(goOffline)
+{
+    [FIRDatabase database].goOffline;
+}
+
+RCT_EXPORT_METHOD(goOnline)
+{
+    [FIRDatabase database].goOnline;
 }
 
 - (FIRDatabaseReference *) getPathRef:(NSString *) path
@@ -611,5 +612,6 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
 - (NSArray<NSString *> *)supportedEvents {
     return @[DATABASE_DATA_EVENT, DATABASE_ERROR_EVENT];
 }
+
 
 @end
