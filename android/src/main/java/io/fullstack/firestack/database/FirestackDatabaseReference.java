@@ -92,7 +92,7 @@ public class FirestackDatabaseReference {
       Log.d(TAG, "Added ValueEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
       //this.setListeningTo(mPath, modifiersString, "value");
     } else {
-      Log.w(TAG, "trying to add duplicate ValueEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
+      Log.w(TAG, "Trying to add duplicate ValueEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
     }
   }
 
@@ -197,27 +197,75 @@ public class FirestackDatabaseReference {
         query = query.limitToFirst(limit);
       } else if (methStr.contains("equalTo")) {
         String value = strArr[1];
-        String key = strArr.length >= 3 ? strArr[2] : null;
-        if (key == null) {
-          query = query.equalTo(value);
+        String type = strArr[2];
+        if ("number".equals(type)) {
+          double doubleValue = Double.parseDouble(value);
+          if (strArr.length > 3) {
+            query = query.equalTo(doubleValue, strArr[3]);
+          } else {
+            query = query.equalTo(doubleValue);
+          }
+        } else if ("boolean".equals(type)) {
+          boolean booleanValue = Boolean.parseBoolean(value);
+          if (strArr.length > 3) {
+            query = query.equalTo(booleanValue, strArr[3] );
+          } else {
+            query = query.equalTo(booleanValue);
+          }
         } else {
-          query = query.equalTo(value, key);
+          if (strArr.length > 3) {
+            query = query.equalTo(value, strArr[3]);
+          } else {
+            query = query.equalTo(value);
+          }
         }
       } else if (methStr.contains("endAt")) {
         String value = strArr[1];
-        String key = strArr.length >= 3 ? strArr[2] : null;
-        if (key == null) {
-          query = query.endAt(value);
+        String type = strArr[2];
+        if ("number".equals(type)) {
+          double doubleValue = Double.parseDouble(value);
+          if (strArr.length > 3) {
+            query = query.endAt(doubleValue, strArr[3]);
+          } else {
+            query = query.endAt(doubleValue);
+          }
+        } else if ("boolean".equals(type)) {
+          boolean booleanValue = Boolean.parseBoolean(value);
+          if (strArr.length > 3) {
+            query = query.endAt(booleanValue, strArr[3] );
+          } else {
+            query = query.endAt(booleanValue);
+          }
         } else {
-          query = query.endAt(value, key);
+          if (strArr.length > 3) {
+            query = query.endAt(value, strArr[3]);
+          } else {
+            query = query.endAt(value);
+          }
         }
       } else if (methStr.contains("startAt")) {
         String value = strArr[1];
-        String key = strArr.length >= 3 ? strArr[2] : null;
-        if (key == null) {
-          query = query.startAt(value);
+        String type = strArr[2];
+        if ("number".equals(type)) {
+          double doubleValue = Double.parseDouble(value);
+          if (strArr.length > 3) {
+            query = query.startAt(doubleValue, strArr[3]);
+          } else {
+            query = query.startAt(doubleValue);
+          }
+        } else if ("boolean".equals(type)) {
+          boolean booleanValue = Boolean.parseBoolean(value);
+          if (strArr.length > 3) {
+            query = query.startAt(booleanValue, strArr[3] );
+          } else {
+            query = query.startAt(booleanValue);
+          }
         } else {
-          query = query.startAt(value, key);
+          if (strArr.length > 3) {
+            query = query.startAt(value, strArr[3]);
+          } else {
+            query = query.startAt(value);
+          }
         }
       }
     }
