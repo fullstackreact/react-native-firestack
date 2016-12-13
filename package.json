@@ -11,7 +11,7 @@
     "lint": "eslint ./src",
     "publish_pages": "gh-pages -d public/",
     "test": "./node_modules/.bin/mocha",
-    "watchcpx": "node ./bin/watchCopy"
+    "watchcpx": "echo 'See https://github.com/wix/wml for watching changes. \r\n'"
   },
   "repository": {
     "type": "git",
