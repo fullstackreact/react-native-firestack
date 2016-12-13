@@ -78,6 +78,7 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
     DatabaseReference ref = mFirebaseDatabase.getReference(path);
     Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(props);
 
+
     DatabaseReference.CompletionListener listener = new DatabaseReference.CompletionListener() {
       @Override
       public void onComplete(DatabaseError error, DatabaseReference ref) {
@@ -85,7 +86,7 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
       }
     };
 
-    ref.setValue(m, listener);
+    ref.setValue(m.get("value"), listener);
   }
 
   @ReactMethod
@@ -155,7 +156,7 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
         }
       };
 
-      newRef.setValue(m, listener);
+      newRef.setValue(m.get("value"), listener);
     } else {
       Log.d(TAG, "No value passed to push: " + newPath);
       WritableMap res = Arguments.createMap();
