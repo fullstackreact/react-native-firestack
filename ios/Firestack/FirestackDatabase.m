@@ -391,11 +391,11 @@ RCT_EXPORT_METHOD(keepSynced:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(set:(NSString *) path
-                  value:(NSDictionary *)value
+                  data:(NSDictionary *)data
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [self getPathRef:path];
-    [ref setValue:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+    [ref setValue:[data valueForKey:@"value"] withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         [self handleCallback:@"set" callback:callback databaseError:error];
     }];
 }
@@ -420,7 +420,7 @@ RCT_EXPORT_METHOD(remove:(NSString *) path
 }
 
 RCT_EXPORT_METHOD(push:(NSString *) path
-                  props:(NSDictionary *) props
+                  data:(NSDictionary *) data
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [self getPathRef:path];
@@ -429,8 +429,8 @@ RCT_EXPORT_METHOD(push:(NSString *) path
     NSURL *url = [NSURL URLWithString:newRef.URL];
     NSString *newPath = [url path];
 
-    if ([props count] > 0) {
-        [newRef setValue:props withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+    if ([data count] > 0) {
+        [newRef setValue:[data valueForKey:@"value"] withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
             if (error != nil) {
                 // Error handling
                 NSDictionary *evt = @{
