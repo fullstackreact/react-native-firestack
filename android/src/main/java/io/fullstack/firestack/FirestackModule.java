@@ -1,5 +1,6 @@
 package io.fullstack.firestack;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -207,6 +208,7 @@ public class FirestackModule extends ReactContextBaseJavaModule implements Lifec
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put("googleApiAvailability", getPlayServicesStatus());
+    constants.put("serverTimeOffset", new Date().getTime() - Long.parseLong(ServerValue.TIMESTAMP.get(".sv")));
     return constants;
   }
 }
