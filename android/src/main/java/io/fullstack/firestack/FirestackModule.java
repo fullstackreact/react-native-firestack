@@ -208,7 +208,7 @@ public class FirestackModule extends ReactContextBaseJavaModule implements Lifec
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put("googleApiAvailability", getPlayServicesStatus());
-    constants.put("serverTimeOffset", new Date().getTime() - Long.parseLong(ServerValue.TIMESTAMP.get(".sv")));
+    constants.put("serverValueTimestamp", ServerValue.TIMESTAMP));
     return constants;
   }
 }
