@@ -102,16 +102,16 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
       bundle.putString(FirebaseAnalytics.Param.ITEM_NAME, val);
     }
     if (map.containsKey("quantity")) {
-      long val = (long) map.get("quantity");
-      bundle.putLong(FirebaseAnalytics.Param.QUANTITY, val);
+      double val = (double) map.get("quantity");
+      bundle.putDouble(FirebaseAnalytics.Param.QUANTITY, val);
     }
     if (map.containsKey("price")) {
-      long val = (long) map.get("price");
-      bundle.putLong(FirebaseAnalytics.Param.PRICE, val);
+      double val = (double) map.get("price");
+      bundle.putDouble(FirebaseAnalytics.Param.PRICE, val);
     }
     if (map.containsKey("value")) {
-      long val = (long) map.get("value");
-      bundle.putLong(FirebaseAnalytics.Param.VALUE, val);
+      double val = (double) map.get("value");
+      bundle.putDouble(FirebaseAnalytics.Param.VALUE, val);
     }
     if (map.containsKey("currency")) {
       String val = (String) map.get("currency");
@@ -171,7 +171,7 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
     }
     if (map.containsKey("shipping")) {
       double val = (double) map.get("shipping");
-      bundle.putDouble(FirebaseAnalytics.Param.NUMBER_OF_PASSENGERS, val);
+      bundle.putDouble(FirebaseAnalytics.Param.SHIPPING, val);
     }
     if (map.containsKey("group_id")) {
       String val = (String) map.get("group_id");
@@ -213,11 +213,11 @@ class FirestackAnalyticsModule extends ReactContextBaseJavaModule {
       String val = (String) map.get("flight_number");
       bundle.putString(FirebaseAnalytics.Param.FLIGHT_NUMBER, val);
     }
-    
+
     Iterator<Map.Entry<String, Object>> entries = map.entrySet().iterator();
     while (entries.hasNext()) {
       Map.Entry<String, Object> entry = entries.next();
-      if (bundle.getBinder(entry.getKey()) == null) {
+      if (bundle.getBundle(entry.getKey()) == null) {
         bundle.putString(entry.getKey(), entry.getValue().toString());
       }
     }

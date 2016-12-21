@@ -42,7 +42,7 @@
 {
     FIRDatabaseReference *rootRef = [self getRef];
     FIRDatabaseQuery *query = [rootRef queryOrderedByKey];
-    
+
     for (NSString *str in modifiers) {
         if ([str isEqualToString:@"orderByKey"]) {
             query = [rootRef queryOrderedByKey];
@@ -107,7 +107,7 @@
             }
         }
     }
-    
+
     return query;
 }
 
@@ -141,7 +141,7 @@
 {
     FIRDatabaseReference *ref = [self getRef];
     int eventType = [self eventTypeFromName:name];
-    
+
     switch (eventType) {
         case FIRDataEventTypeValue:
             [ref removeObserverWithHandle:self.childValueHandler];
@@ -198,7 +198,7 @@
 - (int) eventTypeFromName:(NSString *)name
 {
     int eventType = FIRDataEventTypeValue;
-    
+
     if ([name isEqualToString:DATABASE_VALUE_EVENT]) {
         eventType = FIRDataEventTypeValue;
     } else if ([name isEqualToString:DATABASE_CHILD_ADDED_EVENT]) {
@@ -240,7 +240,7 @@ RCT_EXPORT_MODULE(FirestackDatabase);
 RCT_EXPORT_METHOD(enablePersistence:(BOOL) enable
   callback:(RCTResponseSenderBlock) callback)
 {
-    
+
   BOOL isEnabled = [FIRDatabase database].persistenceEnabled;
   if ( isEnabled != enable) {
     [FIRDatabase database].persistenceEnabled = enable;
@@ -267,7 +267,7 @@ RCT_EXPORT_METHOD(set:(NSString *) path
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [self getRefAtPath:path];
-    
+
     [ref setValue:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         if (error != nil) {
             // Error handling
@@ -286,7 +286,7 @@ RCT_EXPORT_METHOD(update:(NSString *) path
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [self getRefAtPath:path];
-    
+
     [ref updateChildValues:value withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
         if (error != nil) {
             // Error handling
@@ -322,10 +322,10 @@ RCT_EXPORT_METHOD(push:(NSString *) path
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [[self getRefAtPath:path] childByAutoId];
-    
+
     NSURL *url = [NSURL URLWithString:ref.URL];
     NSString *newPath = [url path];
-    
+
     if ([props count] > 0) {
         [ref setValue:props withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
             if (error != nil) {
@@ -370,12 +370,12 @@ RCT_EXPORT_METHOD(on:(NSString *) path
                       @"snapshot": props
                       }];
         };
-        
+
         id errorBlock = ^(NSError * _Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
             [self getAndSendDatabaseError:error withPath: path];
         };
-        
+
         int eventType = [r eventTypeFromName:eventName];
         FIRDatabaseHandle handle = [query observeEventType:eventType
                                                withBlock:withBlock
@@ -405,7 +405,7 @@ RCT_EXPORT_METHOD(onOnce:(NSString *) path
     FirestackDBReference *r = [self getDBHandle:path];
     int eventType = [r eventTypeFromName:name];
     FIRDatabaseQuery *ref = [r getQueryWithModifiers:modifiers];
-    
+
     [ref observeSingleEventOfType:eventType
                         withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
                             NSDictionary *props = [self snapshotToDict:snapshot];
@@ -440,7 +440,7 @@ RCT_EXPORT_METHOD(off:(NSString *)path
     }
 
     // [self saveDBHandle:path dbRef:r];
-    
+
     callback(@[[NSNull null], @{
                    @"result": @"success",
                    @"path": path,
@@ -454,7 +454,7 @@ RCT_EXPORT_METHOD(onDisconnectSetObject:(NSString *) path
                   callback:(RCTResponseSenderBlock) callback)
 {
     FIRDatabaseReference *ref = [self getRefAtPath:path];
-    
+
     [ref onDisconnectSetValue:props
           withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
               if (error != nil) {
@@ -543,73 +543,6 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
     return [r getRef];
 }
 
-- (FIRDatabaseQuery *) getQueryAtPathWithModifiers:(NSString *) str
-                                         modifiers:(NSArray *) modifiers
-{
-    FIRDatabaseReference *rootRef = [self getRefAtPath:str];
-    
-    FIRDatabaseQuery *query = [rootRef queryOrderedByKey];
-    
-    for (NSString *str in modifiers) {
-        if ([str isEqualToString:@"orderByKey"]) {
-            query = [rootRef queryOrderedByKey];
-        } else if ([str isEqualToString:@"orderByPriority"]) {
-            query = [rootRef queryOrderedByPriority];
-        } else if ([str isEqualToString:@"orderByValue"]) {
-            query = [rootRef queryOrderedByValue];
-        } else if ([str containsString:@"orderByChild"]) {
-            NSArray *args = [str componentsSeparatedByString:@":"];
-            NSString *key = args[1];
-            query = [rootRef queryOrderedByChild:key];
-        } else if ([str containsString:@"limitToLast"]) {
-            NSArray *args = [str componentsSeparatedByString:@":"];
-            NSString *key = args[1];
-            NSUInteger limit = key.integerValue;
-            query = [query queryLimitedToLast:limit];
-        } else if ([str containsString:@"limitToFirst"]) {
-            NSArray *args = [str componentsSeparatedByString:@":"];
-            NSString *key = args[1];
-            NSUInteger limit = key.integerValue;
-            query = [query queryLimitedToFirst:limit];
-        } else if ([str containsString:@"equalTo"]) {
-            NSArray *args = [str componentsSeparatedByString:@":"];
-            NSString *value = args[1];
-            NSString *key = args[2];
-            
-            if (key == nil) {
-                query = [query queryEqualToValue:value];
-            } else {
-                query = [query queryEqualToValue:value
-                                        childKey:key];
-            }
-        } else if ([str containsString:@"endAt"]) {
-            NSArray *args = [str componentsSeparatedByString:@":"];
-            NSString *value = args[1];
-            NSString *key = args[2];
-            
-            if (key == nil) {
-                query = [query queryEndingAtValue:value];
-            } else {
-                query = [query queryEndingAtValue:value
-                                         childKey:key];
-            }
-        } else if ([str containsString:@"startAt"]) {
-            NSArray *args = [str componentsSeparatedByString:@":"];
-            NSString *value = args[1];
-            NSString *key = args[2];
-            
-            if (key == nil) {
-                query = [query queryStartingAtValue:value];
-            } else {
-                query = [query queryStartingAtValue:value
-                                           childKey:key];
-            }
-        }
-    }
-    
-    return query;
-}
-
 // Handles
 - (NSDictionary *) storedDBHandles
 {
@@ -623,7 +556,7 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
 {
     NSDictionary *stored = [self storedDBHandles];
     FirestackDBReference *r = [stored objectForKey:path];
-    
+
     if (r == nil) {
         r = [[FirestackDBReference alloc] initWithPath:path];
         [self saveDBHandle:path dbRef:r];
@@ -639,7 +572,7 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
         FirestackDBReference *r = [stored objectForKey:path];
         [r cleanup];
     }
-    
+
     [stored setObject:dbRef forKey:path];
     self._DBHandles = stored;
 }
@@ -647,7 +580,7 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
 - (void) removeDBHandle:(NSString *) path
 {
     NSMutableDictionary *stored = [[self storedDBHandles] mutableCopy];
-    
+
     FirestackDBReference *r = [stored objectForKey:path];
     if (r != nil) {
         [r cleanup];
@@ -662,12 +595,26 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
     [dict setValue:snapshot.key forKey:@"key"];
     NSDictionary *val = snapshot.value;
     [dict setObject:val forKey:@"value"];
-    
+
+    // Snapshot ordering
+    NSMutableArray *childKeys = [NSMutableArray array];
+    if (snapshot.childrenCount > 0) {
+        // Since JS does not respect object ordering of keys
+        // we keep a list of the keys and their ordering
+        // in the snapshot event
+        NSEnumerator *children = [snapshot children];
+        FIRDataSnapshot *child;
+        while(child = [children nextObject]) {
+            [childKeys addObject:child.key];
+        }
+    }
+
+    [dict setObject:childKeys forKey:@"childKeys"];
     [dict setValue:@(snapshot.hasChildren) forKey:@"hasChildren"];
     [dict setValue:@(snapshot.exists) forKey:@"exists"];
     [dict setValue:@(snapshot.childrenCount) forKey:@"childrenCount"];
     [dict setValue:snapshot.priority forKey:@"priority"];
-    
+
     return dict;
 }
 
@@ -683,7 +630,7 @@ RCT_EXPORT_METHOD(onDisconnectCancel:(NSString *) path
      sendJSEvent:DATABASE_ERROR_EVENT
      title:DATABASE_ERROR_EVENT
      props: evt];
-    
+
     return evt;
 }
 

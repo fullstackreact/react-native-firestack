@@ -25,11 +25,11 @@ RCT_EXPORT_METHOD(signInAnonymously:
          if (!user) {
              NSDictionary *evt = @{
                                    @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
-                                   @"msg": [error localizedDescription]
+                                   @"errorMessage": [error localizedDescription]
                                    };
 
 
-             [self sendJSEvent:AUTH_CHANGED_EVENT 
+             [self sendJSEvent:AUTH_CHANGED_EVENT
                   props: evt];
 
              callBack(@[evt]);
@@ -41,9 +41,9 @@ RCT_EXPORT_METHOD(signInAnonymously:
     } @catch(NSException *ex) {
         NSDictionary *eventError = @{
                                      @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
-                                     @"msg": ex.reason
+                                     @"errorMessage": ex.reason
                                      };
-        
+
         [self sendJSEvent:AUTH_ERROR_EVENT
                     props:eventError];
         NSLog(@"An exception occurred: %@", ex);
@@ -97,6 +97,8 @@ RCT_EXPORT_METHOD(signInWithProvider:
                                           callback(@[[NSNull null], userProps]);
                                       } else {
                                           NSLog(@"An error occurred: %@", [error localizedDescription]);
+                                          NSLog(@"[Error signInWithProvider]: %@", [error userInfo]);
+                                          NSLog(@"%@", [NSThread callStackSymbols]);
                                           // No user is signed in.
                                           NSDictionary *err = @{
                                                                 @"error": @"No user signed in",
@@ -144,14 +146,15 @@ RCT_EXPORT_METHOD(listenForAuth)
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"userTokenError",
-                                                      @"msg": [error localizedFailureReason]
+                                                      @"authenticated": @((BOOL)true),
+                                                      @"errorMessage": [error localizedFailureReason]
                                                       }];
                                         } else {
                                             [self
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"user",
-                                                      @"authenticated": @(true),
+                                                      @"authenticated": @((BOOL)true),
                                                       @"user": userProps
                                                       }];
                                         }
@@ -164,7 +167,7 @@ RCT_EXPORT_METHOD(listenForAuth)
             [self sendJSEvent:AUTH_CHANGED_EVENT
                         props:@{
                                 @"eventName": @"no_user",
-                                @"authenticated": @(false),
+                                @"authenticated": @((BOOL)false),
                                 @"error": err
                                 }];
         }
@@ -186,10 +189,15 @@ RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
 
     if (user != nil) {
         NSDictionary *userProps = [self userPropsFromFIRUser:user];
-        callback(@[[NSNull null], userProps]);
+        NSDictionary *responseProps = @{
+                                            @"authenticated": @((BOOL) true),
+                                            @"user": userProps
+                                            };
+        callback(@[[NSNull null], responseProps]);
     } else {
         // No user is signed in.
         NSDictionary *err = @{
+                              @"authenticated": @((BOOL) false),
                               @"user": @"No user logged in"
                               };
         callback(@[err]);
@@ -478,6 +486,8 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
     } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
                                                       accessToken:authTokenSecret];
+    } else if ([provider compare:@"github" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
     } else {
         NSLog(@"Provider not yet handled: %@", provider);
     }
