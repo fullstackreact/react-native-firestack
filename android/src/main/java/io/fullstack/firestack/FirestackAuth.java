@@ -170,7 +170,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
 
                         if (task.isSuccessful()) {
                           FirestackAuthModule.this.user = task.getResult().getUser();
-                          anonymousUserCallback(FirestackAuthModule.this.user, callback);
+                          userCallback(FirestackAuthModule.this.user, callback);
                         } else {
                           // userErrorCallback(task, callback);
                         }
@@ -523,14 +523,15 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             public void onComplete(@NonNull Task<GetTokenResult> task) {
                 WritableMap msgMap = Arguments.createMap();
                 WritableMap userMap = getUserMap();
+                boolean authenticated = false;
                 if (FirestackAuthModule.this.user != null) {
                     final String token = task.getResult().getToken();
                     userMap.putString("token", token);
-                    userMap.putBoolean("anonymous", false);
+                    authenticated = true;
                 }
 
                 msgMap.putMap("user", userMap);
-                msgMap.putBoolean("authenticated", true);
+                msgMap.putBoolean("authenticated", authenticated);
                 callback.invoke(null, msgMap);
             }
         }).addOnFailureListener(new OnFailureListener() {
@@ -540,43 +541,6 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
               }
             });
     }
-
-    // TODO: Reduce to one method
-    public void anonymousUserCallback(FirebaseUser passedUser, final Callback callback) {
-
-        if (passedUser == null) {
-          mAuth = FirebaseAuth.getInstance();
-          this.user = mAuth.getCurrentUser();
-        } else {
-          this.user = passedUser;
-        }
-
-        this.user.getToken(true)
-        .addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-            @Override
-            public void onComplete(@NonNull Task<GetTokenResult> task) {
-                WritableMap msgMap = Arguments.createMap();
-                WritableMap userMap = getUserMap();
-
-                if (FirestackAuthModule.this.user != null) {
-                    final String token = task.getResult().getToken();
-
-                    userMap.putString("token", token);
-                    userMap.putBoolean("anonymous", true);
-                }
-
-                msgMap.putMap("user", userMap);
-
-                callback.invoke(null, msgMap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-              @Override
-              public void onFailure(@NonNull Exception ex) {
-                userExceptionCallback(ex, callback);
-              }
-            });
-    }
-
 
     public void noUserCallback(final Callback callback) {
         WritableMap message = Arguments.createMap();
@@ -624,7 +588,7 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
           userMap.putString("uid", uid);
           userMap.putString("providerId", provider);
           userMap.putBoolean("emailVerified", user.isEmailVerified());
-
+          userMap.putBoolean("anonymous", user.isAnonymous());
           if (name != null) {
             userMap.putString("displayName", name);
           }
