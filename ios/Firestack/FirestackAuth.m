@@ -17,7 +17,7 @@ typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 RCT_EXPORT_MODULE(FirestackAuth);
 
 RCT_EXPORT_METHOD(signInAnonymously:
-                  (RCTResponseSenderBlock) callBack)
+                  (RCTResponseSenderBlock) callback)
 {
     @try {
     [[FIRAuth auth] signInAnonymouslyWithCompletion
@@ -32,10 +32,14 @@ RCT_EXPORT_METHOD(signInAnonymously:
              [self sendJSEvent:AUTH_CHANGED_EVENT
                   props: evt];
 
-             callBack(@[evt]);
+             callback(@[evt]);
          } else {
-          NSDictionary *userProps = [self userPropsFromFIRUser:user];
-          callBack(@[[NSNull null], userProps]);
+             NSDictionary *userProps = [self userPropsFromFIRUser:user];
+             NSDictionary *responseProps = @{
+                                             @"authenticated": @((BOOL) true),
+                                             @"user": userProps
+                                             };
+             callback(@[[NSNull null], responseProps]);
         }
      }];
     } @catch(NSException *ex) {
@@ -47,7 +51,7 @@ RCT_EXPORT_METHOD(signInAnonymously:
         [self sendJSEvent:AUTH_ERROR_EVENT
                     props:eventError];
         NSLog(@"An exception occurred: %@", ex);
-        callBack(@[eventError]);
+        callback(@[eventError]);
     }
 }
 
@@ -61,7 +65,11 @@ RCT_EXPORT_METHOD(signInWithCustomToken:
 
          if (user != nil) {
              NSDictionary *userProps = [self userPropsFromFIRUser:user];
-             callback(@[[NSNull null], userProps]);
+             NSDictionary *responseProps = @{
+                                             @"authenticated": @((BOOL) true),
+                                             @"user": userProps
+                                             };
+             callback(@[[NSNull null], responseProps]);
          } else {
              NSDictionary *err =
              [FirestackErrors handleFirebaseError:AUTH_ERROR_EVENT
@@ -94,7 +102,11 @@ RCT_EXPORT_METHOD(signInWithProvider:
                                       if (user != nil) {
                                           // User is signed in.
                                           NSDictionary *userProps = [self userPropsFromFIRUser:user];
-                                          callback(@[[NSNull null], userProps]);
+                                          NSDictionary *responseProps = @{
+                                                                          @"authenticated": @((BOOL) true),
+                                                                          @"user": userProps
+                                                                          };
+                                          callback(@[[NSNull null], responseProps]);
                                       } else {
                                           NSLog(@"An error occurred: %@", [error localizedDescription]);
                                           NSLog(@"[Error signInWithProvider]: %@", [error userInfo]);
@@ -146,7 +158,7 @@ RCT_EXPORT_METHOD(listenForAuth)
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"userTokenError",
-                                                      @"authenticated": @((BOOL)true),
+                                                      @"authenticated": @((BOOL)false),
                                                       @"errorMessage": [error localizedFailureReason]
                                                       }];
                                         } else {
@@ -236,10 +248,11 @@ RCT_EXPORT_METHOD(signInWithEmail:(NSString *)email
                          completion:^(FIRUser *user, NSError *error) {
                              if (user != nil) {
                                  NSDictionary *userProps = [self userPropsFromFIRUser:user];
-
-                                 callback(@[[NSNull null], @{
-                                                @"user": userProps
-                                                }]);
+                                 NSDictionary *responseProps = @{
+                                                                 @"authenticated": @((BOOL) true),
+                                                                 @"user": userProps
+                                                                 };
+                                 callback(@[[NSNull null], responseProps]);
                              } else {
                                  NSDictionary *err =
                                  [FirestackErrors handleFirebaseError:@"signinError"
