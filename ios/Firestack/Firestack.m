@@ -5,92 +5,257 @@
 //
 
 #import "Firestack.h"
+#import "FirestackErrors.h"
+#import "FirestackEvents.h"
+// #import "FirestackAnalytics.h"
+// #import "FirestackCloudMessaging.h"
 
-@import Firebase;
+static Firestack *_sharedInstance = nil;
+static dispatch_once_t onceToken;
 
 @implementation Firestack
 
-@synthesize bridge = _bridge;
-
 typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 
+- (void)dealloc
+{
+    NSLog(@"Dealloc called on Firestack: %@", self);
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+// TODO: Implement
++ (void) setup:(UIApplication *) application 
+withLaunchOptions: (NSDictionary *) launchOptions
+{
+    NSLog(@"Called setup for firestack with application");
+    
+    dispatch_once(&onceToken, ^{
+        [application registerForRemoteNotifications];
+        
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:kFirestackInitialized
+         object:nil];
+    });
+}
+
+- (id) init
+{
+    self = [super init];
+    if (self != nil) {
+        NSLog(@"Setting up Firestace instance");
+        [Firestack initializeFirestack:self];
+    }
+    return self;
+}
+
++ (void) initializeFirestack:(Firestack *) instance
+{
+    dispatch_once(&onceToken, ^{
+        _sharedInstance = instance;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(reloadFirestack)
+                                                     name:RCTReloadNotification
+                                                   object:nil];
+        
+        [[NSNotificationCenter defaultCenter]
+         postNotificationName:kFirestackInitialized
+         object:nil];
+    });
+}
+
+
++ (instancetype) sharedInstance
+{
+    return _sharedInstance;
+}
+
++ (void) reloadFirestack
+{
+    // Reloading firestack
+    onceToken = 0; // not sure if this is a good idea or a bad idea...
+    [[Firestack sharedInstance] debugLog:@"Firestack"
+                                     msg:@"Reloading firestack"];
+    _sharedInstance = nil;
+}
+
+- (FIRApp *) firebaseApp
+{
+    return [FIRApp defaultApp];
+}
+
+
 RCT_EXPORT_MODULE(Firestack);
+
+RCT_EXPORT_METHOD(serverValue:(RCTResponseSenderBlock) callback)
+{
+    callback(@[[NSNull null], @{
+        @"TIMESTAMP": [FIRServerValue timestamp]
+    }]);
+}
 
 RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                   callback:(RCTResponseSenderBlock)callback)
 {
-    // Are we debugging, yo?
-    self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
-    
-    FIROptions *firestackOptions = [FIROptions defaultOptions];
-    // Bundle ID either from options OR from the main bundle
-    NSString *bundleID;
-    if ([opts valueForKey:@"bundleID"]) {
-        bundleID = [opts valueForKey:@"bundleID"];
-    } else {
-        bundleID = [[NSBundle mainBundle] bundleIdentifier];
-    }
-    // Prefer the user configuration options over the default options
-    NSArray *keyOptions = @[@"APIKey", @"clientID", @"trackingID",
-                            @"GCMSenderID", @"androidClientID",
-                            @"googleAppID", @"databaseURL",
-                            @"deepLinkURLScheme", @"storageBucket"];
-    
-    NSMutableDictionary *props = [[NSMutableDictionary alloc] initWithCapacity:[keyOptions count]];
-    for (int i=0; i < [keyOptions count]; i++) {
-        // Traditional for loop here
-        @try {
-            NSString *key = [keyOptions objectAtIndex:i];
-            NSString *value = [opts valueForKey:key];
-            if (value != nil) {
-                [props setObject:value forKey:key];
-            } else if ([firestackOptions valueForKey:key] != nil) {
-                [props setObject:[firestackOptions valueForKey:key] forKey:key];
+    dispatch_async(dispatch_get_main_queue(),^{
+        // Are we debugging, yo?
+        self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
+        NSLog(@"options passed into configureWithOptions: %@", [opts valueForKey:@"debug"]);
+        
+        NSDictionary *keyMapping = @{
+                                     @"GOOGLE_APP_ID": @[
+                                             @"appId",
+                                             @"googleAppId",
+                                             @"applicationId"
+                                             ],
+                                     @"BUNDLE_ID": @[
+                                             @"bundleId",
+                                             @"bundleID"
+                                             ],
+                                     @"GCM_SENDER_ID": @[
+                                             @"gcmSenderID",
+                                             @"GCMSenderID"
+                                             ],
+                                     @"API_KEY": @[
+                                             @"apiKey"
+                                             ],
+                                     @"CLIENT_ID": @[
+                                             @"clientId",
+                                             @"clientID"
+                                             ],
+                                     @"TRACKING_ID": @[
+                                             @"trackingID",
+                                             @"trackingId"
+                                             ],
+                                     @"ANDROID_CLIENT_ID": @[
+                                             @"applicationId",
+                                             @"clientId",
+                                             @"clientID",
+                                             @"androidClientID",
+                                             @"androidClientId"
+                                             ],
+                                     @"DATABASE_URL": @[
+                                             @"databaseUrl",
+                                             @"databaseURL"
+                                             ],
+                                     @"STORAGE_BUCKET": @[
+                                             @"storageBucket"
+                                             ],
+                                     @"PROJECT_ID": @[
+                                             @"projectId",
+                                             @"projectID"
+                                             ],
+                                     @"TRACKING_ID": @[
+                                             @"trackingID",
+                                             @"trackingId"
+                                             ],
+                                     @"DEEP_LINK_SCHEME": @[
+                                             @"deepLinkScheme"
+                                             ],
+                                     @"MESSAGING_SENDER_ID": @[
+                                             @"messagingSenderId",
+                                             @"messagingSenderID"
+                                             ]
+                                     };
+        NSArray *optionKeys = [keyMapping allKeys];
+        
+        NSMutableDictionary *props;
+        
+        NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
+        
+        if ([[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
+            // If the Firebase plist is included
+            props = [NSMutableDictionary dictionaryWithContentsOfFile:plistPath];
+        } else {
+            props = [[NSMutableDictionary alloc] initWithCapacity:[optionKeys count]];
+        }
+        
+        // Bundle ID either from options OR from the main bundle
+        NSString *bundleID;
+        if ([opts valueForKey:@"bundleID"]) {
+            bundleID = [opts valueForKey:@"bundleID"];
+        } else {
+            bundleID = [[NSBundle mainBundle] bundleIdentifier];
+        }
+        [props setValue:bundleID forKey:@"BUNDLE_ID"];
+        
+        // Prefer the user configuration options over the default options
+        for (int i=0; i < [optionKeys count]; i++) {
+            // Traditional for loop here
+            @try {
+                NSString *key = [optionKeys objectAtIndex:i];
+                // If the name is capitalized
+                if ([opts valueForKey:key] != nil) {
+                    NSString *value = [opts valueForKey:key];
+                    [props setValue:value forKey:key];
+                }
+                
+                NSArray *possibleNames = [keyMapping objectForKey:key];
+                
+                for (NSString *name in possibleNames) {
+                    if ([opts valueForKey:name] != nil) {
+                        // The user passed this option in
+                        NSString *value = [opts valueForKey:name];
+                        [props setValue:value forKey:key];
+                    }
+                }
+            }
+            @catch (NSException *err) {
+                // Uh oh?
+                NSLog(@"An error occurred: %@", err);
             }
         }
-        @catch (NSException *err) {
-            // Uh oh?
-            NSLog(@"An error occurred: %@", err);
-        }
-    }
-    
-    @try {
-        FIROptions *finalOptions = [[FIROptions alloc] initWithGoogleAppID:[props valueForKey:@"googleAppID"]
-                                                                  bundleID:bundleID
-                                                               GCMSenderID:[props valueForKey:@"GCMSenderID"]
-                                                                    APIKey:[props valueForKey:@"APIKey"]
-                                                                  clientID:[props valueForKey:@"clientID"]
-                                                                trackingID:[props valueForKey:@"trackingID"]
-                                                           androidClientID:[props valueForKey:@"androidClientID"]
-                                                               databaseURL:[props valueForKey:@"databaseURL"]
-                                                             storageBucket:[props valueForKey:@"storageBucket"]
-                                                         deepLinkURLScheme:[props valueForKey:@"deepLinkURLScheme"]];
         
-        for (NSString *key in props) {
-            [self debugLog:key msg:[finalOptions valueForKey:key]];
+        @try {
+            if (self.debug) {
+                NSLog(@"props ->: %@", props);
+                NSLog(@"GOOGLE_APP_ID: %@", [props valueForKey:@"GOOGLE_APP_ID"]);
+                NSLog(@"BUNDLE_ID: %@", [props valueForKey:@"BUNDLE_ID"]);
+                NSLog(@"GCM_SENDER_ID: %@", [props valueForKey:@"GCM_SENDER_ID"]);
+                NSLog(@"API_KEY: %@", [props valueForKey:@"API_KEY"]);
+                NSLog(@"CLIENT_ID: %@", [props valueForKey:@"CLIENT_ID"]);
+                NSLog(@"TRACKING_ID: %@", [props valueForKey:@"TRACKING_ID"]);
+                NSLog(@"ANDROID_CLIENT_ID: %@", [props valueForKey:@"ANDROID_CLIENT_ID"]);
+                NSLog(@"DATABASE_URL: %@", [props valueForKey:@"DATABASE_URL"]);
+                NSLog(@"STORAGE_BUCKET: %@", [props valueForKey:@"STORAGE_BUCKET"]);
+                NSLog(@"DEEP_LINK_SCHEME: %@", [props valueForKey:@"DEEP_LINK_SCHEME"]);
+            }
+            
+            FIROptions *finalOptions = [[FIROptions alloc]
+                                        initWithGoogleAppID:[props valueForKey:@"GOOGLE_APP_ID"]
+                                        bundleID:[props valueForKey:@"BUNDLE_ID"]
+                                        GCMSenderID:[props valueForKey:@"GCM_SENDER_ID"]
+                                        APIKey:[props valueForKey:@"API_KEY"]
+                                        clientID:[props valueForKey:@"CLIENT_ID"]
+                                        trackingID:[props valueForKey:@"TRACKING_ID"]
+                                        androidClientID:[props valueForKey:@"ANDROID_CLIENT_ID"]
+                                        databaseURL:[props valueForKey:@"DATABASE_URL"]
+                                        storageBucket:[props valueForKey:@"STORAGE_BUCKET"]
+                                        deepLinkURLScheme:[props valueForKey:@"DEEP_LINK_SCHEME"]];
+            
+            // Save configuration option
+            //        NSDictionary *cfg = [self getConfig];
+            //        [cfg setValuesForKeysWithDictionary:props];
+            
+            // if (!self.configured) {
+            
+            if ([FIRApp defaultApp] == NULL) {
+                [FIRApp configureWithOptions:finalOptions];
+            }            
+            [Firestack initializeFirestack:self];
+            callback(@[[NSNull null], props]);
         }
-        [self debugLog:@"bundleID" msg:bundleID];
-        
-        // Save configuration option
-        NSDictionary *cfg = [self getConfig];
-        [cfg setValuesForKeysWithDictionary:props];
-        
-        if (!self.configured) {
-            [FIRApp configureWithOptions:finalOptions];
-            self->_configured = YES;
+        @catch (NSException *exception) {
+            NSLog(@"Exception occurred while configuring: %@", exception);
+            [self debugLog:@"Configuring error"
+                       msg:[NSString stringWithFormat:@"An error occurred while configuring: %@", [exception debugDescription]]];
+            NSDictionary *errProps = @{
+                                       @"error": [exception name],
+                                       @"description": [exception debugDescription]
+                                       };
+            callback(@[errProps]);
         }
-        callback(@[[NSNull null]]);
-    }
-    @catch (NSException *exception) {
-        NSLog(@"Exception occurred while configuring: %@", exception);
-        [self debugLog:@"Configuring error"
-                   msg:[NSString stringWithFormat:@"An error occurred while configuring: %@", [exception debugDescription]]];
-        NSDictionary *errProps = @{
-                                   @"error": [exception name],
-                                   @"description": [exception debugDescription]
-                                   };
-        callback(@[errProps]);
-    }
+    });
 }
 
 RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
@@ -100,560 +265,85 @@ RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
                       callback:callback];
 }
 
-
-RCT_EXPORT_METHOD(signInWithCustomToken:
-                  (NSString *)customToken
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    [[FIRAuth auth]
-      signInWithCustomToken:customToken
-      completion:^(FIRUser *user, NSError *error) {
-
-        if (user != nil) {
-          NSDictionary *userProps = [self userPropsFromFIRUser:user];
-          callback(@[[NSNull null], userProps]);
-        } else {
-          NSDictionary *err =
-          [self handleFirebaseError:@"signinError"
-                         error:error
-                      withUser:user];
-          callback(@[err]);
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(signInWithProvider:
-                  (NSString *)provider
-                  token:(NSString *)authToken
-                  secret:(NSString *)authTokenSecret
-                  callback:(RCTResponseSenderBlock)callback)
-{
-    FIRAuthCredential *credential = [self getCredentialForProvider:provider
-                                                             token:authToken
-                                                            secret:authTokenSecret];
-    if (credential == nil) {
-        NSDictionary *err = @{
-                              @"error": @"Unhandled provider"
-                              };
-        return callback(@[err]);
-    }
-    
-    @try {
-        [[FIRAuth auth] signInWithCredential:credential
-                                  completion:^(FIRUser *user, NSError *error) {
-                                      if (user != nil) {
-                                          // User is signed in.
-                                          NSDictionary *userProps = [self userPropsFromFIRUser:user];
-                                          callback(@[[NSNull null], userProps]);
-                                      } else {
-                                          NSLog(@"An error occurred: %@", [error localizedDescription]);
-                                          NSLog(@"Error: %@", error);
-                                          // No user is signed in.
-                                          NSDictionary *err = @{
-                                                                @"error": @"No user signed in",
-                                                                @"description": [error localizedDescription]
-                                                                };
-                                          callback(@[err]);
-                                      }
-                                  }];
-    } @catch (NSException *exception) {
-        [self handleException:exception
-                 withCallback:callback];
-    }
-}
-
-RCT_EXPORT_METHOD(signOut:(RCTResponseSenderBlock)callback)
-{
-    NSError *error;
-    [[FIRAuth auth] signOut:&error];
-    if (!error) {
-        // Sign-out succeeded
-        callback(@[[NSNull null], @YES]);
-    } else {
-        NSDictionary *err = @{
-                              @"error": @"Signout error",
-                              @"name": @([error code]),
-                              @"description": [error description]
-                              };
-        callback(@[err]);
-    }
-}
-
-RCT_EXPORT_METHOD(listenForAuth)
-{
-    self->authListenerHandle = [[FIRAuth auth] addAuthStateDidChangeListener:^(FIRAuth *_Nonnull auth,
-                                                                               FIRUser *_Nullable user) {
-        
-        if (user != nil) {
-            // User is signed in.
-            [self userPropsFromFIRUserWithToken:user
-                                    andCallback:^(NSDictionary *userProps, NSError * error) {
-                                        if (error != nil) {
-                                            [self sendJSEvent:@"listenForAuth" props: @{
-                                                                                        @"eventName": @"userTokenError",
-                                                                                        @"msg": [error localizedFailureReason]
-                                                                                        }];
-                                        } else {
-                                            [self sendJSEvent:@"listenForAuth" props: @{
-                                                                                    @"eventName": @"user",
-                                                                                    @"authenticated": @(true),
-                                                                                    @"user": userProps
-                                                                                    }];
-                                        }
-                                    }];
-        } else {
-            // TODO: Update this with different error states
-            NSDictionary *err = @{
-                                  @"error": @"No user logged in"
-                                  };
-            [self sendJSEvent:@"listenForAuth"
-                        props:@{
-                                @"eventName": @"no_user",
-                                @"authenticated": @(false),
-                                @"error": err
-                                }];
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(unlistenForAuth:(RCTResponseSenderBlock)callback)
-{
-    if (self->authListenerHandle != nil) {
-        [[FIRAuth auth] removeAuthStateDidChangeListener:self->authListenerHandle];
-        callback(@[[NSNull null]]);
-    }
-}
-
-RCT_EXPORT_METHOD(getCurrentUser:(RCTResponseSenderBlock)callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    if (user != nil) {
-        NSDictionary *userProps = [self userPropsFromFIRUser:user];
-        callback(@[[NSNull null], userProps]);
-    } else {
-        // No user is signed in.
-        NSDictionary *err = @{
-                              @"user": @"No user logged in"
-                              };
-        callback(@[err]);
-    }
-}
-
-RCT_EXPORT_METHOD(createUserWithEmail:(NSString *)email
-                  pass:(NSString *)password
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    [[FIRAuth auth]
-     createUserWithEmail:email
-     password:password
-     completion:^(FIRUser *_Nullable user,
-                  NSError *_Nullable error) {
-         if (user != nil) {
-             NSDictionary *userProps = [self userPropsFromFIRUser:user];
-             callback(@[[NSNull null], userProps]);
-         } else {
-             NSDictionary *err = @{
-                                   @"error": @"createUserWithEmailError",
-                                   @"name": @([error code]),
-                                   @"description": [error description]
-                                   };
-             callback(@[err]);
-         }
-     }];
-}
-
-RCT_EXPORT_METHOD(signInWithEmail:(NSString *)email
-                  pass:(NSString *)password
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    [[FIRAuth auth] signInWithEmail:email
-                           password:password
-                         completion:^(FIRUser *user, NSError *error) {
-                             if (user != nil) {
-                                 NSDictionary *userProps = [self userPropsFromFIRUser:user];
-                                 
-                                 callback(@[[NSNull null], @{
-                                                @"user": userProps
-                                                }]);
-                             } else {
-                                 NSDictionary *err =
-                                 [self handleFirebaseError:@"signinError"
-                                                     error:error
-                                                  withUser:user];
-                                 callback(@[err]);
-                             }
-                         }];
-}
-
-RCT_EXPORT_METHOD(updateUserEmail:(NSString *)email
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    [user updateEmail:email completion:^(NSError *_Nullable error) {
-        if (error) {
-            // An error happened.
-            NSDictionary *err =
-            [self handleFirebaseError:@"updateEmailError"
-                                error:error
-                             withUser:user];
-            callback(@[err]);
-        } else {
-            // Email updated.
-            NSDictionary *userProps = [self userPropsFromFIRUser:user];
-            callback(@[[NSNull null], userProps]);
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(updateUserPassword:(NSString *)newPassword
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    [user updatePassword:newPassword completion:^(NSError *_Nullable error) {
-        if (error) {
-            // An error happened.
-            NSDictionary *err =
-            [self handleFirebaseError:@"updateUserPasswordError"
-                                error:error
-                             withUser:user];
-            callback(@[err]);
-        } else {
-            // Email updated.
-            NSDictionary *userProps = [self userPropsFromFIRUser:user];
-            callback(@[[NSNull null], userProps]);
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(sendPasswordResetWithEmail:(NSString *)email
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    
-    [[FIRAuth auth] sendPasswordResetWithEmail:email
-                                    completion:^(NSError *_Nullable error) {
-                                        if (error) {
-                                            // An error happened.
-                                            NSDictionary *err = @{
-                                                                  @"error": @"sendPasswordResetWithEmailError",
-                                                                  @"description": error.localizedDescription
-                                                                  };
-                                            callback(@[err]);
-                                        } else {
-                                            // Email updated.
-                                            callback(@[[NSNull null], @{
-                                                           @"result": @(true)
-                                                           }]);
-                                        }
-                                    }];
-}
-
-RCT_EXPORT_METHOD(deleteUser:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    [user deleteWithCompletion:^(NSError *_Nullable error) {
-        if (error) {
-            NSDictionary *err =
-            [self handleFirebaseError:@"deleteUserError"
-                                error:error
-                             withUser:user];
-            callback(@[err]);
-        } else {
-            callback(@[[NSNull null], @{@"result": @(true)}]);
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    [user getTokenWithCompletion:^(NSString *token, NSError *_Nullable error) {
-        if (error) {
-            NSDictionary *err =
-            [self handleFirebaseError:@"getTokenError"
-                                error:error
-                             withUser:user];
-            callback(@[err]);
-        } else {
-            NSDictionary *userProps = [self userPropsFromFIRUser:user];
-            callback(@[[NSNull null], @{@"token": token, @"user": userProps}]);
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    [user getTokenWithCompletion:^(NSString *token , NSError *_Nullable error) {
-        if (error) {
-            NSDictionary *err =
-            [self handleFirebaseError:@"getTokenWithCompletion"
-                                error:error
-                             withUser:user];
-            callback(@[err]);
-        } else {
-            NSDictionary *userProps = [self userPropsFromFIRUser:user];
-            callback(@[[NSNull null], @{@"token": token, @"user": userProps}]);
-        }
-    }];
-}
-
-RCT_EXPORT_METHOD(reauthenticateWithCredentialForProvider:
-                  (NSString *)provider
-                  token:(NSString *)authToken
-                  secret:(NSString *)authTokenSecret
-                  callback:(RCTResponseSenderBlock)callback)
-{
-    FIRAuthCredential *credential = [self getCredentialForProvider:provider
-                                                             token:authToken
-                                                            secret:authTokenSecret];
-    if (credential == nil) {
-        NSDictionary *err = @{
-                              @"error": @"Unhandled provider"
-                              };
-        return callback(@[err]);
-    }
-    
-    FIRUser *user = [FIRAuth auth].currentUser;
-    
-    [user reauthenticateWithCredential:credential completion:^(NSError *_Nullable error) {
-        if (error) {
-            NSDictionary *err =
-            [self handleFirebaseError:@"reauthenticateWithCredentialForProviderError"
-                                error:error
-                             withUser:user];
-            callback(@[err]);
-        } else {
-            callback(@[[NSNull null], @{@"result": @(true)}]);
-        }
-    }];
-}
-
-
-RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    FIRUser *user = [FIRAuth auth].currentUser;
-    FIRUserProfileChangeRequest *changeRequest = [user profileChangeRequest];
-    
-    NSMutableArray *allKeys = [[userProps allKeys] mutableCopy];
-    for (NSString *key in allKeys) {
-        // i.e. changeRequest.displayName = userProps[displayName];
-        @try {
-            if ([key isEqualToString:@"photoURL"]) {
-                NSURL *url = [NSURL URLWithString:[userProps valueForKey:key]];
-                [changeRequest setValue:url forKey:key];
-            } else {
-                [changeRequest setValue:[userProps objectForKey:key] forKey:key];
-            }
-        }
-        @catch (NSException *exception) {
-            NSLog(@"Exception occurred while configuring: %@", exception);
-        }
-        @finally {
-            [changeRequest commitChangesWithCompletion:^(NSError *_Nullable error) {
-                if (error) {
-                    // An error happened.
-                    NSDictionary *err =
-                    [self handleFirebaseError:@"updateEmailError"
-                                        error:error
-                                     withUser:user];
-                    callback(@[err]);
-                } else {
-                    // Profile updated.
-                    NSDictionary *userProps = [self userPropsFromFIRUser:user];
-                    callback(@[[NSNull null], userProps]);
-                }
-            }];
-        }
-    }
-}
-
-#pragma mark - Analytics
-
-RCT_EXPORT_METHOD(logEventWithName:(NSString *)name
-                  props:(NSDictionary *)props
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    [FIRAnalytics logEventWithName:name parameters:props];
-    callback(@[[NSNull null], @YES]);
-}
-
 #pragma mark - Storage
 
-- (NSString *) getStorageUrl
-{
-    NSDictionary *cfg = [self getConfig];
-    NSString *storageUrl = [NSString stringWithFormat:@"gs://%@", [cfg valueForKey:@"storageBucket"]];
-    return storageUrl;
-}
-
-RCT_EXPORT_METHOD(uploadFile:(NSString *) name
-                  path:(NSString *)path
-                  metadata:(NSDictionary *)metadata
-                  callback:(RCTResponseSenderBlock) callback)
-{    
-    NSString *urlStr = [self getStorageUrl];
-    
-    if (urlStr == nil) {
-        NSError *err = [[NSError alloc] init];
-        [err setValue:@"Storage configuration error" forKey:@"name"];
-        [err setValue:@"Call setStorageUrl() first" forKey:@"description"];
-        return callback(@[err]);
-    }
-    
-    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:urlStr];
-    FIRStorageReference *uploadRef = [storageRef child:name];
-    
-    NSURL *localFile = [NSURL fileURLWithPath:path];
-    
-    FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
-    
-    FIRStorageUploadTask *uploadTask = [uploadRef putFile:localFile
-                                                 metadata:firmetadata];
-    // Listen for state changes, errors, and completion of the upload.
-    [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
-        // Upload resumed, also fires when the upload starts
-        [self sendJSEvent:@"uploadResumed" props:@{
-                                                   @"ref": snapshot.reference.bucket
-                                                   }];
-    }];
-    
-    [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
-        // Upload paused
-        [self sendJSEvent:@"uploadPaused" props:@{
-                                                  @"ref": snapshot.reference.bucket
-                                                  }];
-    }];
-    [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
-        // Upload reported progress
-        double percentComplete = 100.0 * (snapshot.progress.completedUnitCount) / (snapshot.progress.totalUnitCount);
-        
-        [self sendJSEvent:@"uploadProgress" props:@{
-                                                    @"progress": @(percentComplete || 0.0)
-                                                    }];
-        
-    }];
-    
-    [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
-        // Upload completed successfully
-        FIRStorageReference *ref = snapshot.reference;
-        NSDictionary *props = @{
-                                @"fullPath": ref.fullPath,
-                                @"bucket": ref.bucket,
-                                @"name": ref.name,
-                                @"metadata": [snapshot.metadata dictionaryRepresentation]
-                                };
-        
-        callback(@[[NSNull null], props]);
-    }];
-    
-    [uploadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
-        if (snapshot.error != nil) {
-            NSError *err = [[NSError alloc] init];
-            switch (snapshot.error.code) {
-                case FIRStorageErrorCodeObjectNotFound:
-                    // File doesn't exist
-                    [err setValue:@"File does not exist" forKey:@"description"];
-                    break;
-                case FIRStorageErrorCodeUnauthorized:
-                    // User doesn't have permission to access file
-                    [err setValue:@"You do not have permissions" forKey:@"description"];
-                    break;
-                case FIRStorageErrorCodeCancelled:
-                    // User canceled the upload
-                    [err setValue:@"Upload cancelled" forKey:@"description"];
-                    break;
-                case FIRStorageErrorCodeUnknown:
-                    // Unknown error occurred, inspect the server response
-                    [err setValue:@"Unknown error" forKey:@"description"];
-                    break;
-            }
-            
-            callback(@[err]);
-        }}];
-}
 
 #pragma mark RemoteConfig
 
-RCT_EXPORT_METHOD(setDefaultRemoteConfig:(NSDictionary *)props
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    if (!self.remoteConfigInstance) {
-        // Create remote Config instance
-        self.remoteConfigInstance = [FIRRemoteConfig remoteConfig];
-    }
-    
-    [self.remoteConfigInstance setDefaults:props];
-    callback(@[[NSNull null], props]);
-}
+// RCT_EXPORT_METHOD(setDefaultRemoteConfig:(NSDictionary *)props
+//                   callback:(RCTResponseSenderBlock) callback)
+// {
+//     if (!self.remoteConfigInstance) {
+//         // Create remote Config instance
+//         self.remoteConfigInstance = [FIRRemoteConfig remoteConfig];
+//     }
 
-RCT_EXPORT_METHOD(setDev:(RCTResponseSenderBlock) callback)
-{
-    FIRRemoteConfigSettings *remoteConfigSettings = [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:YES];
-    self.remoteConfigInstance.configSettings = remoteConfigSettings;
-    callback(@[[NSNull null], @"ok"]);
-}
+//     [self.remoteConfigInstance setDefaults:props];
+//     callback(@[[NSNull null], props]);
+// }
 
-RCT_EXPORT_METHOD(configValueForKey:(NSString *)name
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    if (!self.remoteConfigInstance) {
-        NSDictionary *err = @{
-                              @"error": @"No configuration instance",
-                              @"msg": @"No configuration instance set. Please call setDefaultRemoteConfig before using this feature"
-                              };
-        callback(@[err]);
-    }
-    
-    
-    FIRRemoteConfigValue *value = [self.remoteConfigInstance configValueForKey:name];
-    NSString *valueStr = value.stringValue;
-    
-    if (valueStr == nil) {
-        valueStr = @"";
-    }
-    callback(@[[NSNull null], valueStr]);
-}
+// RCT_EXPORT_METHOD(setDev:(RCTResponseSenderBlock) callback)
+// {
+//     FIRRemoteConfigSettings *remoteConfigSettings = [[FIRRemoteConfigSettings alloc] initWithDeveloperModeEnabled:YES];
+//     self.remoteConfigInstance.configSettings = remoteConfigSettings;
+//     callback(@[[NSNull null], @"ok"]);
+// }
 
-RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
-                  callback:(RCTResponseSenderBlock) callback)
-{
-    if (!self.remoteConfigInstance) {
-        NSDictionary *err = @{
-                              @"error": @"No configuration instance",
-                              @"msg": @"No configuration instance set. Please call setDefaultRemoteConfig before using this feature"
-                              };
-        callback(@[err]);
-    }
-    
-    NSTimeInterval expirationDuration = [expirationSeconds doubleValue];
-    
-    [self.remoteConfigInstance fetchWithExpirationDuration:expirationDuration completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *error) {
-        if (status == FIRRemoteConfigFetchStatusSuccess) {
-            NSLog(@"Config fetched!");
-            [self.remoteConfigInstance activateFetched];
-            callback(@[[NSNull null], @(YES)]);
-        } else {
-            NSLog(@"Error %@", error.localizedDescription);
-            
-            NSDictionary *err = @{
-                                  @"error": @"No configuration instance",
-                                  @"msg": [error localizedDescription]
-                                  };
-            
-            callback(@[err]);
-        }
-    }];
-}
+// RCT_EXPORT_METHOD(configValueForKey:(NSString *)name
+//                   callback:(RCTResponseSenderBlock) callback)
+// {
+//     if (!self.remoteConfigInstance) {
+//         NSDictionary *err = @{
+//                               @"error": @"No configuration instance",
+//                               @"msg": @"No configuration instance set. Please call setDefaultRemoteConfig before using this feature"
+//                               };
+//         callback(@[err]);
+//     }
+
+
+//     FIRRemoteConfigValue *value = [self.remoteConfigInstance configValueForKey:name];
+//     NSString *valueStr = value.stringValue;
+
+//     if (valueStr == nil) {
+//         valueStr = @"";
+//     }
+//     callback(@[[NSNull null], valueStr]);
+// }
+
+// RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
+//                   callback:(RCTResponseSenderBlock) callback)
+// {
+//     if (!self.remoteConfigInstance) {
+//         NSDictionary *err = @{
+//                               @"error": @"No configuration instance",
+//                               @"msg": @"No configuration instance set. Please call setDefaultRemoteConfig before using this feature"
+//                               };
+//         callback(@[err]);
+//     }
+
+//     NSTimeInterval expirationDuration = [expirationSeconds doubleValue];
+
+//     [self.remoteConfigInstance fetchWithExpirationDuration:expirationDuration completionHandler:^(FIRRemoteConfigFetchStatus status, NSError *error) {
+//         if (status == FIRRemoteConfigFetchStatusSuccess) {
+//             NSLog(@"Config fetched!");
+//             [self.remoteConfigInstance activateFetched];
+//             callback(@[[NSNull null], @(YES)]);
+//         } else {
+//             NSLog(@"Error %@", error.localizedDescription);
+
+//             NSDictionary *err = @{
+//                                   @"error": @"No configuration instance",
+//                                   @"msg": [error localizedDescription]
+//                                   };
+
+//             callback(@[err]);
+//         }
+//     }];
+// }
 
 #pragma mark Database
+
+#pragma mark Messaging
 
 #pragma mark Helpers
 
@@ -669,121 +359,43 @@ RCT_EXPORT_METHOD(fetchWithExpiration:(NSNumber*)expirationSeconds
                                  error:(NSError *) error
                               withUser:(FIRUser *) user
 {
-    NSMutableDictionary *err = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-                                name, @"name",
-                                @([error code]), @"code",
-                                [error localizedDescription], @"rawDescription",
-                                [[error userInfo] description], @"userInfo",
-                                nil];
-    
-    NSString *description = @"Unknown error";
-    switch (error.code) {
-        case FIRAuthErrorCodeInvalidEmail:
-            description = @"Invalid email";
-            break;
-        case FIRAuthErrorCodeUserNotFound:
-            description = @"User not found";
-            break;
-        case FIRAuthErrorCodeNetworkError:
-            description = @"Network error";
-            break;
-        case FIRAuthErrorCodeInternalError:
-            description = @"Internal error";
-            break;
-        default:
-            break;
-    }
-    [err setValue:description forKey:@"description"];
-    return [NSDictionary dictionaryWithDictionary:err];
-}
-
-- (NSDictionary *) userPropsFromFIRUser:(FIRUser *) user
-{
-    NSMutableDictionary *userProps = [@{
-                                        @"uid": user.uid,
-                                        @"email": user.email ? user.email : @"",
-                                        @"emailVerified": @(user.emailVerified),
-                                        @"anonymous": @(user.anonymous),
-                                        @"displayName": user.displayName ? user.displayName : @"",
-                                        @"refreshToken": user.refreshToken,
-                                        @"providerID": user.providerID
-                                        } mutableCopy];
-    
-    if ([user valueForKey:@"photoURL"] != nil) {
-        [userProps setValue: [NSString stringWithFormat:@"%@", user.photoURL]
-                     forKey:@"photoURL"];
-    }
-    
-    return userProps;
-}
-
-- (void) userPropsFromFIRUserWithToken:(FIRUser *) user
-                           andCallback:(UserWithTokenResponse) callback
-{
-    NSMutableDictionary *userProps = [[self userPropsFromFIRUser:user] mutableCopy];
-    [user getTokenWithCompletion:^(NSString * _Nullable token, NSError * _Nullable error) {
-        if (error != nil) {
-            return callback(nil, error);
-        }
-        
-        [userProps setValue:token forKey:@"idToken"];
-        callback(userProps, nil);
-    }];
-}
-
-- (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
-                                          token:(NSString *)authToken
-                                         secret:(NSString *)authTokenSecret
-{
-    FIRAuthCredential *credential;
-    if ([provider isEqualToString: @"twitter"]) {
-        credential = [FIRTwitterAuthProvider credentialWithToken:authToken
-                                                          secret:authTokenSecret];
-    } if ([provider isEqualToString: @"facebook"]) {
-        credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
-    } if ([provider isEqualToString: @"google"]) {
-        credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
-                                                          accessToken:authTokenSecret];
-    } else {
-        NSLog(@"Provider not yet handled");
-    }
-    return credential;
+    return [FirestackErrors handleFirebaseError:name
+                                          error:error
+                                       withUser:user];
 }
 
 - (void) handleException:(NSException *)exception
             withCallback:(RCTResponseSenderBlock)callback
 {
-    NSString *errDesc = [exception description];
-    NSLog(@"An error occurred: %@", errDesc);
-    // No user is signed in.
-    NSDictionary *err = @{
-                          @"error": @"No user signed in",
-                          @"description": errDesc
-                          };
-    callback(@[err]);
+    [FirestackErrors handleException:exception
+                        withCallback:callback];
 }
 
 - (void) debugLog:(NSString *)title
               msg:(NSString *)msg
 {
     if (self.debug) {
-        [self sendJSEvent:@"debug"
-                    props:@{
-                            @"name": title,
-                            @"message": msg
-                            }];
+        NSLog(@"%@: %@", title, msg);
     }
+}
+
+// Not sure how to get away from this... yet
+- (NSArray<NSString *> *)supportedEvents {
+    return @[
+        INITIALIZED_EVENT, 
+        DEBUG_EVENT, 
+        AUTH_CHANGED_EVENT];
 }
 
 - (void) sendJSEvent:(NSString *)title
                props:(NSDictionary *)props
 {
     @try {
-        [self.bridge.eventDispatcher sendAppEventWithName:title
-                                                     body:props];
+        [self sendEventWithName:title
+                           body:props];
     }
-    @catch (NSException *exception) {
-        NSLog(@"An exception occurred while throwing JS event: %@", [exception debugDescription]);
+    @catch (NSException *err) {
+        NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
     }
 }
 

@@ -4,18 +4,35 @@
 //  Copyright © 2016 Facebook. All rights reserved.
 //
 
-// #import <UIKit/UIKit.h>
-#import "Firebase.h"
+#ifndef Firestack_h
+#define Firestack_h
+
+#import <UIKit/UIKit.h>
 #import "RCTBridgeModule.h"
 #import "RCTEventDispatcher.h"
+#import "RCTEventEmitter.h"
 
-@interface Firestack : NSObject <RCTBridgeModule> {
-    FIRAuthStateDidChangeListenerHandle authListenerHandle;
+@interface Firestack : RCTEventEmitter <RCTBridgeModule> {
 }
+
+// + (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
++ (void) setup:(UIApplication *) application 
+withLaunchOptions: (NSDictionary *) launchOptions;
+
++ (void) reloadFirestack;
++ (id) sharedInstance;
+
+- (void) debugLog:(NSString *)title
+              msg:(NSString *)msg;
+
+- (void) sendJSEvent:(NSString *)title
+               props:(NSDictionary *)props;
+
 
 @property (nonatomic) BOOL debug;
 @property (atomic) BOOL configured;
 @property (nonatomic, strong) NSDictionary *configuration;
-@property (nonatomic, strong) FIRRemoteConfig *remoteConfigInstance;
 
 @end
+
+#endif

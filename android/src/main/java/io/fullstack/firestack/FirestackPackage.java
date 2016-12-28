@@ -1,5 +1,7 @@
 package io.fullstack.firestack;
 
+import android.content.Context;
+
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
@@ -11,6 +13,10 @@ import java.util.Collections;
 import java.util.List;
 
 public class FirestackPackage implements ReactPackage {
+    private Context mContext;
+
+    public FirestackPackage() {
+    }
     /**
      * @param reactContext react application context that can be used to create modules
      * @return list of native modules to register with the newly created catalyst instance
@@ -18,8 +24,13 @@ public class FirestackPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new FirestackModule(reactContext));
 
+        modules.add(new FirestackModule(reactContext, reactContext.getBaseContext()));
+        modules.add(new FirestackAuthModule(reactContext));
+        modules.add(new FirestackDatabaseModule(reactContext));
+        modules.add(new FirestackAnalyticsModule(reactContext));
+        modules.add(new FirestackStorageModule(reactContext));
+        modules.add(new FirestackCloudMessaging(reactContext));
         return modules;
     }
 
