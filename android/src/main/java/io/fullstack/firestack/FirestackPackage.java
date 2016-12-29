@@ -32,7 +32,7 @@ public class FirestackPackage implements ReactPackage {
     @Override
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
-        modules.add(new FirestackModule(reactContext, reactContext.getBaseContext()));
+        modules.add(new FirestackModule(reactContext));
         modules.add(new FirestackAuth(reactContext));
         modules.add(new FirestackDatabase(reactContext));
         modules.add(new FirestackAnalytics(reactContext));
