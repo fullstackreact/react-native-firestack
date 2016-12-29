@@ -20,6 +20,7 @@ import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 
 import io.fullstack.firestack.Utils;
@@ -332,5 +333,12 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
 
   private String getDBListenerKey(String path, String modifiersString) {
     return path + " | " + modifiersString;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("serverValueTimestamp", ServerValue.TIMESTAMP);
+    return constants;
   }
 }
