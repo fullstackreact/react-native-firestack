@@ -21,22 +21,15 @@ RCT_EXPORT_MODULE(FirestackStorage);
   return dispatch_queue_create("io.fullstack.firestack.storage", DISPATCH_QUEUE_SERIAL);
 }
 
-RCT_EXPORT_METHOD(downloadUrl: (NSString *) storageUrl
-                  path:(NSString *) path
+RCT_EXPORT_METHOD(downloadUrl: (NSString *) remotePath
     callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *storageRef;
-    if (storageUrl == nil ) {
-        storageRef = [[FIRStorage storage] reference];
-    } else {
-        storageRef = [[FIRStorage storage] referenceForURL:storageUrl];
-    }
-    FIRStorageReference *fileRef = [storageRef child:path];
+    FIRStorageReference *fileRef = [[FIRStorage storage] referenceWithPath:remotePath];
     [fileRef downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
         if (error != nil) {
             NSDictionary *evt = @{
                                   @"status": @"error",
-                                  @"path": path,
+                                  @"path": remotePath,
                                   @"msg": [error debugDescription]
                                   };
             callback(@[evt]);
@@ -51,20 +44,12 @@ RCT_EXPORT_METHOD(downloadUrl: (NSString *) storageUrl
     }];
 }
 
-RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
-                  name: (NSString *) name
+RCT_EXPORT_METHOD(uploadFile: (NSString *) remotePath
                   path:(NSString *)path
                   metadata:(NSDictionary *)metadata
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *storageRef;
-    if (urlStr == nil) {
-        storageRef = [[FIRStorage storage] reference];
-    } else {
-        storageRef = [[FIRStorage storage] referenceForURL:urlStr];
-    }
-
-    FIRStorageReference *uploadRef = [storageRef child:name];
+    FIRStorageReference *uploadRef = [[FIRStorage storage] referenceWithPath:remotePath];
     FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
 
     if ([path hasPrefix:@"assets-library://"]) {
@@ -161,7 +146,6 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
                 case FIRStorageErrorCodeUnknown:
                     // Unknown error occurred, inspect the server response
                     [errProps setValue:@"Unknown error" forKey:@"description"];
-                    NSLog(@"Unknown error: %@", snapshot.error);
                     break;
             }
 
@@ -169,21 +153,11 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) urlStr
         }}];
 }
 
-RCT_EXPORT_METHOD(downloadFile: (NSString *) urlStr
-                  path:(NSString *) path
+RCT_EXPORT_METHOD(downloadFile: (NSString *) remotePath
                   localFile:(NSString *) file
                   callback:(RCTResponseSenderBlock) callback)
 {
-    if (urlStr == nil) {
-        NSError *err = [[NSError alloc] init];
-        [err setValue:@"Storage configuration error" forKey:@"name"];
-        [err setValue:@"Call setStorageUrl() first" forKey:@"description"];
-        return callback(@[err]);
-    }
-
-    FIRStorageReference *storageRef = [[FIRStorage storage] referenceForURL:urlStr];
-    FIRStorageReference *fileRef = [storageRef child:path];
-
+    FIRStorageReference *fileRef = [[FIRStorage storage] referenceWithPath:remotePath];
     NSURL *localFile = [NSURL fileURLWithPath:file];
 
     FIRStorageDownloadTask *downloadTask = [fileRef writeToFile:localFile];

@@ -7,22 +7,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReactContext;
+import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import com.facebook.react.bridge.ReadableArray;
-import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.ReadableArray;
 import com.google.firebase.database.DataSnapshot;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 
 @SuppressWarnings("WeakerAccess")
-public class FirestackUtils {
-  private static final String TAG = "FirestackUtils";
+public class Utils {
+  private static final String TAG = "Utils";
 
   // TODO NOTE
   public static void todoNote(final String tag, final String name, final Callback callback) {
@@ -37,15 +37,13 @@ public class FirestackUtils {
   /**
    * send a JS event
    **/
-  public static void sendEvent(final ReactContext context,
-                               final String eventName,
-                               final WritableMap params) {
-    if (context.hasActiveCatalystInstance()) {
+  public static void sendEvent(final ReactContext context, final String eventName, final WritableMap params) {
+    if (context != null) {
       context
           .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit(eventName, params);
     } else {
-      Log.d(TAG, "Waiting for CatalystInstance before sending event");
+      Log.d(TAG, "Missing context - cannot send event!");
     }
   }
 
@@ -84,12 +82,12 @@ public class FirestackUtils {
           data.putString("value", null);
       }
     } else {
-      WritableMap valueMap = FirestackUtils.castSnapshotValue(dataSnapshot);
+      WritableMap valueMap = Utils.castSnapshotValue(dataSnapshot);
       data.putMap("value", valueMap);
     }
 
     // Child keys
-    WritableArray childKeys = FirestackUtils.getChildKeys(dataSnapshot);
+    WritableArray childKeys = Utils.getChildKeys(dataSnapshot);
     data.putArray("childKeys", childKeys);
 
     Object priority = dataSnapshot.getPriority();
@@ -109,32 +107,11 @@ public class FirestackUtils {
 
   public static <Any> Any castSnapshotValue(DataSnapshot snapshot) {
     if (snapshot.hasChildren()) {
-      WritableMap data = Arguments.createMap();
-      for (DataSnapshot child : snapshot.getChildren()) {
-        Any castedChild = castSnapshotValue(child);
-        switch (castedChild.getClass().getName()) {
-          case "java.lang.Boolean":
-            data.putBoolean(child.getKey(), (Boolean) castedChild);
-            break;
-          case "java.lang.Long":
-            Long longVal = (Long) castedChild;
-            data.putDouble(child.getKey(), (double) longVal);
-            break;
-          case "java.lang.Double":
-            data.putDouble(child.getKey(), (Double) castedChild);
-            break;
-          case "java.lang.String":
-            data.putString(child.getKey(), (String) castedChild);
-            break;
-          case "com.facebook.react.bridge.WritableNativeMap":
-            data.putMap(child.getKey(), (WritableMap) castedChild);
-            break;
-          default:
-            Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
-            break;
-        }
+      if (isArray(snapshot)) {
+        return (Any) buildArray(snapshot);
+      } else {
+        return (Any) buildMap(snapshot);
       }
-      return (Any) data;
     } else {
       if (snapshot.getValue() != null) {
         String type = snapshot.getValue().getClass().getName();
@@ -154,6 +131,88 @@ public class FirestackUtils {
       }
       return (Any) null;
     }
+  }
+
+  private static boolean isArray(DataSnapshot snapshot) {
+    long expectedKey = 0;
+    for (DataSnapshot child : snapshot.getChildren()) {
+      try {
+        long key = Long.parseLong(child.getKey());
+        if (key == expectedKey) {
+          expectedKey++;
+        } else {
+          return false;
+        }
+      } catch (NumberFormatException ex) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static <Any> WritableArray buildArray(DataSnapshot snapshot) {
+    WritableArray array = Arguments.createArray();
+    for (DataSnapshot child : snapshot.getChildren()) {
+      Any castedChild = castSnapshotValue(child);
+      switch (castedChild.getClass().getName()) {
+        case "java.lang.Boolean":
+          array.pushBoolean((Boolean) castedChild);
+          break;
+        case "java.lang.Long":
+          Long longVal = (Long) castedChild;
+          array.pushDouble((double) longVal);
+          break;
+        case "java.lang.Double":
+          array.pushDouble((Double) castedChild);
+          break;
+        case "java.lang.String":
+          array.pushString((String) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeMap":
+          array.pushMap((WritableMap) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeArray":
+          array.pushArray((WritableArray) castedChild);
+          break;
+        default:
+          Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
+          break;
+      }
+    }
+    return array;
+  }
+
+  private static <Any> WritableMap buildMap(DataSnapshot snapshot) {
+    WritableMap map = Arguments.createMap();
+    for (DataSnapshot child : snapshot.getChildren()) {
+      Any castedChild = castSnapshotValue(child);
+
+      switch (castedChild.getClass().getName()) {
+        case "java.lang.Boolean":
+          map.putBoolean(child.getKey(), (Boolean) castedChild);
+          break;
+        case "java.lang.Long":
+          Long longVal = (Long) castedChild;
+          map.putDouble(child.getKey(), (double) longVal);
+          break;
+        case "java.lang.Double":
+          map.putDouble(child.getKey(), (Double) castedChild);
+          break;
+        case "java.lang.String":
+          map.putString(child.getKey(), (String) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeMap":
+          map.putMap(child.getKey(), (WritableMap) castedChild);
+          break;
+        case "com.facebook.react.bridge.WritableNativeArray":
+          map.putArray(child.getKey(), (WritableArray) castedChild);
+          break;
+        default:
+          Log.w(TAG, "Invalid type: " + castedChild.getClass().getName());
+          break;
+      }
+    }
+    return map;
   }
 
   public static WritableArray getChildKeys(DataSnapshot snapshot) {
@@ -192,10 +251,10 @@ public class FirestackUtils {
           deconstructedMap.put(key, readableMap.getString(key));
           break;
         case Map:
-          deconstructedMap.put(key, FirestackUtils.recursivelyDeconstructReadableMap(readableMap.getMap(key)));
+          deconstructedMap.put(key, Utils.recursivelyDeconstructReadableMap(readableMap.getMap(key)));
           break;
         case Array:
-          deconstructedMap.put(key, FirestackUtils.recursivelyDeconstructReadableArray(readableMap.getArray(key)));
+          deconstructedMap.put(key, Utils.recursivelyDeconstructReadableArray(readableMap.getArray(key)));
           break;
         default:
           throw new IllegalArgumentException("Could not convert object with key: " + key + ".");
@@ -223,10 +282,10 @@ public class FirestackUtils {
           deconstructedList.add(i, readableArray.getString(i));
           break;
         case Map:
-          deconstructedList.add(i, FirestackUtils.recursivelyDeconstructReadableMap(readableArray.getMap(i)));
+          deconstructedList.add(i, Utils.recursivelyDeconstructReadableMap(readableArray.getMap(i)));
           break;
         case Array:
-          deconstructedList.add(i, FirestackUtils.recursivelyDeconstructReadableArray(readableArray.getArray(i)));
+          deconstructedList.add(i, Utils.recursivelyDeconstructReadableArray(readableArray.getArray(i)));
           break;
         default:
           throw new IllegalArgumentException("Could not convert object at index " + i + ".");

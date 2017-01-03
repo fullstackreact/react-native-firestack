@@ -40,7 +40,7 @@ RCT_EXPORT_METHOD(signInAnonymously:
     } @catch(NSException *ex) {
         NSDictionary *eventError = @{
                                      @"eventName": AUTH_ANONYMOUS_ERROR_EVENT,
-                                     @"errorMessage": ex.reason
+                                     @"msg": ex.reason
                                      };
         
         [self sendJSEvent:AUTH_ERROR_EVENT
@@ -137,15 +137,14 @@ RCT_EXPORT_METHOD(listenForAuth)
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"userTokenError",
-                                                      @"authenticated": @((BOOL)true),
-                                                      @"errorMessage": [error localizedFailureReason]
+                                                      @"msg": [error localizedDescription]
                                                       }];
                                         } else {
                                             [self
                                              sendJSEvent:AUTH_CHANGED_EVENT
                                              props: @{
                                                       @"eventName": @"user",
-                                                      @"authenticated": @((BOOL)true),
+                                                      @"authenticated": @(true),
                                                       @"user": userProps
                                                       }];
                                         }
@@ -158,7 +157,7 @@ RCT_EXPORT_METHOD(listenForAuth)
             [self sendJSEvent:AUTH_CHANGED_EVENT
                         props:@{
                                 @"eventName": @"no_user",
-                                @"authenticated": @((BOOL)false),
+                                @"authenticated": @(false),
                                 @"error": err
                                 }];
         }
@@ -481,9 +480,7 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
 
 - (void) userCallback:(RCTResponseSenderBlock) callback
                  user:(FIRUser *) user {
-    NSDictionary *userProps = @{
-                                @"user": [self userPropsFromFIRUser:user]
-                                };
+    NSDictionary *userProps = [self userPropsFromFIRUser:user];
     callback(@[[NSNull null], userProps]);
 }
 

@@ -6,11 +6,18 @@ import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.ViewManager;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+
+import io.fullstack.firestack.auth.FirestackAuth;
+import io.fullstack.firestack.storage.FirestackStorage;
+import io.fullstack.firestack.database.FirestackDatabase;
+import io.fullstack.firestack.analytics.FirestackAnalytics;
+import io.fullstack.firestack.messaging.FirestackMessaging;
 
 @SuppressWarnings("unused")
 public class FirestackPackage implements ReactPackage {
@@ -26,11 +33,11 @@ public class FirestackPackage implements ReactPackage {
     public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new FirestackModule(reactContext, reactContext.getBaseContext()));
-        modules.add(new FirestackAuthModule(reactContext));
-        modules.add(new FirestackDatabaseModule(reactContext));
-        modules.add(new FirestackAnalyticsModule(reactContext));
-        modules.add(new FirestackStorageModule(reactContext));
-        modules.add(new FirestackCloudMessaging(reactContext));
+        modules.add(new FirestackAuth(reactContext));
+        modules.add(new FirestackDatabase(reactContext));
+        modules.add(new FirestackAnalytics(reactContext));
+        modules.add(new FirestackStorage(reactContext));
+        modules.add(new FirestackMessaging(reactContext));
         return modules;
     }
 
