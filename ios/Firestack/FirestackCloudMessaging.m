@@ -71,7 +71,7 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
 }
 
 #pragma mark Request permissions
-- (void) requestPermissions(NSDictionary *)requestedPermissions
+- (void) requestPermissions:(NSDictionary *)requestedPermissions
           callback:(RCTResponseSenderBlock) callback
 {
   if (SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(@"9.0")) {
