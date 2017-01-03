@@ -382,7 +382,7 @@ var Login = React.createClass({
           console.log("Logged in!");
           console.log(data);
           let token = data.credentials.token
-          firestack.signInWithProvider('facebook', token, '') // facebook need only access token.
+          firestack.auth.signInWithProvider('facebook', token, '') // facebook need only access token.
             .then((user)=>{
               console.log(user)
             })
