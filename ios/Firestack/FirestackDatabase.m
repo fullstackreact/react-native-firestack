@@ -400,6 +400,17 @@ RCT_EXPORT_METHOD(set:(NSString *) path
     }];
 }
 
+RCT_EXPORT_METHOD(setWithPriority:(NSString *) path
+                  data:(NSDictionary *)data
+                  priority: (NSDictionary *)priority
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRDatabaseReference *ref = [self getPathRef:path];
+    [ref setValue:[data valueForKey:@"value"] andPriority:[priority valueForKey:@"value"] withCompletionBlock:^(NSError * _Nullable error, FIRDatabaseReference * _Nonnull ref) {
+        [self handleCallback:@"setWithPriority" callback:callback databaseError:error];
+    }];
+}
+
 RCT_EXPORT_METHOD(update:(NSString *) path
                   value:(NSDictionary *)value
                   callback:(RCTResponseSenderBlock) callback)
