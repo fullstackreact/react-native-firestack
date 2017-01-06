@@ -18,6 +18,7 @@
 }
 
 @property NSMutableDictionary *dbReferences;
+@property NSMutableDictionary *transactions;
 
 @end
 
