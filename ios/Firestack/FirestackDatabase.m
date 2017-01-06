@@ -22,6 +22,7 @@
 @property FIRDatabaseHandle childMovedHandler;
 @property FIRDatabaseHandle childValueHandler;
 + (NSDictionary *) snapshotToDict:(FIRDataSnapshot *) snapshot;
+
 @end
 
 @implementation FirestackDBReference
@@ -366,6 +367,7 @@ RCT_EXPORT_MODULE(FirestackDatabase);
     if (self != nil) {
         _dbReferences = [[NSMutableDictionary alloc] init];
         _transactions = [[NSMutableDictionary alloc] init];
+        _transactionQueue = dispatch_queue_create("com.fullstackreact.react-native-firestack", DISPATCH_QUEUE_CONCURRENT);
     }
     return self;
 }
@@ -462,24 +464,29 @@ RCT_EXPORT_METHOD(beginTransaction:(NSString *) path
                   applyLocally:(BOOL) applyLocally
                   onComplete:(RCTResponseSenderBlock) onComplete)
 {
-    NSMutableDictionary *transactionState = [NSMutableDictionary new];
-    [_transactions setValue:transactionState forKey:identifier];
-    dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-    [transactionState setObject:sema forKey:@"semaphore"];
-    
-    FIRDatabaseReference *ref = [self getPathRef:path];
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(_transactionQueue, ^{
+        NSMutableDictionary *transactionState = [NSMutableDictionary new];
+        
+        dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+        [transactionState setObject:sema forKey:@"semaphore"];
+        
+        FIRDatabaseReference *ref = [self getPathRef:path];
         [ref runTransactionBlock:^FIRTransactionResult * _Nonnull(FIRMutableData * _Nonnull currentData) {
-            [self sendEventWithName:DATABASE_TRANSACTION_EVENT
-                               body:@{
-                                      @"id": identifier,
-                                      @"originalValue": currentData.value
-                                      }];
+            dispatch_barrier_async(_transactionQueue, ^{
+                [_transactions setValue:transactionState forKey:identifier];
+                [self sendEventWithName:DATABASE_TRANSACTION_EVENT
+                                   body:@{
+                                          @"id": identifier,
+                                          @"originalValue": currentData.value
+                                          }];
+            });
             // Wait for the event handler to call tryCommitTransaction
             dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
             BOOL abort = [transactionState valueForKey:@"abort"];
             id value = [transactionState valueForKey:@"value"];
-            [_transactions removeObjectForKey:identifier];
+            dispatch_barrier_async(_transactionQueue, ^{
+                [_transactions removeObjectForKey:identifier];
+            });
             if (abort) {
                 return [FIRTransactionResult abort];
             } else {
@@ -510,9 +517,13 @@ RCT_EXPORT_METHOD(tryCommitTransaction:(NSString *) identifier
                   withData:(NSDictionary *) data
                   orAbort:(BOOL) abort)
 {
-    NSMutableDictionary *transactionState = [_transactions valueForKey:identifier];
+    __block NSMutableDictionary *transactionState;
+    dispatch_sync(_transactionQueue, ^{
+        transactionState = [_transactions objectForKey: identifier];
+    });
     if (!transactionState) {
         NSLog(@"tryCommitTransaction for unknown ID %@", identifier);
+        return;
     }
     dispatch_semaphore_t sema = [transactionState valueForKey:@"semaphore"];
     if (abort) {
