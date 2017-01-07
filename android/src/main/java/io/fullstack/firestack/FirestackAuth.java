@@ -34,6 +34,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.TwitterAuthProvider;
 
 class FirestackAuthModule extends ReactContextBaseJavaModule {
   private final int NO_CURRENT_USER = 100;
@@ -153,6 +154,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
            this.facebookLogin(authToken,callback);
       } else if (provider.equals("google")) {
            this.googleLogin(authToken,callback);
+      } else if (provider.equals("twitter")) {
+           this.twitterLogin(authToken,authSecret,callback);
       } else
       // TODO
       FirestackUtils.todoNote(TAG, "signInWithProvider", callback);
@@ -215,6 +218,8 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
             credential = FacebookAuthProvider.getCredential(authToken);
         } else if (provider.equals("google")) {
             credential = GoogleAuthProvider.getCredential(authToken, null);
+        } else if (provider.equals("twitter")) {
+            credential = TwitterAuthProvider.getCredential(authToken, authSecret);
         } else {
             // TODO:
             FirestackUtils.todoNote(TAG, "reauthenticateWithCredentialForProvider", callback);
@@ -489,6 +494,30 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         mAuth = FirebaseAuth.getInstance();
 
         AuthCredential credential = FacebookAuthProvider.getCredential(Token);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                      if (task.isSuccessful()) {
+                          FirestackAuthModule.this.user = task.getResult().getUser();
+                          userCallback(FirestackAuthModule.this.user, callback);
+                      }else{
+                          // userErrorCallback(task, callback);
+                      }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+              @Override
+              public void onFailure(@NonNull Exception ex) {
+                userExceptionCallback(ex, callback);
+              }
+            });
+    }
+
+    @ReactMethod
+    public void twitterLogin(String Token, String Secret, final Callback callback) {
+        mAuth = FirebaseAuth.getInstance();
+
+        AuthCredential credential = TwitterAuthProvider.getCredential(Token, Secret);
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
