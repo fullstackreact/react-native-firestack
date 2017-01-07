@@ -122,6 +122,12 @@ source 'https://github.com/CocoaPods/Specs.git'
 ].each do |lib|
   pod lib
 end
+
+target '[project name]' do
+end
+
+# target '[project test name]' do
+# end
 ```
 
 Then you can run `(cd ios && pod install)` to get the pods opened. If you do use this route, remember to use the `.xcworkspace` file.
