@@ -481,8 +481,12 @@ RCT_EXPORT_METHOD(beginTransaction:(NSString *) path
                                           }];
             });
             // Wait for the event handler to call tryCommitTransaction
-            dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-            BOOL abort = [transactionState valueForKey:@"abort"];
+            // WARNING: This wait occurs on the Firebase Worker Queue
+            // so if tryCommitTransaction fails to signal the semaphore
+            // no further blocks will be executed by Firebase until the timeout expires
+            dispatch_time_t delayTime = dispatch_time(DISPATCH_TIME_NOW, 30 * NSEC_PER_SEC);
+            BOOL timedout = dispatch_semaphore_wait(sema, delayTime) != 0;
+            BOOL abort = [transactionState valueForKey:@"abort"] || timedout;
             id value = [transactionState valueForKey:@"value"];
             dispatch_barrier_async(_transactionQueue, ^{
                 [_transactions removeObjectForKey:identifier];
