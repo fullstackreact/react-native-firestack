@@ -15,6 +15,16 @@ firestack.database()
   });
 ```
 
+Read for export:
+```javascript
+firestack.database()
+  .ref('posts')
+  .on('value', (snapshot) => {
+    const value = snapshot.exportVal();     
+  });
+```
+This includes hidden properties like `.priority`
+
 Basic write example:
 ```javascript
 firestack.database()
