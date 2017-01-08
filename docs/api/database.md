@@ -29,7 +29,9 @@ Test value exists at location:
 ```javascript
 firestack.database()
   .ref('posts/1234')
-  .exists();
+  .on('value', (snapshot) => {
+    const exists = snapshot.exists();
+  });
 ```
 
 
