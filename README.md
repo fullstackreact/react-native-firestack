@@ -122,6 +122,12 @@ source 'https://github.com/CocoaPods/Specs.git'
 ].each do |lib|
   pod lib
 end
+
+target '[project name]' do
+end
+
+# target '[project test name]' do
+# end
 ```
 
 Then you can run `(cd ios && pod install)` to get the pods opened. If you do use this route, remember to use the `.xcworkspace` file.
@@ -382,7 +388,7 @@ var Login = React.createClass({
           console.log("Logged in!");
           console.log(data);
           let token = data.credentials.token
-          firestack.signInWithProvider('facebook', token, '') // facebook need only access token.
+          firestack.auth.signInWithProvider('facebook', token, '') // facebook need only access token.
             .then((user)=>{
               console.log(user)
             })
