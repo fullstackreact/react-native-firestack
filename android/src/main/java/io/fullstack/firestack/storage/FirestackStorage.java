@@ -29,6 +29,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.StreamDownloadTask;
 import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -55,13 +59,11 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
   private static final String FileTypeRegular = "FILETYPE_REGULAR";
   private static final String FileTypeDirectory = "FILETYPE_DIRECTORY";
 
-  private static final String STORAGE_UPLOAD_PROGRESS = "upload_progress";
-  private static final String STORAGE_UPLOAD_PAUSED = "upload_paused";
-  private static final String STORAGE_UPLOAD_RESUMED = "upload_resumed";
-
-  private static final String STORAGE_DOWNLOAD_PROGRESS = "download_progress";
-  private static final String STORAGE_DOWNLOAD_PAUSED = "download_paused";
-  private static final String STORAGE_DOWNLOAD_RESUMED = "download_resumed";
+  private static final String STORAGE_EVENT = "storage_event";
+  private static final String STORAGE_ERROR = "storage_error";
+  private static final String STORAGE_STATE_CHANGED = "state_changed";
+  private static final String STORAGE_UPLOAD_SUCCESS = "upload_success";
+  private static final String STORAGE_UPLOAD_FAILURE = "upload_failure";
   private static final String STORAGE_DOWNLOAD_SUCCESS = "download_success";
   private static final String STORAGE_DOWNLOAD_FAILURE = "download_failure";
 
@@ -204,30 +206,30 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
       public void onProgress(StreamDownloadTask.TaskSnapshot taskSnapshot) {
         Log.d(TAG, "Got download progress " + taskSnapshot);
         WritableMap event = getDownloadTaskAsMap(taskSnapshot);
-        //TODO: No need for this if JS listeners are separated
-        event.putString("eventName", STORAGE_DOWNLOAD_PROGRESS);
-        Utils.sendEvent(getReactApplicationContext(), STORAGE_DOWNLOAD_PROGRESS, event);
+        handleStorageEvent(STORAGE_STATE_CHANGED, path, event);
       }
     }).addOnPausedListener(new OnPausedListener<StreamDownloadTask.TaskSnapshot>() {
       @Override
       public void onPaused(StreamDownloadTask.TaskSnapshot taskSnapshot) {
         Log.d(TAG, "Download is paused " + taskSnapshot);
         WritableMap event = getDownloadTaskAsMap(taskSnapshot);
-        //TODO: No need for this if JS listeners are separated
-        event.putString("eventName", STORAGE_DOWNLOAD_PAUSED);
-        Utils.sendEvent(getReactApplicationContext(), STORAGE_DOWNLOAD_PAUSED, event);
+        handleStorageEvent(STORAGE_STATE_CHANGED, path, event);
       }
     }).addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
       @Override
       public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
         Log.d(TAG, "Successfully downloaded file " + taskSnapshot);
         WritableMap resp = getDownloadTaskAsMap(taskSnapshot);
+        handleStorageEvent(STORAGE_DOWNLOAD_SUCCESS, path, resp);
+        //TODO: A little hacky, but otherwise throws a not consumed exception
+        resp = getDownloadTaskAsMap(taskSnapshot);
         callback.invoke(null, resp);
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override
       public void onFailure(@NonNull Exception exception) {
         Log.e(TAG, "Failed to download file " + exception.getMessage());
+        //TODO: JS Error event
         callback.invoke(makeErrorPayload(1, exception));
       }
     });
@@ -258,6 +260,7 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             public void onFailure(@NonNull Exception exception) {
               // handle unsuccessful uploads
               Log.e(TAG, "Failed to upload file " + exception.getMessage());
+              //TODO: JS Error event
               callback.invoke(makeErrorPayload(1, exception));
             }
           })
@@ -266,6 +269,9 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
               Log.d(TAG, "Successfully uploaded file " + taskSnapshot);
               WritableMap resp = getUploadTaskAsMap(taskSnapshot);
+              handleStorageEvent(STORAGE_UPLOAD_SUCCESS, path, resp);
+              //TODO: A little hacky, but otherwise throws a not consumed exception
+              resp = getUploadTaskAsMap(taskSnapshot);
               callback.invoke(null, resp);
             }
           })
@@ -274,9 +280,7 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
               Log.d(TAG, "Got upload progress " + taskSnapshot);
               WritableMap event = getUploadTaskAsMap(taskSnapshot);
-              //TODO: No need for this if JS listeners are separated
-              event.putString("eventName", STORAGE_UPLOAD_PROGRESS);
-              Utils.sendEvent(getReactApplicationContext(), STORAGE_UPLOAD_PROGRESS, event);
+              handleStorageEvent(STORAGE_STATE_CHANGED, path, event);
             }
           })
           .addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
@@ -284,9 +288,7 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
               Log.d(TAG, "Upload is paused " + taskSnapshot);
               WritableMap event = getUploadTaskAsMap(taskSnapshot);
-              //TODO: No need for this if JS listeners are separated
-              event.putString("eventName", STORAGE_UPLOAD_PAUSED);
-              Utils.sendEvent(getReactApplicationContext(), STORAGE_UPLOAD_PAUSED, event);
+              handleStorageEvent(STORAGE_STATE_CHANGED, path, event);
             }
           });
     } catch (Exception ex) {
@@ -296,11 +298,6 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
   }
 
   //Firebase.Storage methods
-  @ReactMethod
-  public void refFromURL(final String url, final Callback callback) {
-
-  }
-
   @ReactMethod
   public void setMaxDownloadRetryTime(final double milliseconds) {
     FirebaseStorage.getInstance().setMaxDownloadRetryTimeMillis((long)milliseconds);
@@ -387,6 +384,7 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
     WritableMap resp = Arguments.createMap();
     resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
     resp.putString("ref", taskSnapshot.getStorage().getPath());
+    resp.putString("state", this.getTaskStatus(taskSnapshot.getTask()));
     resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
 
     return resp;
@@ -399,6 +397,7 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
     resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
     resp.putString("downloadUrl", taskSnapshot.getDownloadUrl() != null ? taskSnapshot.getDownloadUrl().toString() : null);
     resp.putString("ref", taskSnapshot.getStorage().getPath());
+    resp.putString("state", this.getTaskStatus(taskSnapshot.getTask()));
     resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
 
     if (taskSnapshot.getMetadata() != null) {
@@ -407,6 +406,43 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
     }
 
     return resp;
+  }
+
+  private String getTaskStatus(StorageTask<?> task) {
+    if (task.isInProgress()) {
+      return "RUNNING";
+    } else if (task.isPaused()) {
+      return "PAUSED";
+    } else if (task.isSuccessful() || task.isComplete()) {
+      return "SUCCESS";
+    } else if (task.isCanceled()) {
+      return "CANCELLED";
+    } else if (task.getException() != null) {
+      return "ERROR";
+    } else {
+      return "UNKNOWN";
+    }
+  }
+
+  private void handleStorageEvent(final String name, final String path, WritableMap body) {
+    WritableMap evt = Arguments.createMap();
+    evt.putString("eventName", name);
+    evt.putString("path", path);
+    evt.putMap("body", body);
+
+    Utils.sendEvent(this.getReactApplicationContext(), STORAGE_EVENT, evt);
+  }
+
+  private void handleStorageError(final String path, final StorageException error) {
+    WritableMap body = Arguments.createMap();
+    body.putString("path", path);
+    body.putString("message", error.getMessage());
+
+    WritableMap evt  = Arguments.createMap();
+    evt.putString("eventName", STORAGE_ERROR);
+    evt.putMap("body", body);
+
+    Utils.sendEvent(this.getReactApplicationContext(), STORAGE_ERROR, evt);
   }
 
   private WritableMap makeErrorPayload(double code, Exception ex) {

@@ -114,35 +114,25 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) path
     [downloadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Download resumed, also fires when the upload starts
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
-        //TODO: Get rid once JS listeners are separated
-        event = [event mutableCopy];
-        [event setValue:STORAGE_DOWNLOAD_RESUMED forKey:@"eventName"];
-        
-        [self sendJSEvent:STORAGE_DOWNLOAD_RESUMED props:event];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
     
     [downloadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Download paused
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
-        //TODO: Get rid once JS listeners are separated
-        event = [event mutableCopy];
-        [event setValue:STORAGE_DOWNLOAD_PAUSED forKey:@"eventName"];
-        
-        [self sendJSEvent:STORAGE_DOWNLOAD_PAUSED props:event];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
     [downloadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Download reported progress
         NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
-        //TODO: Get rid once JS listeners are separated
-        event = [event mutableCopy];
-        [event setValue:STORAGE_DOWNLOAD_PROGRESS forKey:@"eventName"];
-        
-        [self sendJSEvent:STORAGE_DOWNLOAD_PROGRESS props:event];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
     
     [downloadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Download completed successfully
         NSDictionary *resp = [self getDownloadTaskAsDictionary:snapshot];
+        
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_DOWNLOAD_SUCCESS props:resp];
         callback(@[[NSNull null], resp]);
     }];
     
@@ -170,6 +160,7 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) path
                     break;
             }
             
+            //TODO: Error event
             callback(@[errProps]);
         }}];
 }
@@ -194,6 +185,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path
                                                         FIRStorageUploadTask *uploadTask = [fileRef putData:imageData
                                                                                                    metadata:firmetadata];
                                                         [self addUploadObservers:uploadTask
+                                                                            path:path
                                                                         callback:callback];
                                                     }];
     } else {
@@ -202,47 +194,39 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path
                                                    metadata:firmetadata];
         
         [self addUploadObservers:uploadTask
+                            path:path
                         callback:callback];
     }
 
 }
 
 - (void) addUploadObservers:(FIRStorageUploadTask *) uploadTask
+                       path:(NSString *) path
                    callback:(RCTResponseSenderBlock) callback
 {
     // Listen for state changes, errors, and completion of the upload.
     [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload resumed, also fires when the upload starts
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        //TODO: Get rid once JS listeners are separated
-        event = [event mutableCopy];
-        [event setValue:STORAGE_UPLOAD_RESUMED forKey:@"eventName"];
-        
-        [self sendJSEvent:STORAGE_UPLOAD_RESUMED props:event];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload paused
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        //TODO: Get rid once JS listeners are separated
-        event = [event mutableCopy];
-        [event setValue:STORAGE_UPLOAD_PROGRESS forKey:@"eventName"];
-        
-        [self sendJSEvent:STORAGE_UPLOAD_PAUSED props:event];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
     [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload reported progress
         NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
-        //TODO: Get rid once JS listeners are separated
-        event = [event mutableCopy];
-        [event setValue:STORAGE_UPLOAD_PROGRESS forKey:@"eventName"];
-        
-        [self sendJSEvent:STORAGE_UPLOAD_PROGRESS props:event];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload completed successfully
         NSDictionary *resp = [self getUploadTaskAsDictionary:snapshot];
+        
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_UPLOAD_SUCCESS props:resp];
         callback(@[[NSNull null], resp]);
     }];
 
@@ -269,6 +253,7 @@ RCT_EXPORT_METHOD(putFile:(NSString *) path
                     break;
             }
 
+            //TODO: Error event
             callback(@[errProps]);
         }}];
 }
@@ -289,7 +274,8 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds)
     [[FIRStorage storage] setMaxUploadRetryTime:[milliseconds doubleValue]];
 }
 
-- (FIRStorageReference *)getReference:(NSString *)path {
+- (FIRStorageReference *)getReference:(NSString *)path
+{
     if ([path hasPrefix:@"url::"]) {
         NSString *url = [path substringFromIndex:5];
         return [[FIRStorage storage] referenceForURL:url];
@@ -302,11 +288,13 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds)
     return @{
              @"bytesTransferred": @(task.progress.completedUnitCount),
              @"ref": task.reference.fullPath,
+             @"status": [self getTaskStatus:task.status],
              @"totalBytes": @(task.progress.totalUnitCount)
              };
 }
 
-- (NSDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
+- (NSDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task
+{
     NSString *downloadUrl = [task.metadata.downloadURL absoluteString];
     FIRStorageMetadata *metadata = [task.metadata dictionaryRepresentation];
     return @{
@@ -314,8 +302,24 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds)
              @"downloadUrl": downloadUrl != nil ? downloadUrl : [NSNull null],
              @"metadata": metadata != nil ? metadata : [NSNull null],
              @"ref": task.reference.fullPath,
+             @"state": [self getTaskStatus:task.status],
              @"totalBytes": @(task.progress.totalUnitCount)
              };
+}
+
+- (NSString *)getTaskStatus:(FIRStorageTaskStatus)status
+{
+    if (status == FIRStorageTaskStatusResume || status == FIRStorageTaskStatusProgress) {
+        return @"RUNNING";
+    } else if (status == FIRStorageTaskStatusPause) {
+        return @"PAUSED";
+    } else if (status == FIRStorageTaskStatusSuccess) {
+        return @"SUCCESS";
+    } else if (status == FIRStorageTaskStatusFailure) {
+        return @"ERROR";
+    } else {
+        return @"UNKNOWN";
+    }
 }
 
 // This is just too good not to use, but I don't want to take credit for
@@ -344,25 +348,36 @@ RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds)
 
 // Not sure how to get away from this... yet
 - (NSArray<NSString *> *)supportedEvents {
-    return @[
-             STORAGE_UPLOAD_PAUSED,
-             STORAGE_UPLOAD_RESUMED,
-             STORAGE_UPLOAD_PROGRESS,
-             STORAGE_DOWNLOAD_PAUSED,
-             STORAGE_DOWNLOAD_RESUMED,
-             STORAGE_DOWNLOAD_PROGRESS
-             ];
+    return @[STORAGE_EVENT, STORAGE_ERROR];
 }
 
-- (void) sendJSEvent:(NSString *)title
+- (void) sendJSError:(NSError *) error
+                      withPath:(NSString *) path
+{
+    NSDictionary *evt = @{
+                          @"path": path,
+                          @"message": [error debugDescription]
+                          };
+    [self sendJSEvent:STORAGE_ERROR path:path title:STORAGE_ERROR props: evt];
+}
+
+- (void) sendJSEvent:(NSString *)type
+                path:(NSString *)path
+               title:(NSString *)title
                props:(NSDictionary *)props
 {
     @try {
-        [self sendEventWithName:title
-                           body:props];
+        [self sendEventWithName:type
+                            body:@{
+                                   @"eventName": title,
+                                   @"path": path,
+                                   @"body": props
+                                   }];
+        
     }
     @catch (NSException *err) {
         NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
+        NSLog(@"Tried to send: %@ with %@", title, props);
     }
 }
 
