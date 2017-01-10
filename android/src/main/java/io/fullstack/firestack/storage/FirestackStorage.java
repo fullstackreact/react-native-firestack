@@ -29,7 +29,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import com.google.firebase.storage.StorageException;
 import com.google.firebase.storage.StreamDownloadTask;
 import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -237,44 +236,32 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
     }).addOnProgressListener(new OnProgressListener<StreamDownloadTask.TaskSnapshot>() {
       @Override
       public void onProgress(StreamDownloadTask.TaskSnapshot taskSnapshot) {
-        WritableMap data = Arguments.createMap();
-        data.putString("ref", taskSnapshot.getStorage().getBucket());
-        double percentComplete = taskSnapshot.getTotalByteCount() == 0 ? 0.0f : 100.0f * (taskSnapshot.getBytesTransferred()) / (taskSnapshot.getTotalByteCount());
-        data.putDouble("progress", percentComplete);
-        Utils.sendEvent(mReactContext, STORAGE_DOWNLOAD_PROGRESS, data);
+        Log.d(TAG, "Got download progress " + taskSnapshot);
+        WritableMap event = getDownloadTaskAsMap(taskSnapshot);
+        //TODO: No need for this if JS listeners are separated
+        event.putString("eventName", STORAGE_DOWNLOAD_PROGRESS);
+        Utils.sendEvent(getReactApplicationContext(), STORAGE_DOWNLOAD_PROGRESS, event);
       }
     }).addOnPausedListener(new OnPausedListener<StreamDownloadTask.TaskSnapshot>() {
       @Override
       public void onPaused(StreamDownloadTask.TaskSnapshot taskSnapshot) {
-        WritableMap data = Arguments.createMap();
-        data.putString("ref", taskSnapshot.getStorage().getBucket());
-        Utils.sendEvent(mReactContext, STORAGE_DOWNLOAD_PAUSED, data);
+        Log.d(TAG, "Download is paused " + taskSnapshot);
+        WritableMap event = getDownloadTaskAsMap(taskSnapshot);
+        //TODO: No need for this if JS listeners are separated
+        event.putString("eventName", STORAGE_DOWNLOAD_PAUSED);
+        Utils.sendEvent(getReactApplicationContext(), STORAGE_DOWNLOAD_PAUSED, event);
       }
     }).addOnSuccessListener(new OnSuccessListener<StreamDownloadTask.TaskSnapshot>() {
       @Override
       public void onSuccess(StreamDownloadTask.TaskSnapshot taskSnapshot) {
-        final WritableMap data = Arguments.createMap();
-        StorageReference ref = taskSnapshot.getStorage();
-        data.putString("fullPath", ref.getPath());
-        data.putString("bucket", ref.getBucket());
-        data.putString("name", ref.getName());
-        ref.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-          @Override
-          public void onSuccess(final StorageMetadata storageMetadata) {
-            data.putMap("metadata", getMetadataAsMap(storageMetadata));
-            callback.invoke(null, data);
-          }
-        })
-                .addOnFailureListener(new OnFailureListener() {
-                  @Override
-                  public void onFailure(@NonNull Exception exception) {
-                    callback.invoke(makeErrorPayload(1, exception));
-                  }
-                });
+        Log.d(TAG, "Successfully downloaded file " + taskSnapshot);
+        WritableMap resp = getDownloadTaskAsMap(taskSnapshot);
+        callback.invoke(null, resp);
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override
       public void onFailure(@NonNull Exception exception) {
+        Log.e(TAG, "Failed to download file " + exception.getMessage());
         callback.invoke(makeErrorPayload(1, exception));
       }
     });
@@ -305,49 +292,35 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             public void onFailure(@NonNull Exception exception) {
               // handle unsuccessful uploads
               Log.e(TAG, "Failed to upload file " + exception.getMessage());
-
-              WritableMap err = Arguments.createMap();
-              err.putString("description", exception.getLocalizedMessage());
-
-              callback.invoke(err);
+              callback.invoke(makeErrorPayload(1, exception));
             }
           })
           .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
               Log.d(TAG, "Successfully uploaded file " + taskSnapshot);
-              // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-              WritableMap resp = getDownloadData(taskSnapshot);
+              WritableMap resp = getUploadTaskAsMap(taskSnapshot);
               callback.invoke(null, resp);
             }
           })
           .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-              double totalBytes = taskSnapshot.getTotalByteCount();
-              double bytesTransferred = taskSnapshot.getBytesTransferred();
-              double progress = (100.0 * bytesTransferred) / totalBytes;
-
-              System.out.println("Transferred " + bytesTransferred + "/" + totalBytes + "(" + progress + "% complete)");
-
-              if (progress >= 0) {
-                WritableMap data = Arguments.createMap();
-                data.putString("eventName", STORAGE_UPLOAD_PROGRESS);
-                data.putDouble("progress", progress);
-                Utils.sendEvent(getReactApplicationContext(), STORAGE_UPLOAD_PROGRESS, data);
-              }
+              Log.d(TAG, "Got upload progress " + taskSnapshot);
+              WritableMap event = getUploadTaskAsMap(taskSnapshot);
+              //TODO: No need for this if JS listeners are separated
+              event.putString("eventName", STORAGE_UPLOAD_PROGRESS);
+              Utils.sendEvent(getReactApplicationContext(), STORAGE_UPLOAD_PROGRESS, event);
             }
           })
           .addOnPausedListener(new OnPausedListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onPaused(UploadTask.TaskSnapshot taskSnapshot) {
-              System.out.println("Upload is paused");
-              StorageMetadata d = taskSnapshot.getMetadata();
-              String bucket = d.getBucket();
-              WritableMap data = Arguments.createMap();
-              data.putString("eventName", STORAGE_UPLOAD_PAUSED);
-              data.putString("ref", bucket);
-              Utils.sendEvent(getReactApplicationContext(), STORAGE_UPLOAD_PAUSED, data);
+              Log.d(TAG, "Upload is paused " + taskSnapshot);
+              WritableMap event = getUploadTaskAsMap(taskSnapshot);
+              //TODO: No need for this if JS listeners are separated
+              event.putString("eventName", STORAGE_UPLOAD_PAUSED);
+              Utils.sendEvent(getReactApplicationContext(), STORAGE_UPLOAD_PAUSED, event);
             }
           });
     } catch (Exception ex) {
@@ -444,21 +417,28 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
     }
   }
 
-  private WritableMap getDownloadData(final UploadTask.TaskSnapshot taskSnapshot) {
-    Uri downloadUrl = taskSnapshot.getDownloadUrl();
+  private WritableMap getDownloadTaskAsMap(final StreamDownloadTask.TaskSnapshot taskSnapshot) {
+    WritableMap resp = Arguments.createMap();
+    resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
+    resp.putString("ref", taskSnapshot.getStorage().getPath());
+    resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
+
+    return resp;
+  }
+
+  private WritableMap getUploadTaskAsMap(final UploadTask.TaskSnapshot taskSnapshot) {
     StorageMetadata d = taskSnapshot.getMetadata();
 
     WritableMap resp = Arguments.createMap();
-    resp.putString("downloadUrl", downloadUrl.toString());
-    resp.putString("fullPath", d.getPath());
-    resp.putString("bucket", d.getBucket());
-    resp.putString("name", d.getName());
+    resp.putDouble("bytesTransferred", taskSnapshot.getBytesTransferred());
+    resp.putString("downloadUrl", taskSnapshot.getDownloadUrl() != null ? taskSnapshot.getDownloadUrl().toString() : null);
+    resp.putString("ref", taskSnapshot.getStorage().getPath());
+    resp.putDouble("totalBytes", taskSnapshot.getTotalByteCount());
 
-    WritableMap metadataObj = Arguments.createMap();
-    metadataObj.putString("cacheControl", d.getCacheControl());
-    metadataObj.putString("contentDisposition", d.getContentDisposition());
-    metadataObj.putString("contentType", d.getContentType());
-    resp.putMap("metadata", metadataObj);
+    if (taskSnapshot.getMetadata() != null) {
+      WritableMap metadata = getMetadataAsMap(taskSnapshot.getMetadata());
+      resp.putMap("metadata", metadata);
+    }
 
     return resp;
   }
