@@ -57,12 +57,7 @@ RCT_EXPORT_METHOD(getDownloadURL: (NSString *) path
                                   };
             callback(@[evt]);
         } else {
-            NSDictionary *resp = @{
-                                   @"status": @"success",
-                                   @"url": [URL absoluteString],
-                                   @"path": [URL path]
-                                   };
-            callback(@[[NSNull null], resp]);
+            callback(@[[NSNull null], [URL absoluteString]]);
         }
     }];
 }

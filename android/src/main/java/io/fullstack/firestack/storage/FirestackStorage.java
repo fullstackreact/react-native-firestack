@@ -115,47 +115,13 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
         .addOnSuccessListener(new OnSuccessListener<Uri>() {
           @Override
           public void onSuccess(Uri uri) {
-            final WritableMap res = Arguments.createMap();
-
-            res.putString("status", "success");
-            res.putString("bucket", FirebaseStorage.getInstance().getApp().getOptions().getStorageBucket());
-            res.putString("fullPath", uri.toString());
-            res.putString("path", uri.getPath());
-            res.putString("url", uri.toString());
-
-            reference.getMetadata()
-                .addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-                  @Override
-                  public void onSuccess(final StorageMetadata storageMetadata) {
-                    Log.d(TAG, "getMetadata success " + storageMetadata);
-
-                    res.putMap("metadata", getMetadataAsMap(storageMetadata));
-                    res.putString("name", storageMetadata.getName());
-                    res.putString("url", storageMetadata.getDownloadUrl().toString());
-                    callback.invoke(null, res);
-                  }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                  @Override
-                  public void onFailure(@NonNull Exception exception) {
-                    Log.e(TAG, "Failure in download " + exception);
-                    final int errorCode = 1;
-                    callback.invoke(makeErrorPayload(errorCode, exception));
-                  }
-                });
-
+            callback.invoke(null, uri.toString());
           }
         })
         .addOnFailureListener(new OnFailureListener() {
           @Override
           public void onFailure(@NonNull Exception exception) {
-            Log.e(TAG, "Failed to download file " + exception.getMessage());
-
-            WritableMap err = Arguments.createMap();
-            err.putString("status", "error");
-            err.putString("description", exception.getLocalizedMessage());
-
-            callback.invoke(err);
+            callback.invoke(makeErrorPayload(1, exception));
           }
         });
   }
