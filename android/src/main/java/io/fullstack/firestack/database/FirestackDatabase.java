@@ -171,14 +171,14 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
   public void on(final String path,
                  final String modifiersString,
                  final ReadableArray modifiersArray,
-                 final String name,
+                 final String eventName,
                  final Callback callback) {
     FirestackDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
 
-    if (name.equals("value")) {
+    if (eventName.equals("value")) {
       ref.addValueEventListener();
     } else {
-      ref.addChildEventListener(name);
+      ref.addChildEventListener(eventName);
     }
 
     WritableMap resp = Arguments.createMap();
@@ -191,7 +191,7 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
   public void onOnce(final String path,
                      final String modifiersString,
                      final ReadableArray modifiersArray,
-                     final String name,
+                     final String eventName,
                      final Callback callback) {
     FirestackDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
     ref.addOnceValueEventListener(callback);
@@ -207,22 +207,21 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
   public void off(
           final String path,
           final String modifiersString,
-          final String name,
+          final String eventName,
           final Callback callback) {
 
     String key = this.getDBListenerKey(path, modifiersString);
     FirestackDatabaseReference r = mDBListeners.get(key);
 
     if (r != null) {
-      if (name == null || "".equals(name)) {
+      if (eventName == null || "".equals(eventName)) {
         r.cleanup();
         mDBListeners.remove(key);
       } else {
-        //TODO: Remove individual listeners as per iOS code
-        //1) Remove event handler
-        //2) If no more listeners, remove from listeners map
-        r.cleanup();
-        mDBListeners.remove(key);
+        r.removeEventListener(eventName);
+        if (!r.hasListeners()) {
+          mDBListeners.remove(key);
+        } ;
       }
     }
 

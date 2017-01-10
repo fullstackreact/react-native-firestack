@@ -1,8 +1,10 @@
 package io.fullstack.firestack.database;
 
+import java.util.HashSet;
 import java.util.List;
 import android.util.Log;
 import java.util.ListIterator;
+import java.util.Set;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
@@ -28,6 +30,7 @@ public class FirestackDatabaseReference {
   private ChildEventListener mEventListener;
   private ValueEventListener mValueListener;
   private ReactContext mReactContext;
+  private Set<String> childEventListeners = new HashSet<>();
 
   public FirestackDatabaseReference(final ReactContext context,
                                     final FirebaseDatabase firebaseDatabase,
@@ -40,7 +43,7 @@ public class FirestackDatabaseReference {
     mQuery = this.buildDatabaseQueryAtPathAndModifiers(firebaseDatabase, path, modifiersArray);
   }
 
-  public void addChildEventListener(final String name) {
+  public void addChildEventListener(final String eventName) {
     if (mEventListener == null) {
       mEventListener = new ChildEventListener() {
         @Override
@@ -65,7 +68,7 @@ public class FirestackDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
-          handleDatabaseError(name, error);
+          handleDatabaseError(eventName, error);
         }
       };
       mQuery.addChildEventListener(mEventListener);
@@ -73,6 +76,8 @@ public class FirestackDatabaseReference {
     } else {
       Log.w(TAG, "Trying to add duplicate ChildEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
     }
+    //Keep track of the events that the JS is interested in knowing about
+    childEventListeners.add(eventName);
   }
 
   public void addValueEventListener() {
@@ -117,8 +122,24 @@ public class FirestackDatabaseReference {
     Log.d(TAG, "Added OnceValueEventListener for path: " + mPath + " with modifiers " + mModifiersString);
   }
 
+  public void removeEventListener(String eventName) {
+    if ("value".equals(eventName)) {
+      this.removeValueEventListener();
+    } else {
+      childEventListeners.remove(eventName);
+      if (childEventListeners.isEmpty()) {
+        this.removeChildEventListener();
+      }
+    }
+  }
+
+  public boolean hasListeners() {
+    return mEventListener != null || mValueListener != null;
+  }
+
   public void cleanup() {
     Log.d(TAG, "cleaning up database reference " + this);
+    childEventListeners.clear();
     this.removeChildEventListener();
     this.removeValueEventListener();
   }
@@ -272,5 +293,4 @@ public class FirestackDatabaseReference {
 
     return query;
   }
-
 }
