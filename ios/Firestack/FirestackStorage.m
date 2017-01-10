@@ -21,15 +21,38 @@ RCT_EXPORT_MODULE(FirestackStorage);
   return dispatch_queue_create("io.fullstack.firestack.storage", DISPATCH_QUEUE_SERIAL);
 }
 
-RCT_EXPORT_METHOD(downloadUrl: (NSString *) remotePath
-    callback:(RCTResponseSenderBlock) callback)
+RCT_EXPORT_METHOD(delete: (NSString *) path
+                  callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *fileRef = [[FIRStorage storage] referenceWithPath:remotePath];
+    
+    FIRStorageReference *fileRef = [self getReference:path];
+    [fileRef deleteWithCompletion:^(NSError * _Nullable error) {
+        if (error == nil) {
+            NSDictionary *resp = @{
+                                   @"status": @"success",
+                                   @"path": path
+                                   };
+            callback(@[[NSNull null], resp]);
+        } else {
+            NSDictionary *evt = @{
+                                  @"status": @"error",
+                                  @"path": path,
+                                  @"msg": [error debugDescription]
+                                  };
+            callback(@[evt]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(getDownloadURL: (NSString *) path
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRStorageReference *fileRef = [self getReference:path];
     [fileRef downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
         if (error != nil) {
             NSDictionary *evt = @{
                                   @"status": @"error",
-                                  @"path": remotePath,
+                                  @"path": path,
                                   @"msg": [error debugDescription]
                                   };
             callback(@[evt]);
@@ -44,31 +67,71 @@ RCT_EXPORT_METHOD(downloadUrl: (NSString *) remotePath
     }];
 }
 
-RCT_EXPORT_METHOD(uploadFile: (NSString *) remotePath
-                  path:(NSString *)path
+RCT_EXPORT_METHOD(getMetadata: (NSString *) path
+                    callback:(RCTResponseSenderBlock) callback)
+{
+    FIRStorageReference *fileRef = [self getReference:path];
+    [fileRef metadataWithCompletion:^(FIRStorageMetadata * _Nullable metadata, NSError * _Nullable error) {
+        if (error != nil) {
+            NSDictionary *evt = @{
+                                  @"status": @"error",
+                                  @"path": path,
+                                  @"msg": [error debugDescription]
+                                  };
+            callback(@[evt]);
+        } else {
+            NSDictionary *resp = [metadata dictionaryRepresentation];
+            callback(@[[NSNull null], resp]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(updateMetadata: (NSString *) path
+                        metadata:(NSDictionary *) metadata
+                        callback:(RCTResponseSenderBlock) callback)
+{
+    FIRStorageReference *fileRef = [self getReference:path];
+    FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
+    [fileRef updateMetadata:firmetadata completion:^(FIRStorageMetadata * _Nullable metadata, NSError * _Nullable error) {
+        if (error != nil) {
+            NSDictionary *evt = @{
+                                  @"status": @"error",
+                                  @"path": path,
+                                  @"msg": [error debugDescription]
+                                  };
+            callback(@[evt]);
+        } else {
+            NSDictionary *resp = [metadata dictionaryRepresentation];
+            callback(@[[NSNull null], resp]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(putFile:(NSString *) path
+                  localPath:(NSString *)localPath
                   metadata:(NSDictionary *)metadata
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *uploadRef = [[FIRStorage storage] referenceWithPath:remotePath];
+    FIRStorageReference *fileRef = [self getReference:path];
     FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
 
-    if ([path hasPrefix:@"assets-library://"]) {
-        NSURL *localFile = [[NSURL alloc] initWithString:path];
+    if ([localPath hasPrefix:@"assets-library://"]) {
+        NSURL *localFile = [[NSURL alloc] initWithString:localPath];
         PHFetchResult* assets = [PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil];
         PHAsset *asset = [assets firstObject];
 
         [[PHImageManager defaultManager] requestImageDataForAsset:asset
-                                                    options:nil
+                                                          options:nil
                                                     resultHandler:^(NSData * imageData, NSString * dataUTI, UIImageOrientation orientation, NSDictionary * info) {
-                                                        FIRStorageUploadTask *uploadTask = [uploadRef putData:imageData
-                                                                                                     metadata:firmetadata];
+                                                        FIRStorageUploadTask *uploadTask = [fileRef putData:imageData
+                                                                                                   metadata:firmetadata];
                                                         [self addUploadObservers:uploadTask
                                                                         callback:callback];
                                                     }];
     } else {
-        NSURL *imageFile = [NSURL fileURLWithPath:path];
-        FIRStorageUploadTask *uploadTask = [uploadRef putFile:imageFile
-                                                     metadata:firmetadata];
+        NSURL *imageFile = [NSURL fileURLWithPath:localPath];
+        FIRStorageUploadTask *uploadTask = [fileRef putFile:imageFile
+                                                   metadata:firmetadata];
         
         [self addUploadObservers:uploadTask
                         callback:callback];
@@ -153,12 +216,12 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) remotePath
         }}];
 }
 
-RCT_EXPORT_METHOD(downloadFile: (NSString *) remotePath
-                  localFile:(NSString *) file
+RCT_EXPORT_METHOD(downloadFile: (NSString *) path
+                  localPath:(NSString *) localPath
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *fileRef = [[FIRStorage storage] referenceWithPath:remotePath];
-    NSURL *localFile = [NSURL fileURLWithPath:file];
+    FIRStorageReference *fileRef = [self getReference:path];
+    NSURL *localFile = [NSURL fileURLWithPath:localPath];
 
     FIRStorageDownloadTask *downloadTask = [fileRef writeToFile:localFile];
     // Listen for state changes, errors, and completion of the download.
@@ -235,12 +298,29 @@ RCT_EXPORT_METHOD(downloadFile: (NSString *) remotePath
         }}];
 }
 
-// Compatibility with the android library
-// For now, just passes the url path back
-RCT_EXPORT_METHOD(getRealPathFromURI: (NSString *) urlStr
-                  callback:(RCTResponseSenderBlock) callback)
+//Firebase.Storage methods
+RCT_EXPORT_METHOD(setMaxDownloadRetryTime:(NSNumber *) milliseconds)
 {
-    callback(@[[NSNull null], urlStr]);
+    [[FIRStorage storage] setMaxDownloadRetryTime:[milliseconds doubleValue]];
+}
+
+RCT_EXPORT_METHOD(setMaxOperationRetryTime:(NSNumber *) milliseconds)
+{
+    [[FIRStorage storage] setMaxOperationRetryTime:[milliseconds doubleValue]];
+}
+
+RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds)
+{
+    [[FIRStorage storage] setMaxUploadRetryTime:[milliseconds doubleValue]];
+}
+
+- (FIRStorageReference *)getReference:(NSString *)path {
+    if ([path hasPrefix:@"url::"]) {
+        NSString *url = [path substringFromIndex:5];
+        return [[FIRStorage storage] referenceForURL:url];
+    } else {
+        return [[FIRStorage storage] referenceWithPath:path];
+    }
 }
 
 // This is just too good not to use, but I don't want to take credit for

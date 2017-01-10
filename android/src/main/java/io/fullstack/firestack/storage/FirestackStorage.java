@@ -17,6 +17,7 @@ import android.support.annotation.NonNull;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableMap;
@@ -85,8 +86,122 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void downloadFile(final String remotePath,
-                           final String localFile,
+  public void delete(final String path,
+                     final Callback callback) {
+    StorageReference reference = this.getReference(path);
+    reference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+      @Override
+      public void onSuccess(Void aVoid) {
+        WritableMap data = Arguments.createMap();
+        data.putString("success", "success");
+        data.putString("path", path);
+        callback.invoke(null, data);
+      }
+    }).addOnFailureListener(new OnFailureListener() {
+      @Override
+      public void onFailure(Exception exception) {
+        callback.invoke(makeErrorPayload(1, exception));
+      }
+    });
+  }
+
+  @ReactMethod
+  public void getDownloadURL(final String path,
+                             final Callback callback) {
+    Log.d(TAG, "Download url for remote path: " + path);
+    final StorageReference reference = this.getReference(path);
+
+    Task<Uri> downloadTask = reference.getDownloadUrl();
+    downloadTask
+        .addOnSuccessListener(new OnSuccessListener<Uri>() {
+          @Override
+          public void onSuccess(Uri uri) {
+            final WritableMap res = Arguments.createMap();
+
+            res.putString("status", "success");
+            res.putString("bucket", FirebaseStorage.getInstance().getApp().getOptions().getStorageBucket());
+            res.putString("fullPath", uri.toString());
+            res.putString("path", uri.getPath());
+            res.putString("url", uri.toString());
+
+            reference.getMetadata()
+                .addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                  @Override
+                  public void onSuccess(final StorageMetadata storageMetadata) {
+                    Log.d(TAG, "getMetadata success " + storageMetadata);
+
+                    res.putMap("metadata", getMetadataAsMap(storageMetadata));
+                    res.putString("name", storageMetadata.getName());
+                    res.putString("url", storageMetadata.getDownloadUrl().toString());
+                    callback.invoke(null, res);
+                  }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                  @Override
+                  public void onFailure(@NonNull Exception exception) {
+                    Log.e(TAG, "Failure in download " + exception);
+                    final int errorCode = 1;
+                    callback.invoke(makeErrorPayload(errorCode, exception));
+                  }
+                });
+
+          }
+        })
+        .addOnFailureListener(new OnFailureListener() {
+          @Override
+          public void onFailure(@NonNull Exception exception) {
+            Log.e(TAG, "Failed to download file " + exception.getMessage());
+
+            WritableMap err = Arguments.createMap();
+            err.putString("status", "error");
+            err.putString("description", exception.getLocalizedMessage());
+
+            callback.invoke(err);
+          }
+        });
+  }
+
+  @ReactMethod
+  public void getMetadata(final String path,
+                          final Callback callback) {
+    StorageReference reference = this.getReference(path);
+    reference.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+      @Override
+      public void onSuccess(StorageMetadata storageMetadata) {
+        WritableMap data = getMetadataAsMap(storageMetadata);
+        callback.invoke(null, data);
+      }
+    }).addOnFailureListener(new OnFailureListener() {
+      @Override
+      public void onFailure(Exception exception) {
+        callback.invoke(makeErrorPayload(1, exception));
+      }
+    });
+  }
+
+  @ReactMethod
+  public void updateMetadata(final String path,
+                             final ReadableMap metadata,
+                             final Callback callback) {
+    StorageReference reference = this.getReference(path);
+    StorageMetadata md = buildMetadataFromMap(metadata);
+    reference.updateMetadata(md).addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+      @Override
+      public void onSuccess(StorageMetadata storageMetadata) {
+        WritableMap data = getMetadataAsMap(storageMetadata);
+        callback.invoke(null, data);
+      }
+    }).addOnFailureListener(new OnFailureListener() {
+      @Override
+      public void onFailure(Exception exception) {
+        callback.invoke(makeErrorPayload(1, exception));
+      }
+    });
+  }
+
+  @ReactMethod
+  public void downloadFile(final String path,
+                           final String localPath,
                            final Callback callback) {
     if (!isExternalStorageWritable()) {
       Log.w(TAG, "downloadFile failed: external storage not writable");
@@ -97,16 +212,16 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
       callback.invoke(error);
       return;
     }
-    Log.d(TAG, "downloadFile from remote path: " + remotePath);
+    Log.d(TAG, "downloadFile from remote path: " + path);
 
-    StorageReference fileRef = FirebaseStorage.getInstance().getReference(remotePath);
+    StorageReference reference = this.getReference(path);
 
-    fileRef.getStream(new StreamDownloadTask.StreamProcessor() {
+    reference.getStream(new StreamDownloadTask.StreamProcessor() {
       @Override
       public void doInBackground(StreamDownloadTask.TaskSnapshot taskSnapshot, InputStream inputStream) throws IOException {
-        int indexOfLastSlash = localFile.lastIndexOf("/");
-        String pathMinusFileName = indexOfLastSlash>0 ? localFile.substring(0, indexOfLastSlash) + "/" : "/";
-        String filename = indexOfLastSlash>0 ? localFile.substring(indexOfLastSlash+1) : localFile;
+        int indexOfLastSlash = localPath.lastIndexOf("/");
+        String pathMinusFileName = indexOfLastSlash>0 ? localPath.substring(0, indexOfLastSlash) + "/" : "/";
+        String filename = indexOfLastSlash>0 ? localPath.substring(indexOfLastSlash+1) : localPath;
         File fileWithJustPath = new File(pathMinusFileName);
         fileWithJustPath.mkdirs();
         File fileWithFullPath = new File(pathMinusFileName, filename);
@@ -150,124 +265,38 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
             callback.invoke(null, data);
           }
         })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception exception) {
-            final int errorCode = 1;
-            WritableMap data = Arguments.createMap();
-            StorageException storageException = StorageException.fromException(exception);
-            data.putString("description", storageException.getMessage());
-            data.putInt("code", errorCode);
-            callback.invoke(makeErrorPayload(errorCode, exception));
-          }
-        });
+                .addOnFailureListener(new OnFailureListener() {
+                  @Override
+                  public void onFailure(@NonNull Exception exception) {
+                    callback.invoke(makeErrorPayload(1, exception));
+                  }
+                });
       }
     }).addOnFailureListener(new OnFailureListener() {
       @Override
       public void onFailure(@NonNull Exception exception) {
-        final int errorCode = 1;
-        WritableMap data = Arguments.createMap();
-        StorageException storageException = StorageException.fromException(exception);
-        data.putString("description", storageException.getMessage());
-        data.putInt("code", errorCode);
-        callback.invoke(makeErrorPayload(errorCode, exception));
+        callback.invoke(makeErrorPayload(1, exception));
       }
     });
   }
 
   @ReactMethod
-  public void downloadUrl(final String remotePath,
-                          final Callback callback) {
-    Log.d(TAG, "Download url for remote path: " + remotePath);
-    final StorageReference fileRef = FirebaseStorage.getInstance().getReference(remotePath);
+  public void putFile(final String path, final String localPath, final ReadableMap metadata, final Callback callback) {
+    StorageReference reference = this.getReference(path);
 
-    Task<Uri> downloadTask = fileRef.getDownloadUrl();
-    downloadTask
-        .addOnSuccessListener(new OnSuccessListener<Uri>() {
-          @Override
-          public void onSuccess(Uri uri) {
-            final WritableMap res = Arguments.createMap();
-
-            res.putString("status", "success");
-            res.putString("bucket", FirebaseStorage.getInstance().getApp().getOptions().getStorageBucket());
-            res.putString("fullPath", uri.toString());
-            res.putString("path", uri.getPath());
-            res.putString("url", uri.toString());
-
-            fileRef.getMetadata()
-                .addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-                  @Override
-                  public void onSuccess(final StorageMetadata storageMetadata) {
-                    Log.d(TAG, "getMetadata success " + storageMetadata);
-
-                    res.putMap("metadata", getMetadataAsMap(storageMetadata));
-                    res.putString("name", storageMetadata.getName());
-                    res.putString("url", storageMetadata.getDownloadUrl().toString());
-                    callback.invoke(null, res);
-                  }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                  @Override
-                  public void onFailure(@NonNull Exception exception) {
-                    Log.e(TAG, "Failure in download " + exception);
-                    final int errorCode = 1;
-                    callback.invoke(makeErrorPayload(errorCode, exception));
-                  }
-                });
-
-          }
-        })
-        .addOnFailureListener(new OnFailureListener() {
-          @Override
-          public void onFailure(@NonNull Exception exception) {
-            Log.e(TAG, "Failed to download file " + exception.getMessage());
-
-            WritableMap err = Arguments.createMap();
-            err.putString("status", "error");
-            err.putString("description", exception.getLocalizedMessage());
-
-            callback.invoke(err);
-          }
-        });
-  }
-
-  private WritableMap getMetadataAsMap(StorageMetadata storageMetadata) {
-    WritableMap metadata = Arguments.createMap();
-    metadata.putString("getBucket", storageMetadata.getBucket());
-    metadata.putString("getName", storageMetadata.getName());
-    metadata.putDouble("sizeBytes", storageMetadata.getSizeBytes());
-    metadata.putDouble("created_at", storageMetadata.getCreationTimeMillis());
-    metadata.putDouble("updated_at", storageMetadata.getUpdatedTimeMillis());
-    metadata.putString("md5hash", storageMetadata.getMd5Hash());
-    metadata.putString("encoding", storageMetadata.getContentEncoding());
-    return metadata;
-  }
-
-  // STORAGE
-  @ReactMethod
-  public void uploadFile(final String remotePath, final String filepath, final ReadableMap metadata, final Callback callback) {
-    StorageReference fileRef = FirebaseStorage.getInstance().getReference(remotePath);
-
-    Log.i(TAG, "Upload file: " + filepath + " to " + remotePath);
+    Log.i(TAG, "Upload file: " + localPath + " to " + path);
 
     try {
       Uri file;
-      if (filepath.startsWith("content://")) {
-        String realPath = getRealPathFromURI(filepath);
+      if (localPath.startsWith("content://")) {
+        String realPath = getRealPathFromURI(localPath);
         file = Uri.fromFile(new File(realPath));
       } else {
-        file = Uri.fromFile(new File(filepath));
+        file = Uri.fromFile(new File(localPath));
       }
 
-      StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
-      Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(metadata);
-
-      for (Map.Entry<String, Object> entry : m.entrySet()) {
-        metadataBuilder.setCustomMetadata(entry.getKey(), entry.getValue().toString());
-      }
-
-      StorageMetadata md = metadataBuilder.build();
-      UploadTask uploadTask = fileRef.putFile(file, md);
+      StorageMetadata md = buildMetadataFromMap(metadata);
+      UploadTask uploadTask = reference.putFile(file, md);
 
       // register observers to listen for when the download is done or if it fails
       uploadTask
@@ -327,16 +356,77 @@ public class FirestackStorage extends ReactContextBaseJavaModule {
     }
   }
 
+  //Firebase.Storage methods
   @ReactMethod
-  public void getRealPathFromURI(final String uri, final Callback callback) {
-    try {
-      String path = getRealPathFromURI(uri);
-      callback.invoke(null, path);
-    } catch (Exception ex) {
-      ex.printStackTrace();
-      final int errorCode = 1;
-      callback.invoke(makeErrorPayload(errorCode, ex));
+  public void refFromURL(final String url, final Callback callback) {
+
+  }
+
+  @ReactMethod
+  public void setMaxDownloadRetryTime(final double milliseconds) {
+    FirebaseStorage.getInstance().setMaxDownloadRetryTimeMillis((long)milliseconds);
+  }
+
+  @ReactMethod
+  public void setMaxOperationRetryTime(final double milliseconds) {
+    FirebaseStorage.getInstance().setMaxOperationRetryTimeMillis((long)milliseconds);
+  }
+
+  @ReactMethod
+  public void setMaxUploadRetryTime(final double milliseconds) {
+    FirebaseStorage.getInstance().setMaxUploadRetryTimeMillis((long)milliseconds);
+  }
+
+  private StorageReference getReference(String path) {
+    if (path.startsWith("url::")) {
+      String url = path.substring(5);
+      return FirebaseStorage.getInstance().getReferenceFromUrl(url);
+    } else {
+      return FirebaseStorage.getInstance().getReference(path);
     }
+  }
+
+  private StorageMetadata buildMetadataFromMap(ReadableMap metadata) {
+    StorageMetadata.Builder metadataBuilder = new StorageMetadata.Builder();
+    Map<String, Object> m = Utils.recursivelyDeconstructReadableMap(metadata);
+
+    for (Map.Entry<String, Object> entry : m.entrySet()) {
+      metadataBuilder.setCustomMetadata(entry.getKey(), entry.getValue().toString());
+    }
+
+    return metadataBuilder.build();
+  }
+
+  private WritableMap getMetadataAsMap(StorageMetadata storageMetadata) {
+    WritableMap metadata = Arguments.createMap();
+    metadata.putString("bucket", storageMetadata.getBucket());
+    metadata.putString("generation", storageMetadata.getGeneration());
+    metadata.putString("metageneration", storageMetadata.getMetadataGeneration());
+    metadata.putString("fullPath", storageMetadata.getPath());
+    metadata.putString("name", storageMetadata.getName());
+    metadata.putDouble("size", storageMetadata.getSizeBytes());
+    metadata.putDouble("timeCreated", storageMetadata.getCreationTimeMillis());
+    metadata.putDouble("updated", storageMetadata.getUpdatedTimeMillis());
+    metadata.putString("md5hash", storageMetadata.getMd5Hash());
+    metadata.putString("cacheControl", storageMetadata.getCacheControl());
+    metadata.putString("contentDisposition", storageMetadata.getContentDisposition());
+    metadata.putString("contentEncoding", storageMetadata.getContentEncoding());
+    metadata.putString("contentLanguage", storageMetadata.getContentLanguage());
+    metadata.putString("contentType", storageMetadata.getContentType());
+
+    WritableArray downloadURLs = Arguments.createArray();
+    for (Uri uri : storageMetadata.getDownloadUrls()) {
+      downloadURLs.pushString(uri.getPath());
+    }
+    metadata.putArray("downloadURLs", downloadURLs);
+
+    WritableMap customMetadata = Arguments.createMap();
+    for (String key : storageMetadata.getCustomMetadataKeys()) {
+      customMetadata.putString(key, storageMetadata.getCustomMetadata(key));
+    }
+    metadata.putMap("customMetadata", customMetadata);
+
+    return metadata;
   }
 
   private String getRealPathFromURI(final String uri) {
