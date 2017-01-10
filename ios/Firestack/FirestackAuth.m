@@ -67,14 +67,10 @@ RCT_EXPORT_METHOD(signInWithCustomToken:
 }
 
 RCT_EXPORT_METHOD(signInWithProvider:
-                  (NSString *)provider
-                  token:(NSString *)authToken
-                  secret:(NSString *)authTokenSecret
+                  (NSDictionary *)credentialData
                   callback:(RCTResponseSenderBlock)callback)
 {
-    FIRAuthCredential *credential = [self getCredentialForProvider:provider
-                                                             token:authToken
-                                                            secret:authTokenSecret];
+    FIRAuthCredential *credential = [self getCredentialForProvider:credentialData];
     if (credential == nil) {
         NSDictionary *err = @{
                               @"error": @"Unhandled provider"
@@ -340,14 +336,10 @@ RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
 }
 
 RCT_EXPORT_METHOD(reauthenticateWithCredentialForProvider:
-                  (NSString *)provider
-                  token:(NSString *)authToken
-                  secret:(NSString *)authTokenSecret
+                  (NSDictionary *)credentialData
                   callback:(RCTResponseSenderBlock)callback)
 {
-    FIRAuthCredential *credential = [self getCredentialForProvider:provider
-                                                             token:authToken
-                                                            secret:authTokenSecret];
+    FIRAuthCredential *credential = [self getCredentialForProvider:credentialData];
     if (credential == nil) {
         NSDictionary *err = @{
                               @"error": @"Unhandled provider"
@@ -440,19 +432,23 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
     }];
 }
 
-- (FIRAuthCredential *)getCredentialForProvider:(NSString *)provider
-                                          token:(NSString *)authToken
-                                         secret:(NSString *)authTokenSecret
+- (FIRAuthCredential *)getCredentialForProvider:(NSDictionary *)credentialData
 {
     FIRAuthCredential *credential;
-    if ([provider compare:@"twitter" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIRTwitterAuthProvider credentialWithToken:authToken
-                                                          secret:authTokenSecret];
-    } else if ([provider compare:@"facebook" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIRFacebookAuthProvider credentialWithAccessToken:authToken];
-    } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
-        credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
-                                                      accessToken:authTokenSecret];
+    NSString *provider = [credentialData valueForKey:@"provider"];
+    if ([provider compare:@"twitter.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        NSString *accessToken = [credentialData valueForKey:@"accessToken"];
+        NSString *secret = [credentialData valueForKey:@"secret"];
+        credential = [FIRTwitterAuthProvider credentialWithToken:accessToken
+                                                          secret:secret];
+    } else if ([provider compare:@"facebook.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        NSString *accessToken = [credentialData valueForKey:@"accessToken"];
+        credential = [FIRFacebookAuthProvider credentialWithAccessToken:accessToken];
+    } else if ([provider compare:@"google.com" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        NSString *idToken = [credentialData valueForKey:@"idToken"];
+        NSString *accessToken = [credentialData valueForKey:@"accessToken"];
+        credential = [FIRGoogleAuthProvider credentialWithIDToken:idToken
+                                                      accessToken:accessToken];
     } else {
         NSLog(@"Provider not yet handled: %@", provider);
     }
