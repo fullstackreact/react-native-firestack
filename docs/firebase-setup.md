@@ -66,6 +66,7 @@ We can pass _custom_ options by passing an object with configuration options. Th
 | option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
 |----------------|----------|-------------------------|----------------------------------------|
 | debug | bool | false | When set to true, Firestack will log messages to the console and fire `debug` events we can listen to in `js` |
+| persistence | bool | false | When set to true, database will persist data locally |
 | bundleID | string | Default from app `[NSBundle mainBundle]` | The bundle ID for the app to be bundled with |
 | googleAppID | string | "" | The Google App ID that is used to uniquely identify an instance of an app. |
 | databaseURL | string | "" | The database root (i.e. https://my-app.firebaseio.com) |
@@ -76,7 +77,6 @@ We can pass _custom_ options by passing an object with configuration options. Th
 | trackingID | string | "" | The tracking ID for Google Analytics |
 | clientID | string | "" | The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google |
 | APIKey | string | "" | The secret iOS API key used for authenticating requests from our app |
-| persistence | bool | false | Enable database persistence |
 
 For instance:
 
