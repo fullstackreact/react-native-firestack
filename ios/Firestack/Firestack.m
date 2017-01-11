@@ -24,14 +24,14 @@ typedef void (^UserWithTokenResponse)(NSDictionary *, NSError *);
 }
 
 // TODO: Implement
-+ (void) setup:(UIApplication *) application 
++ (void) setup:(UIApplication *) application
 withLaunchOptions: (NSDictionary *) launchOptions
 {
     NSLog(@"Called setup for firestack with application");
-    
+
     dispatch_once(&onceToken, ^{
         [application registerForRemoteNotifications];
-        
+
         [[NSNotificationCenter defaultCenter]
          postNotificationName:kFirestackInitialized
          object:nil];
@@ -42,7 +42,7 @@ withLaunchOptions: (NSDictionary *) launchOptions
 {
     self = [super init];
     if (self != nil) {
-        NSLog(@"Setting up Firestace instance");
+        NSLog(@"Setting up Firestack instance");
         [Firestack initializeFirestack:self];
     }
     return self;
@@ -52,12 +52,7 @@ withLaunchOptions: (NSDictionary *) launchOptions
 {
     dispatch_once(&onceToken, ^{
         _sharedInstance = instance;
-        
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(reloadFirestack)
-                                                     name:RCTReloadNotification
-                                                   object:nil];
-        
+
         [[NSNotificationCenter defaultCenter]
          postNotificationName:kFirestackInitialized
          object:nil];
@@ -68,15 +63,6 @@ withLaunchOptions: (NSDictionary *) launchOptions
 + (instancetype) sharedInstance
 {
     return _sharedInstance;
-}
-
-+ (void) reloadFirestack
-{
-    // Reloading firestack
-    onceToken = 0; // not sure if this is a good idea or a bad idea...
-    [[Firestack sharedInstance] debugLog:@"Firestack"
-                                     msg:@"Reloading firestack"];
-    _sharedInstance = nil;
 }
 
 - (FIRApp *) firebaseApp
@@ -101,7 +87,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
         // Are we debugging, yo?
         self.debug = [opts valueForKey:@"debug"] != nil ? YES : NO;
         NSLog(@"options passed into configureWithOptions: %@", [opts valueForKey:@"debug"]);
-        
+
         NSDictionary *keyMapping = @{
                                      @"GOOGLE_APP_ID": @[
                                              @"appId",
@@ -158,18 +144,18 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                                              ]
                                      };
         NSArray *optionKeys = [keyMapping allKeys];
-        
+
         NSMutableDictionary *props;
-        
+
         NSString *plistPath = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info" ofType:@"plist"];
-        
+
         if ([[NSFileManager defaultManager] fileExistsAtPath:plistPath]) {
             // If the Firebase plist is included
             props = [NSMutableDictionary dictionaryWithContentsOfFile:plistPath];
         } else {
             props = [[NSMutableDictionary alloc] initWithCapacity:[optionKeys count]];
         }
-        
+
         // Bundle ID either from options OR from the main bundle
         NSString *bundleID;
         if ([opts valueForKey:@"bundleID"]) {
@@ -178,7 +164,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
             bundleID = [[NSBundle mainBundle] bundleIdentifier];
         }
         [props setValue:bundleID forKey:@"BUNDLE_ID"];
-        
+
         // Prefer the user configuration options over the default options
         for (int i=0; i < [optionKeys count]; i++) {
             // Traditional for loop here
@@ -189,9 +175,9 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                     NSString *value = [opts valueForKey:key];
                     [props setValue:value forKey:key];
                 }
-                
+
                 NSArray *possibleNames = [keyMapping objectForKey:key];
-                
+
                 for (NSString *name in possibleNames) {
                     if ([opts valueForKey:name] != nil) {
                         // The user passed this option in
@@ -205,7 +191,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                 NSLog(@"An error occurred: %@", err);
             }
         }
-        
+
         @try {
             if (self.debug) {
                 NSLog(@"props ->: %@", props);
@@ -220,7 +206,7 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                 NSLog(@"STORAGE_BUCKET: %@", [props valueForKey:@"STORAGE_BUCKET"]);
                 NSLog(@"DEEP_LINK_SCHEME: %@", [props valueForKey:@"DEEP_LINK_SCHEME"]);
             }
-            
+
             FIROptions *finalOptions = [[FIROptions alloc]
                                         initWithGoogleAppID:[props valueForKey:@"GOOGLE_APP_ID"]
                                         bundleID:[props valueForKey:@"BUNDLE_ID"]
@@ -232,16 +218,16 @@ RCT_EXPORT_METHOD(configureWithOptions:(NSDictionary *) opts
                                         databaseURL:[props valueForKey:@"DATABASE_URL"]
                                         storageBucket:[props valueForKey:@"STORAGE_BUCKET"]
                                         deepLinkURLScheme:[props valueForKey:@"DEEP_LINK_SCHEME"]];
-            
+
             // Save configuration option
             //        NSDictionary *cfg = [self getConfig];
             //        [cfg setValuesForKeysWithDictionary:props];
-            
+
             // if (!self.configured) {
-            
+
             if ([FIRApp defaultApp] == NULL) {
                 [FIRApp configureWithOptions:finalOptions];
-            }            
+            }
             [Firestack initializeFirestack:self];
             callback(@[[NSNull null], props]);
         }
@@ -382,8 +368,8 @@ RCT_EXPORT_METHOD(configure:(RCTResponseSenderBlock)callback)
 // Not sure how to get away from this... yet
 - (NSArray<NSString *> *)supportedEvents {
     return @[
-        INITIALIZED_EVENT, 
-        DEBUG_EVENT, 
+        INITIALIZED_EVENT,
+        DEBUG_EVENT,
         AUTH_CHANGED_EVENT];
 }
 
