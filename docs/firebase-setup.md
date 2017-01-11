@@ -66,6 +66,7 @@ We can pass _custom_ options by passing an object with configuration options. Th
 | option           | type | Default Value           | Description                                                                                                                                                                                                                                                                                                                                                      |
 |----------------|----------|-------------------------|----------------------------------------|
 | debug | bool | false | When set to true, Firestack will log messages to the console and fire `debug` events we can listen to in `js` |
+| persistence | bool | false | When set to true, database persistence will be enabled. |
 | bundleID | string | Default from app `[NSBundle mainBundle]` | The bundle ID for the app to be bundled with |
 | googleAppID | string | "" | The Google App ID that is used to uniquely identify an instance of an app. |
 | databaseURL | string | "" | The database root (i.e. https://my-app.firebaseio.com) |
