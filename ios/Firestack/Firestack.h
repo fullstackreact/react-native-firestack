@@ -16,10 +16,9 @@
 }
 
 // + (void) registerForNotification:(NSString *) typeStr andToken:(NSData *)deviceToken;
-+ (void) setup:(UIApplication *) application 
++ (void) setup:(UIApplication *) application
 withLaunchOptions: (NSDictionary *) launchOptions;
 
-+ (void) reloadFirestack;
 + (id) sharedInstance;
 
 - (void) debugLog:(NSString *)title
