@@ -76,6 +76,7 @@ We can pass _custom_ options by passing an object with configuration options. Th
 | trackingID | string | "" | The tracking ID for Google Analytics |
 | clientID | string | "" | The OAuth2 client ID for iOS application used to authenticate Google Users for signing in with Google |
 | APIKey | string | "" | The secret iOS API key used for authenticating requests from our app |
+| persistence | bool | false | Enable database persistence |
 
 For instance:
 
