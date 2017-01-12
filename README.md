@@ -44,6 +44,24 @@ We have a working application example available in at [fullstackreact/FirestackA
   * [Events](docs/api/events.md)
 * [Redux](docs/redux.md)
 
+## Feature overview
+Feature      | Firestack     | Firebase
+------------ | ------------- | -------------
+Real time database | -- | YES
+Authentication | -- | YES
+Cloud messaging | -- | YES
+Storage | -- | YES
+Crash reporting | -- | YES
+Notifications | -- | YES
+Remote config | -- | YES
+Dynamic links | -- | YES
+AdMob | -- | YES
+Analytics | -- | YES
+App indexing | -- | YES
+Hosting | -- | YES
+AdWords | -- | YES
+Invites | -- | YES
+
 ## Contributing
 
 For a detailed discussion of how Firestack works as well as how to contribute, check out our [contribution guide](https://github.com/fullstackreact/react-native-firestack/blob/master/Contributing.md).
