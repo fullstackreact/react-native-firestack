@@ -453,6 +453,8 @@ RCT_EXPORT_METHOD(updateUserProfile:(NSDictionary *)userProps
     } else if ([provider compare:@"google" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
         credential = [FIRGoogleAuthProvider credentialWithIDToken:authToken
                                                       accessToken:authTokenSecret];
+    } else if ([provider compare:@"github" options:NSCaseInsensitiveSearch] == NSOrderedSame) {
+        credential = [FIRGitHubAuthProvider credentialWithToken:authToken];
     } else {
         NSLog(@"Provider not yet handled: %@", provider);
     }
