@@ -27,177 +27,192 @@ import io.fullstack.firestack.Utils;
 
 public class FirestackMessaging extends ReactContextBaseJavaModule {
 
-    private static final String TAG = "FirestackMessaging";
-    private static final String EVENT_NAME_TOKEN = "FirestackRefreshToken";
-    private static final String EVENT_NAME_NOTIFICATION = "FirestackReceiveNotification";
-    private static final String EVENT_NAME_SEND = "FirestackUpstreamSend";
+  private static final String TAG = "FirestackMessaging";
+  private static final String EVENT_NAME_TOKEN = "FirestackRefreshToken";
+  private static final String EVENT_NAME_NOTIFICATION = "FirestackReceiveNotification";
+  private static final String EVENT_NAME_SEND = "FirestackUpstreamSend";
 
-    public static final String INTENT_NAME_TOKEN = "io.fullstack.firestack.refreshToken";
-    public static final String INTENT_NAME_NOTIFICATION = "io.fullstack.firestack.ReceiveNotification";
-    public static final String INTENT_NAME_SEND = "io.fullstack.firestack.Upstream";
+  public static final String INTENT_NAME_TOKEN = "io.fullstack.firestack.refreshToken";
+  public static final String INTENT_NAME_NOTIFICATION = "io.fullstack.firestack.ReceiveNotification";
+  public static final String INTENT_NAME_SEND = "io.fullstack.firestack.Upstream";
 
-    private IntentFilter mRefreshTokenIntentFilter;
-    private IntentFilter mReceiveNotificationIntentFilter;
-    private IntentFilter mReceiveSendIntentFilter;
+  private IntentFilter mRefreshTokenIntentFilter;
+  private IntentFilter mReceiveNotificationIntentFilter;
+  private IntentFilter mReceiveSendIntentFilter;
+  private BroadcastReceiver mBroadcastReceiver;
 
-    public FirestackMessaging(ReactApplicationContext reactContext) {
-        super(reactContext);
-        mRefreshTokenIntentFilter = new IntentFilter(INTENT_NAME_TOKEN);
-        mReceiveNotificationIntentFilter = new IntentFilter(INTENT_NAME_NOTIFICATION);
-        mReceiveSendIntentFilter = new IntentFilter(INTENT_NAME_SEND);
-        initRefreshTokenHandler();
-        initMessageHandler();
-        initSendHandler();
-        Log.d(TAG, "New instance");
-    }
+  public FirestackMessaging(ReactApplicationContext reactContext) {
+    super(reactContext);
+    mRefreshTokenIntentFilter = new IntentFilter(INTENT_NAME_TOKEN);
+    mReceiveNotificationIntentFilter = new IntentFilter(INTENT_NAME_NOTIFICATION);
+    mReceiveSendIntentFilter = new IntentFilter(INTENT_NAME_SEND);
+    initRefreshTokenHandler();
+    initMessageHandler();
+    initSendHandler();
+    Log.d(TAG, "New instance");
+  }
 
-    @Override
-    public String getName() {
-        return TAG;
-    }
+  @Override
+  public String getName() {
+    return TAG;
+  }
 
-    @ReactMethod
-    public void getToken(final Callback callback) {
+  private void initMessageHandler() {
+    Log.d(TAG, "Firestack initMessageHandler called");
 
-        try {
-            String token = FirebaseInstanceId.getInstance().getToken();
-            Log.d(TAG, "Firebase token: " + token);
-            callback.invoke(null, token);
-        } catch (Exception e) {
-            WritableMap error = Arguments.createMap();
-            error.putString("message", e.getMessage());
-            callback.invoke(error);
-        }
-    }
+    if (mBroadcastReceiver == null) {
+      mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+          RemoteMessage remoteMessage = intent.getParcelableExtra("data");
+          Log.d(TAG, "Firebase onReceive: " + remoteMessage);
+          WritableMap params = Arguments.createMap();
 
-    /**
-     *
-     */
-    private void initRefreshTokenHandler() {
-        getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                WritableMap params = Arguments.createMap();
-                params.putString("token", intent.getStringExtra("token"));
-                ReactContext ctx = getReactApplicationContext();
-                Log.d(TAG, "initRefreshTokenHandler received event " + EVENT_NAME_TOKEN);
-                Utils.sendEvent(ctx, EVENT_NAME_TOKEN, params);
+          params.putNull("data");
+          params.putNull("notification");
+          params.putString("id", remoteMessage.getMessageId());
+          params.putString("messageId", remoteMessage.getMessageId());
+
+
+          if (remoteMessage.getData().size() != 0) {
+            WritableMap dataMap = Arguments.createMap();
+            Map<String, String> data = remoteMessage.getData();
+
+            for (String key : data.keySet()) {
+              dataMap.putString(key, data.get(key));
             }
 
-            ;
-        }, mRefreshTokenIntentFilter);
-    }
+            params.putMap("data", dataMap);
+          }
 
-    @ReactMethod
-    public void subscribeToTopic(String topic, final Callback callback) {
-        try {
-            FirebaseMessaging.getInstance().subscribeToTopic(topic);
-            callback.invoke(null,topic);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.d(TAG, "Firebase token: " + e);
-            WritableMap error = Arguments.createMap();
-            error.putString("message", e.getMessage());
-            callback.invoke(error);
 
+          if (remoteMessage.getNotification() != null) {
+            WritableMap notificationMap = Arguments.createMap();
+            RemoteMessage.Notification notification = remoteMessage.getNotification();
+            notificationMap.putString("title", notification.getTitle());
+            notificationMap.putString("body", notification.getBody());
+            notificationMap.putString("icon", notification.getIcon());
+            notificationMap.putString("sound", notification.getSound());
+            notificationMap.putString("tag", notification.getTag());
+            params.putMap("notification", notificationMap);
+          }
+
+          ReactContext ctx = getReactApplicationContext();
+          Utils.sendEvent(ctx, EVENT_NAME_NOTIFICATION, params);
         }
+      };
+
+    }
+    getReactApplicationContext().registerReceiver(mBroadcastReceiver, mReceiveNotificationIntentFilter);
+  }
+
+  /**
+   *
+   */
+  private void initRefreshTokenHandler() {
+    getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        WritableMap params = Arguments.createMap();
+        params.putString("token", intent.getStringExtra("token"));
+        ReactContext ctx = getReactApplicationContext();
+        Log.d(TAG, "initRefreshTokenHandler received event " + EVENT_NAME_TOKEN);
+        Utils.sendEvent(ctx, EVENT_NAME_TOKEN, params);
+      }
+
+      ;
+    }, mRefreshTokenIntentFilter);
+  }
+
+  @ReactMethod
+  public void subscribeToTopic(String topic, final Callback callback) {
+    try {
+      FirebaseMessaging.getInstance().subscribeToTopic(topic);
+      callback.invoke(null, topic);
+    } catch (Exception e) {
+      e.printStackTrace();
+      Log.d(TAG, "Firebase token: " + e);
+      WritableMap error = Arguments.createMap();
+      error.putString("message", e.getMessage());
+      callback.invoke(error);
+
+    }
+  }
+
+  @ReactMethod
+  public void getToken(final Callback callback) {
+
+    try {
+      String token = FirebaseInstanceId.getInstance().getToken();
+      Log.d(TAG, "Firebase token: " + token);
+      callback.invoke(null, token);
+    } catch (Exception e) {
+      WritableMap error = Arguments.createMap();
+      error.putString("message", e.getMessage());
+      callback.invoke(error);
+    }
+  }
+
+  @ReactMethod
+  public void unsubscribeFromTopic(String topic, final Callback callback) {
+    try {
+      FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
+      callback.invoke(null, topic);
+    } catch (Exception e) {
+      WritableMap error = Arguments.createMap();
+      error.putString("message", e.getMessage());
+      callback.invoke(error);
+    }
+  }
+
+  @ReactMethod
+  public void send(String senderId, String messageId, String messageType, ReadableMap params, final Callback callback) {
+    FirebaseMessaging fm = FirebaseMessaging.getInstance();
+    RemoteMessage.Builder remoteMessage = new RemoteMessage.Builder(senderId);
+    remoteMessage.setMessageId(messageId);
+    remoteMessage.setMessageType(messageType);
+    ReadableMapKeySetIterator iterator = params.keySetIterator();
+
+    while (iterator.hasNextKey()) {
+      String key = iterator.nextKey();
+      ReadableType type = params.getType(key);
+      if (type == ReadableType.String) {
+        remoteMessage.addData(key, params.getString(key));
+        Log.d(TAG, "Firebase send: " + key);
+        Log.d(TAG, "Firebase send: " + params.getString(key));
+      }
     }
 
-    @ReactMethod
-    public void unsubscribeFromTopic(String topic, final Callback callback) {
-        try {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(topic);
-            callback.invoke(null,topic);
-        } catch (Exception e) {
-            WritableMap error = Arguments.createMap();
-            error.putString("message", e.getMessage());
-            callback.invoke(error);
+    try {
+      fm.send(remoteMessage.build());
+      WritableMap res = Arguments.createMap();
+      res.putString("status", "success");
+      callback.invoke(null, res);
+    } catch (Exception e) {
+      Log.e(TAG, "Error sending message", e);
+      WritableMap error = Arguments.createMap();
+      error.putString("code", e.toString());
+      error.putString("message", e.toString());
+      callback.invoke(error);
+    }
+  }
+
+  private void initSendHandler() {
+    getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
+      @Override
+      public void onReceive(Context context, Intent intent) {
+        WritableMap params = Arguments.createMap();
+        if (intent.getBooleanExtra("hasError", false)) {
+          WritableMap error = Arguments.createMap();
+          error.putInt("code", intent.getIntExtra("errCode", 0));
+          error.putString("message", intent.getStringExtra("errorMessage"));
+          params.putMap("err", error);
+        } else {
+          params.putNull("err");
         }
-    }
-
-    private void initMessageHandler() {
-        Log.d(TAG, "Firestack initMessageHandler called");
-        getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                RemoteMessage remoteMessage = intent.getParcelableExtra("data");
-                Log.d(TAG, "Firebase onReceive: " + remoteMessage);
-                WritableMap params = Arguments.createMap();
-                if (remoteMessage.getData().size() != 0) {
-                    WritableMap dataMap = Arguments.createMap();
-                    Map<String, String> data = remoteMessage.getData();
-                    //Set<String> keysIterator = data.keySet();
-                    for (String key : data.keySet()) {
-                        dataMap.putString(key, data.get(key));
-                    }
-                    params.putMap("data", dataMap);
-                } else {
-                    params.putNull("data");
-                }
-                if (remoteMessage.getNotification() != null) {
-                    WritableMap notificationMap = Arguments.createMap();
-                    RemoteMessage.Notification notification = remoteMessage.getNotification();
-                    notificationMap.putString("title", notification.getTitle());
-                    notificationMap.putString("body", notification.getBody());
-                    notificationMap.putString("icon", notification.getIcon());
-                    notificationMap.putString("sound", notification.getSound());
-                    notificationMap.putString("tag", notification.getTag());
-                    params.putMap("notification", notificationMap);
-                } else {
-                    params.putNull("notification");
-                }
-                ReactContext ctx = getReactApplicationContext();
-                Utils.sendEvent(ctx, EVENT_NAME_NOTIFICATION, params);
-            }
-        }, mReceiveNotificationIntentFilter);
-    }
-
-    @ReactMethod
-    public void send(String senderId, String messageId, String messageType, ReadableMap params, final Callback callback) {
-        FirebaseMessaging fm = FirebaseMessaging.getInstance();
-        RemoteMessage.Builder remoteMessage = new RemoteMessage.Builder(senderId);
-        remoteMessage.setMessageId(messageId);
-        remoteMessage.setMessageType(messageType);
-        ReadableMapKeySetIterator iterator = params.keySetIterator();
-        while (iterator.hasNextKey()) {
-            String key = iterator.nextKey();
-            ReadableType type = params.getType(key);
-            if (type == ReadableType.String) {
-                remoteMessage.addData(key, params.getString(key));
-                Log.d(TAG, "Firebase send: " + key);
-                Log.d(TAG, "Firebase send: " + params.getString(key));
-            }
-        }
-        try {
-            fm.send(remoteMessage.build());
-            WritableMap res = Arguments.createMap();
-            res.putString("status", "success");
-            callback.invoke(null, res);
-        } catch(Exception e) {
-            Log.e(TAG, "Error sending message", e);
-            WritableMap error = Arguments.createMap();
-            error.putString("code", e.toString());
-            error.putString("message", e.toString());
-            callback.invoke(error);
-        }
-    }
-
-    private void initSendHandler() {
-        getReactApplicationContext().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                WritableMap params = Arguments.createMap();
-                if (intent.getBooleanExtra("hasError", false)) {
-                    WritableMap error = Arguments.createMap();
-                    error.putInt("code", intent.getIntExtra("errCode", 0));
-                    error.putString("message", intent.getStringExtra("errorMessage"));
-                    params.putMap("err", error);
-                } else {
-                    params.putNull("err");
-                }
-                ReactContext ctx = getReactApplicationContext();
-                Utils.sendEvent(ctx, EVENT_NAME_SEND, params);
-            }
-        }, mReceiveSendIntentFilter);
-    }
+        ReactContext ctx = getReactApplicationContext();
+        Utils.sendEvent(ctx, EVENT_NAME_SEND, params);
+      }
+    }, mReceiveSendIntentFilter);
+  }
 }
