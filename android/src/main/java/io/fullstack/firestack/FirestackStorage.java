@@ -43,7 +43,7 @@ import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 
-class FirestackStorageModule extends ReactContextBaseJavaModule {
+class FirestackStorage extends ReactContextBaseJavaModule {
 
   private static final String TAG = "FirestackStorage";
   private static final String DocumentDirectoryPath = "DOCUMENT_DIRECTORY_PATH";
@@ -53,6 +53,7 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
   private static final String TemporaryDirectoryPath = "TEMPORARY_DIRECTORY_PATH";
   private static final String CachesDirectoryPath = "CACHES_DIRECTORY_PATH";
   private static final String DocumentDirectory = "DOCUMENT_DIRECTORY_PATH";
+  private static final String BundlePath = "MAIN_BUNDLE_PATH";
 
   private static final String FileTypeRegular = "FILETYPE_REGULAR";
   private static final String FileTypeDirectory = "FILETYPE_DIRECTORY";
@@ -62,8 +63,10 @@ class FirestackStorageModule extends ReactContextBaseJavaModule {
   private ReactContext mReactContext;
   private FirebaseApp app;
 
-  public FirestackStorageModule(ReactApplicationContext reactContext) {
+  public FirestackStorage(ReactApplicationContext reactContext) {
     super(reactContext);
+
+    Log.d(TAG, "Attaching FirestackStorage");
     this.context = reactContext;
     mReactContext = reactContext;
 
@@ -279,6 +282,7 @@ Log.i(TAG, "From file: " + filepath + " to " + urlStr + " with name " + name);
     constants.put(CachesDirectoryPath, this.getReactApplicationContext().getCacheDir().getAbsolutePath());
     constants.put(FileTypeRegular, 0);
     constants.put(FileTypeDirectory, 1);
+    constants.put(BundlePath, null);
 
     File externalStorageDirectory = Environment.getExternalStorageDirectory();
     if (externalStorageDirectory != null) {

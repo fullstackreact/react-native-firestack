@@ -29,8 +29,8 @@ public class FirestackPackage implements ReactPackage {
         modules.add(new FirestackAuthModule(reactContext));
         modules.add(new FirestackDatabaseModule(reactContext));
         modules.add(new FirestackAnalyticsModule(reactContext));
-        modules.add(new FirestackStorageModule(reactContext));
-        modules.add(new FirestackCloudMessaging(reactContext));
+        modules.add(new FirestackStorage(reactContext));
+        // modules.add(new FirestackCloudMessaging(reactContext));
         return modules;
     }
 
