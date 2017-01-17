@@ -29,6 +29,8 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.auth.EmailAuthProvider;
+
 
 import io.fullstack.firestack.Utils;
 
@@ -51,7 +53,7 @@ public class FirestackAuth extends ReactContextBaseJavaModule {
     mReactContext = reactContext;
     mAuth = FirebaseAuth.getInstance();
 
-   Log.d(TAG, "New FirestackAuth instance");
+    Log.d(TAG, "New FirestackAuth instance");
   }
 
   @Override
@@ -164,6 +166,43 @@ public class FirestackAuth extends ReactContextBaseJavaModule {
     } else
       // TODO
       Utils.todoNote(TAG, "signInWithProvider", callback);
+  }
+
+  @ReactMethod
+  public void linkPassword(final String email, final String password, final Callback callback) {
+    FirebaseUser user = mAuth.getCurrentUser();
+
+    if (user != null) {
+      AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+      user
+          .linkWithCredential(credential)
+          .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+              try {
+                if (task.isSuccessful()) {
+                  Log.d(TAG, "user linked with password credential");
+                  userCallback(mAuth.getCurrentUser(), callback);
+                } else {
+                  userErrorCallback(task, callback);
+                }
+              } catch (Exception ex) {
+                userExceptionCallback(ex, callback);
+              }
+            }
+          });
+    } else {
+      callbackNoUser(callback, true);
+    }
+  }
+
+  @ReactMethod
+  public void link(final String provider, final String authToken, final String authSecret, final Callback callback) {
+    if (provider.equals("password")) {
+      linkPassword(authToken, authSecret, callback);
+    } else
+      // TODO other providers
+      Utils.todoNote(TAG, "linkWithProvider", callback);
   }
 
   @ReactMethod
@@ -514,7 +553,7 @@ public class FirestackAuth extends ReactContextBaseJavaModule {
 
   private void userErrorCallback(Task task, final Callback onFail) {
     WritableMap error = Arguments.createMap();
-    error.putString("code", ((FirebaseAuthException)task.getException()).getErrorCode());
+    error.putString("code", ((FirebaseAuthException) task.getException()).getErrorCode());
     error.putString("message", task.getException().getMessage());
     onFail.invoke(error);
   }
