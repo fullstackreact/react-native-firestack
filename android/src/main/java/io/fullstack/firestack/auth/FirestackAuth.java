@@ -25,6 +25,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GetTokenResult;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -513,19 +514,15 @@ public class FirestackAuth extends ReactContextBaseJavaModule {
 
   private void userErrorCallback(Task task, final Callback onFail) {
     WritableMap error = Arguments.createMap();
-    error.putInt("errorCode", task.getException().hashCode());
-    error.putString("errorMessage", task.getException().getMessage());
-    error.putString("allErrorMessage", task.getException().toString());
-
+    error.putString("code", ((FirebaseAuthException)task.getException()).getErrorCode());
+    error.putString("message", task.getException().getMessage());
     onFail.invoke(error);
   }
 
   private void userExceptionCallback(Exception ex, final Callback onFail) {
     WritableMap error = Arguments.createMap();
-    error.putInt("errorCode", ex.hashCode());
-    error.putString("errorMessage", ex.getMessage());
-    error.putString("allErrorMessage", ex.toString());
-
+    error.putInt("code", ex.hashCode());
+    error.putString("message", ex.getMessage());
     onFail.invoke(error);
   }
 
