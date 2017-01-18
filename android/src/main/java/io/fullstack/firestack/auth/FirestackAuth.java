@@ -476,8 +476,31 @@ public class FirestackAuth extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
+  public void reloadUser(final Callback callback) {
+    FirebaseUser user = mAuth.getCurrentUser();
+
+    if (user == null) {
+      callbackNoUser(callback, false);
+    } else {
+      user.reload()
+          .addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+              if (task.isSuccessful()) {
+                Log.d(TAG, "user reloaded");
+                userCallback(mAuth.getCurrentUser(), callback);
+              } else {
+                userErrorCallback(task, callback);
+              }
+            }
+          });
+    }
+  }
+
+  @ReactMethod
   public void getCurrentUser(final Callback callback) {
     FirebaseUser user = mAuth.getCurrentUser();
+
     if (user == null) {
       callbackNoUser(callback, false);
     } else {
