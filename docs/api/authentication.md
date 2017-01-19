@@ -227,7 +227,7 @@ Refreshes the current user.
 
 ```javascript
 firestack.auth().currentUser
-  .getToken()
+  .reload()
   .then((user) => {})
   .catch();
 ```
