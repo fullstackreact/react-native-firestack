@@ -58,7 +58,9 @@
         };
         id errorBlock = ^(NSError * _Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
-            [self getAndSendDatabaseError:error withPath: _path];
+            [self getAndSendDatabaseError:error
+                                     path:_path
+                          modifiersString:_modifiersString];
         };
         int eventType = [self eventTypeFromName:eventName];
         FIRDatabaseHandle handle = [_query observeEventType:eventType
@@ -158,11 +160,13 @@
 }
 
 - (NSDictionary *) getAndSendDatabaseError:(NSError *) error
-                                  withPath:(NSString *) path
+                                      path:(NSString *) path
+                           modifiersString:(NSString *) modifiersString
 {
     NSDictionary *evt = @{
                           @"eventName": DATABASE_ERROR_EVENT,
                           @"path": path,
+                          @"modifiersString": modifiersString,
                           @"msg": [error debugDescription]
                           };
     [self sendJSEvent:DATABASE_ERROR_EVENT title:DATABASE_ERROR_EVENT props: evt];

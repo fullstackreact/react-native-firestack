@@ -68,7 +68,7 @@ public class FirestackDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
-          handleDatabaseError(eventName, error);
+          handleDatabaseError(error);
         }
       };
       mQuery.addChildEventListener(mEventListener);
@@ -90,7 +90,7 @@ public class FirestackDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
-          handleDatabaseError("value", error);
+          handleDatabaseError(error);
         }
       };
       mQuery.addValueEventListener(mValueListener);
@@ -162,22 +162,22 @@ public class FirestackDatabaseReference {
     WritableMap data = Utils.dataSnapshotToMap(name, mPath, mModifiersString, dataSnapshot);
     WritableMap evt = Arguments.createMap();
     evt.putString("eventName", name);
-    evt.putString("path", mPath);
-    evt.putString("modifiersString", mModifiersString);
     evt.putMap("body", data);
 
     Utils.sendEvent(mReactContext, "database_event", evt);
   }
 
-  private void handleDatabaseError(final String name, final DatabaseError error) {
+  private void handleDatabaseError(final DatabaseError error) {
     WritableMap err = Arguments.createMap();
+    err.putString("eventName", "database_error");
+    err.putString("path", mPath);
+    err.putString("modifiersString", mModifiersString);
     err.putInt("errorCode", error.getCode());
     err.putString("errorDetails", error.getDetails());
-    err.putString("description", error.getMessage());
+    err.putString("msg", error.getMessage());
 
     WritableMap evt  = Arguments.createMap();
-    evt.putString("eventName", name);
-    evt.putString("path", mPath);
+    evt.putString("eventName", "database_error");
     evt.putMap("body", err);
 
     Utils.sendEvent(mReactContext, "database_error", evt);
