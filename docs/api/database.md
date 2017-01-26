@@ -36,6 +36,14 @@ firestack.database()
 ```
 Useful for `orderByPriority` queries.
 
+
+Transaction Support:
+```javascript
+firestack.database()
+  .ref('posts/1234/title')
+  .transaction((title) => 'My Awesome Post');
+```
+
 ## Unmounted components
 
 Listening to database updates on unmounted components will trigger a warning:
