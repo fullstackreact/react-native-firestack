@@ -100,7 +100,7 @@ Sign in the user with a 3rd party credential provider. `credential` requires the
 
 ```javascript
 const credential = {
-  provider: 'facebook.com', 
+  provider: 'facebook', 
   token: '12345', 
   secret: '6789', 
 };
@@ -227,7 +227,7 @@ Refreshes the current user.
 
 ```javascript
 firestack.auth().currentUser
-  .getToken()
+  .reload()
   .then((user) => {})
   .catch();
 ```

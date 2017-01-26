@@ -1,22 +1,20 @@
 package io.fullstack.firestack;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.HashMap;
 
 import android.util.Log;
 import android.content.Context;
 import android.support.annotation.Nullable;
 
+import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
-import com.facebook.react.bridge.ReactMethod;
-import com.facebook.react.bridge.Callback;
-import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.ReadableMap;
-import com.facebook.react.bridge.ReactContext;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
@@ -32,16 +30,10 @@ interface KeySetterFn {
 @SuppressWarnings("WeakerAccess")
 public class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
   private static final String TAG = "Firestack";
-  private Context context;
-  private ReactContext mReactContext;
   private FirebaseApp app;
 
-  public FirestackModule(ReactApplicationContext reactContext, Context context) {
+  public FirestackModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    this.context = context;
-    mReactContext = reactContext;
-
-    Log.d(TAG, "New instance");
   }
 
   @Override
@@ -69,7 +61,7 @@ public class FirestackModule extends ReactContextBaseJavaModule implements Lifec
     Log.i(TAG, "configureWithOptions");
 
     FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
-    FirebaseOptions defaultOptions = FirebaseOptions.fromResource(this.context);
+    FirebaseOptions defaultOptions = FirebaseOptions.fromResource(getReactApplicationContext().getBaseContext());
 
     if (defaultOptions == null) {
       defaultOptions = new FirebaseOptions.Builder().build();
@@ -154,7 +146,7 @@ public class FirestackModule extends ReactContextBaseJavaModule implements Lifec
     try {
       Log.i(TAG, "Configuring app");
       if (app == null) {
-        app = FirebaseApp.initializeApp(this.context, builder.build());
+        app = FirebaseApp.initializeApp(getReactApplicationContext().getBaseContext(), builder.build());
       }
       Log.i(TAG, "Configured");
 
@@ -189,14 +181,14 @@ public class FirestackModule extends ReactContextBaseJavaModule implements Lifec
   public void onHostResume() {
     WritableMap params = Arguments.createMap();
     params.putBoolean("isForground", true);
-    Utils.sendEvent(mReactContext, "FirestackAppState", params);
+    Utils.sendEvent(getReactApplicationContext(), "FirestackAppState", params);
   }
 
   @Override
   public void onHostPause() {
     WritableMap params = Arguments.createMap();
     params.putBoolean("isForground", false);
-    Utils.sendEvent(mReactContext, "FirestackAppState", params);
+    Utils.sendEvent(getReactApplicationContext(), "FirestackAppState", params);
   }
 
   @Override
@@ -208,6 +200,8 @@ public class FirestackModule extends ReactContextBaseJavaModule implements Lifec
   public Map<String, Object> getConstants() {
     final Map<String, Object> constants = new HashMap<>();
     constants.put("googleApiAvailability", getPlayServicesStatus());
+
+    // TODO remove once this has been moved on ios
     constants.put("serverValueTimestamp", ServerValue.TIMESTAMP);
     return constants;
   }

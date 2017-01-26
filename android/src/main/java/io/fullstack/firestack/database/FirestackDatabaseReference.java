@@ -1,8 +1,10 @@
 package io.fullstack.firestack.database;
 
+import java.util.HashSet;
 import java.util.List;
 import android.util.Log;
 import java.util.ListIterator;
+import java.util.Set;
 
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.Arguments;
@@ -28,6 +30,7 @@ public class FirestackDatabaseReference {
   private ChildEventListener mEventListener;
   private ValueEventListener mValueListener;
   private ReactContext mReactContext;
+  private Set<String> childEventListeners = new HashSet<>();
 
   public FirestackDatabaseReference(final ReactContext context,
                                     final FirebaseDatabase firebaseDatabase,
@@ -40,7 +43,7 @@ public class FirestackDatabaseReference {
     mQuery = this.buildDatabaseQueryAtPathAndModifiers(firebaseDatabase, path, modifiersArray);
   }
 
-  public void addChildEventListener(final String name) {
+  public void addChildEventListener(final String eventName) {
     if (mEventListener == null) {
       mEventListener = new ChildEventListener() {
         @Override
@@ -65,7 +68,7 @@ public class FirestackDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
-          handleDatabaseError(name, error);
+          handleDatabaseError(error);
         }
       };
       mQuery.addChildEventListener(mEventListener);
@@ -73,6 +76,8 @@ public class FirestackDatabaseReference {
     } else {
       Log.w(TAG, "Trying to add duplicate ChildEventListener for path: " + mPath + " with modifiers: "+ mModifiersString);
     }
+    //Keep track of the events that the JS is interested in knowing about
+    childEventListeners.add(eventName);
   }
 
   public void addValueEventListener() {
@@ -85,7 +90,7 @@ public class FirestackDatabaseReference {
 
         @Override
         public void onCancelled(DatabaseError error) {
-          handleDatabaseError("value", error);
+          handleDatabaseError(error);
         }
       };
       mQuery.addValueEventListener(mValueListener);
@@ -117,8 +122,24 @@ public class FirestackDatabaseReference {
     Log.d(TAG, "Added OnceValueEventListener for path: " + mPath + " with modifiers " + mModifiersString);
   }
 
+  public void removeEventListener(String eventName) {
+    if ("value".equals(eventName)) {
+      this.removeValueEventListener();
+    } else {
+      childEventListeners.remove(eventName);
+      if (childEventListeners.isEmpty()) {
+        this.removeChildEventListener();
+      }
+    }
+  }
+
+  public boolean hasListeners() {
+    return mEventListener != null || mValueListener != null;
+  }
+
   public void cleanup() {
     Log.d(TAG, "cleaning up database reference " + this);
+    childEventListeners.clear();
     this.removeChildEventListener();
     this.removeValueEventListener();
   }
@@ -141,22 +162,22 @@ public class FirestackDatabaseReference {
     WritableMap data = Utils.dataSnapshotToMap(name, mPath, mModifiersString, dataSnapshot);
     WritableMap evt = Arguments.createMap();
     evt.putString("eventName", name);
-    evt.putString("path", mPath);
-    evt.putString("modifiersString", mModifiersString);
     evt.putMap("body", data);
 
     Utils.sendEvent(mReactContext, "database_event", evt);
   }
 
-  private void handleDatabaseError(final String name, final DatabaseError error) {
+  private void handleDatabaseError(final DatabaseError error) {
     WritableMap err = Arguments.createMap();
+    err.putString("eventName", "database_error");
+    err.putString("path", mPath);
+    err.putString("modifiersString", mModifiersString);
     err.putInt("errorCode", error.getCode());
     err.putString("errorDetails", error.getDetails());
-    err.putString("description", error.getMessage());
+    err.putString("msg", error.getMessage());
 
     WritableMap evt  = Arguments.createMap();
-    evt.putString("eventName", name);
-    evt.putString("path", mPath);
+    evt.putString("eventName", "database_error");
     evt.putMap("body", err);
 
     Utils.sendEvent(mReactContext, "database_error", evt);
@@ -272,5 +293,4 @@ public class FirestackDatabaseReference {
 
     return query;
   }
-
 }

@@ -10,14 +10,16 @@
 #define FirestackDatabase_h
 
 #import "Firebase.h"
-#import "RCTEventEmitter.h"
-#import "RCTBridgeModule.h"
+#import <React/RCTEventEmitter.h>
+#import <React/RCTBridgeModule.h>
 
 @interface FirestackDatabase : RCTEventEmitter <RCTBridgeModule> {
 
 }
 
 @property NSMutableDictionary *dbReferences;
+@property NSMutableDictionary *transactions;
+@property dispatch_queue_t transactionQueue;
 
 @end
 

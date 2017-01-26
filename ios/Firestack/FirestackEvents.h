@@ -29,6 +29,7 @@ static NSString *const DEBUG_EVENT = @"debug";
 // Database
 static NSString *const DATABASE_DATA_EVENT = @"database_event";
 static NSString *const DATABASE_ERROR_EVENT = @"database_error";
+static NSString *const DATABASE_TRANSACTION_EVENT = @"database_transaction_update";
 
 static NSString *const DATABASE_VALUE_EVENT = @"value";
 static NSString *const DATABASE_CHILD_ADDED_EVENT = @"child_added";
@@ -37,12 +38,14 @@ static NSString *const DATABASE_CHILD_REMOVED_EVENT = @"child_removed";
 static NSString *const DATABASE_CHILD_MOVED_EVENT = @"child_moved";
 
 // Storage
-static NSString *const STORAGE_UPLOAD_PROGRESS = @"upload_progress";
-static NSString *const STORAGE_UPLOAD_PAUSED = @"upload_paused";
-static NSString *const STORAGE_UPLOAD_RESUMED = @"upload_resumed";
-static NSString *const STORAGE_DOWNLOAD_PROGRESS = @"download_progress";
-static NSString *const STORAGE_DOWNLOAD_PAUSED = @"download_paused";
-static NSString *const STORAGE_DOWNLOAD_RESUMED = @"download_resumed";
+static NSString *const STORAGE_EVENT = @"storage_event";
+static NSString *const STORAGE_ERROR = @"storage_error";
+
+static NSString *const STORAGE_STATE_CHANGED = @"state_changed";
+static NSString *const STORAGE_UPLOAD_SUCCESS = @"upload_success";
+static NSString *const STORAGE_UPLOAD_FAILURE = @"upload_failure";
+static NSString *const STORAGE_DOWNLOAD_SUCCESS = @"download_success";
+static NSString *const STORAGE_DOWNLOAD_FAILURE = @"download_failure";
 
 // Messaging
 static NSString *const MESSAGING_SUBSYSTEM_EVENT = @"messaging_event";

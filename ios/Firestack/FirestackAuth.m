@@ -314,7 +314,7 @@ RCT_EXPORT_METHOD(getToken:(RCTResponseSenderBlock) callback)
             if (error) {
                 [self userErrorCallback:callback error:error user:user msg:@"getTokenError"];
             } else {
-                [self userCallback:callback user:user];
+                callback(@[[NSNull null], token]);
             }
         }];
     } else {
@@ -331,7 +331,7 @@ RCT_EXPORT_METHOD(getTokenWithCompletion:(RCTResponseSenderBlock) callback)
             if (error) {
                 [self userErrorCallback:callback error:error user:user msg:@"getTokenWithCompletion"];
             } else {
-                [self userCallback:callback user:user];
+                callback(@[[NSNull null], token]);
             }
         }];
     } else {
