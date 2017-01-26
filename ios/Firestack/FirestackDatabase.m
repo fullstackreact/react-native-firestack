@@ -44,6 +44,12 @@
   return self;
 }
 
+- (NSString *) absPath:(FIRDatabaseReference *) ref {
+    NSString *url = ref.URL;
+    NSString *rooturl = ref.root.URL;
+    return [[url substringFromIndex:rooturl.length] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+}
+
 - (void) addEventHandler:(NSString *) eventName
 {
     if (![self isListeningTo:eventName]) {
@@ -53,14 +59,17 @@
                         title:eventName
                         props: @{
                                  @"eventName": eventName,
-                                 @"path": _path,
+                                 @"path": [self absPath:[snapshot ref]],
                                  @"modifiersString": _modifiersString,
-                                 @"snapshot": props
+                                 @"snapshot": props,
+                                 @"handlePath": _path
                                  }];
         };
         id errorBlock = ^(NSError * _Nonnull error) {
             NSLog(@"Error onDBEvent: %@", [error debugDescription]);
-            [self getAndSendDatabaseError:error withPath: _path];
+            [self getAndSendDatabaseError:error
+                                     path:_path
+                          modifiersString:_modifiersString];
         };
         int eventType = [self eventTypeFromName:eventName];
         FIRDatabaseHandle handle = [_query observeEventType:eventType
@@ -73,13 +82,15 @@
 }
 
 - (void) addSingleEventHandler:(RCTResponseSenderBlock) callback
+                        ofType:(NSString *) type
 {
-    [_query observeSingleEventOfType:FIRDataEventTypeValue
+    int eventType = [self eventTypeFromName:type];
+    [_query observeSingleEventOfType:eventType
                            withBlock:^(FIRDataSnapshot * _Nonnull snapshot) {
                                NSDictionary *props = [FirestackDBReference snapshotToDict:snapshot];
                                callback(@[[NSNull null], @{
-                                              @"eventName": @"value",
-                                              @"path": _path,
+                                              @"eventName": type,
+                                              @"path": [self absPath:[snapshot ref]],
                                               @"modifiersString": _modifiersString,
                                               @"snapshot": props
                                               }]);
@@ -160,11 +171,13 @@
 }
 
 - (NSDictionary *) getAndSendDatabaseError:(NSError *) error
-                                  withPath:(NSString *) path
+                                      path:(NSString *) path
+                           modifiersString:(NSString *) modifiersString
 {
     NSDictionary *evt = @{
                           @"eventName": DATABASE_ERROR_EVENT,
                           @"path": path,
+                          @"modifiersString": modifiersString,
                           @"msg": [error debugDescription]
                           };
     [self sendJSEvent:DATABASE_ERROR_EVENT title:DATABASE_ERROR_EVENT props: evt];
@@ -571,7 +584,7 @@ RCT_EXPORT_METHOD(onOnce:(NSString *) path
                 callback:(RCTResponseSenderBlock) callback)
 {
     FirestackDBReference *ref = [self getDBHandle:path modifiers:modifiers modifiersString:modifiersString];
-    [ref addSingleEventHandler:callback];
+    [ref addSingleEventHandler:callback ofType:name];
 }
 
 RCT_EXPORT_METHOD(off:(NSString *)path
