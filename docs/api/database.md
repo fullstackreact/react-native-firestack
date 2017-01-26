@@ -25,6 +25,15 @@ firestack.database()
   });
 ```
 
+Test value exists at location:
+```javascript
+firestack.database()
+  .ref('posts/1234')
+  .on('value', (snapshot) => {
+    const exists = snapshot.exists();
+  });
+```
+
 Basic write with priority example:
 ```javascript
 firestack.database()
