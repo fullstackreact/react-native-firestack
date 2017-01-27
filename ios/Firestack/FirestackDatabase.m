@@ -491,8 +491,11 @@ RCT_EXPORT_METHOD(off:(NSString *)path
                   callback:(RCTResponseSenderBlock) callback)
 {
     NSString *key = [self getDBListenerKey:path withModifiers:modifiersString];
+    NSArray *listenerKeys;
     FirestackDBReference *ref = [_dbReferences objectForKey:key];
-    if (ref != nil) {
+    if (ref == nil) {
+        listenerKeys = @[];
+    } else {
         if (eventName == nil || [eventName isEqualToString:@""]) {
             [ref cleanup];
             [_dbReferences removeObjectForKey:key];
@@ -502,12 +505,13 @@ RCT_EXPORT_METHOD(off:(NSString *)path
                 [_dbReferences removeObjectForKey:key];
             }
         }
+        listenerKeys = [ref listenerKeys];
     }
     callback(@[[NSNull null], @{
                    @"result": @"success",
                    @"handle": path,
                    @"modifiersString": modifiersString,
-                   @"remainingListeners": [ref listenerKeys],
+                   @"remainingListeners": listenerKeys,
                    }]);
 }
 
