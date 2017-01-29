@@ -13,28 +13,7 @@
 #endif
 #import "FirestackCloudMessaging.h"
 #import "FirestackEvents.h"
-#import "RCTConvert.h"
-
-// https://github.com/facebook/react-native/blob/master/Libraries/PushNotificationIOS/RCTPushNotificationManager.m
-@implementation RCTConvert (UILocalNotification)
-
-+ (UILocalNotification *)UILocalNotification:(id)json
-{
-  NSDictionary<NSString *, id> *details = [self NSDictionary:json];
-  UILocalNotification *notification = [UILocalNotification new];
-  notification.fireDate = [RCTConvert NSDate:details[@"fireDate"]] ?: [NSDate date];
-  notification.alertBody = [RCTConvert NSString:details[@"alertBody"]];
-  notification.alertAction = [RCTConvert NSString:details[@"alertAction"]];
-  notification.soundName = [RCTConvert NSString:details[@"soundName"]] ?: UILocalNotificationDefaultSoundName;
-  notification.userInfo = [RCTConvert NSDictionary:details[@"userInfo"]];
-  notification.category = [RCTConvert NSString:details[@"category"]];
-  if (details[@"applicationIconBadgeNumber"]) {
-    notification.applicationIconBadgeNumber = [RCTConvert NSInteger:details[@"applicationIconBadgeNumber"]];
-  }
-  return notification;
-}
-
-@end
+// #import "RCTConvert.h"
 
 @implementation FirestackCloudMessaging
 
@@ -89,34 +68,39 @@ static NSDictionary *RCTFormatLocalNotification(UILocalNotification *notificatio
     selector:@selector(handleTokenRefresh)
     name:kFIRInstanceIDTokenRefreshNotification
     object: nil];
-
-  if (SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(@"9.0")) {
-  UIUserNotificationType allNotificationTypes =
-  (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
-  UIUserNotificationSettings *settings =
-  [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
-  [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
-} else {
-  // iOS 10 or later
-  #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
-  UNAuthorizationOptions authOptions =
-      UNAuthorizationOptionAlert
-      | UNAuthorizationOptionSound
-      | UNAuthorizationOptionBadge;
-  [[UNUserNotificationCenter currentNotificationCenter]
-      requestAuthorizationWithOptions:authOptions
-      completionHandler:^(BOOL granted, NSError * _Nullable error) {
-      }
-   ];
-
-  // For iOS 10 display notification (sent via APNS)
-  [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
-  // For iOS 10 data message (sent via FCM)
-  [[FIRMessaging messaging] setRemoteMessageDelegate:self];
-  #endif
 }
 
-[[UIApplication sharedApplication] registerForRemoteNotifications];
+#pragma mark Request permissions
+- (void) requestPermissions:(NSDictionary *)requestedPermissions
+          callback:(RCTResponseSenderBlock) callback
+{
+  if (SYSTEM_VERSION_LESS_THAN_OR_EQUAL_TO(@"9.0")) {
+    UIUserNotificationType allNotificationTypes =
+      (UIUserNotificationTypeSound | UIUserNotificationTypeAlert | UIUserNotificationTypeBadge);
+    UIUserNotificationSettings *settings =
+    [UIUserNotificationSettings settingsForTypes:allNotificationTypes categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+  } else {
+    // iOS 10 or later
+    #if defined(__IPHONE_10_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_10_0
+    UNAuthorizationOptions authOptions =
+        UNAuthorizationOptionAlert
+        | UNAuthorizationOptionSound
+        | UNAuthorizationOptionBadge;
+    [[UNUserNotificationCenter currentNotificationCenter]
+        requestAuthorizationWithOptions:authOptions
+        completionHandler:^(BOOL granted, NSError * _Nullable error) {
+        }
+    ];
+
+    // For iOS 10 display notification (sent via APNS)
+    [[UNUserNotificationCenter currentNotificationCenter] setDelegate:self];
+    // For iOS 10 data message (sent via FCM)
+    [[FIRMessaging messaging] setRemoteMessageDelegate:self];
+    #endif
+  }
+
+  [[UIApplication sharedApplication] registerForRemoteNotifications];
 }
 
 #pragma mark callbacks

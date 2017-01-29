@@ -9,7 +9,7 @@
 #ifndef FirestackErrors_h
 #define FirestackErrors_h
 
-#import "RCTBridgeModule.h"
+#import <React/RCTBridgeModule.h>
 #import "Firebase.h"
 
 @interface FirestackErrors : NSObject <RCTBridgeModule> {
