@@ -20,6 +20,7 @@ import com.google.firebase.database.OnDisconnect;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 
 
 import io.fullstack.firestack.Utils;
@@ -170,14 +171,14 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
   public void on(final String path,
                  final String modifiersString,
                  final ReadableArray modifiersArray,
-                 final String name,
+                 final String eventName,
                  final Callback callback) {
     FirestackDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
 
-    if (name.equals("value")) {
+    if (eventName.equals("value")) {
       ref.addValueEventListener();
     } else {
-      ref.addChildEventListener(name);
+      ref.addChildEventListener(eventName);
     }
 
     WritableMap resp = Arguments.createMap();
@@ -190,7 +191,7 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
   public void onOnce(final String path,
                      final String modifiersString,
                      final ReadableArray modifiersArray,
-                     final String name,
+                     final String eventName,
                      final Callback callback) {
     FirestackDatabaseReference ref = this.getDBHandle(path, modifiersArray, modifiersString);
     ref.addOnceValueEventListener(callback);
@@ -206,22 +207,21 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
   public void off(
           final String path,
           final String modifiersString,
-          final String name,
+          final String eventName,
           final Callback callback) {
 
     String key = this.getDBListenerKey(path, modifiersString);
     FirestackDatabaseReference r = mDBListeners.get(key);
 
     if (r != null) {
-      if (name == null || "".equals(name)) {
+      if (eventName == null || "".equals(eventName)) {
         r.cleanup();
         mDBListeners.remove(key);
       } else {
-        //TODO: Remove individual listeners as per iOS code
-        //1) Remove event handler
-        //2) If no more listeners, remove from listeners map
-        r.cleanup();
-        mDBListeners.remove(key);
+        r.removeEventListener(eventName);
+        if (!r.hasListeners()) {
+          mDBListeners.remove(key);
+        } ;
       }
     }
 
@@ -332,5 +332,12 @@ public class FirestackDatabase extends ReactContextBaseJavaModule {
 
   private String getDBListenerKey(String path, String modifiersString) {
     return path + " | " + modifiersString;
+  }
+
+  @Override
+  public Map<String, Object> getConstants() {
+    final Map<String, Object> constants = new HashMap<>();
+    constants.put("serverValueTimestamp", ServerValue.TIMESTAMP);
+    return constants;
   }
 }

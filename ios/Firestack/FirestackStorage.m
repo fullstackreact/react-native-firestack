@@ -21,109 +21,213 @@ RCT_EXPORT_MODULE(FirestackStorage);
   return dispatch_queue_create("io.fullstack.firestack.storage", DISPATCH_QUEUE_SERIAL);
 }
 
-RCT_EXPORT_METHOD(downloadUrl: (NSString *) remotePath
-    callback:(RCTResponseSenderBlock) callback)
+RCT_EXPORT_METHOD(delete: (NSString *) path
+                  callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *fileRef = [[FIRStorage storage] referenceWithPath:remotePath];
+    
+    FIRStorageReference *fileRef = [self getReference:path];
+    [fileRef deleteWithCompletion:^(NSError * _Nullable error) {
+        if (error == nil) {
+            NSDictionary *resp = @{
+                                   @"status": @"success",
+                                   @"path": path
+                                   };
+            callback(@[[NSNull null], resp]);
+        } else {
+            NSDictionary *evt = @{
+                                  @"status": @"error",
+                                  @"path": path,
+                                  @"message": [error debugDescription]
+                                  };
+            callback(@[evt]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(getDownloadURL: (NSString *) path
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRStorageReference *fileRef = [self getReference:path];
     [fileRef downloadURLWithCompletion:^(NSURL * _Nullable URL, NSError * _Nullable error) {
         if (error != nil) {
             NSDictionary *evt = @{
                                   @"status": @"error",
-                                  @"path": remotePath,
-                                  @"msg": [error debugDescription]
+                                  @"path": path,
+                                  @"message": [error debugDescription]
                                   };
             callback(@[evt]);
         } else {
-            NSDictionary *resp = @{
-                                   @"status": @"success",
-                                   @"url": [URL absoluteString],
-                                   @"path": [URL path]
-                                   };
+            callback(@[[NSNull null], [URL absoluteString]]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(getMetadata: (NSString *) path
+                    callback:(RCTResponseSenderBlock) callback)
+{
+    FIRStorageReference *fileRef = [self getReference:path];
+    [fileRef metadataWithCompletion:^(FIRStorageMetadata * _Nullable metadata, NSError * _Nullable error) {
+        if (error != nil) {
+            NSDictionary *evt = @{
+                                  @"status": @"error",
+                                  @"path": path,
+                                  @"message": [error debugDescription]
+                                  };
+            callback(@[evt]);
+        } else {
+            NSDictionary *resp = [metadata dictionaryRepresentation];
             callback(@[[NSNull null], resp]);
         }
     }];
 }
 
-RCT_EXPORT_METHOD(uploadFile: (NSString *) remotePath
-                  path:(NSString *)path
+RCT_EXPORT_METHOD(updateMetadata: (NSString *) path
+                        metadata:(NSDictionary *) metadata
+                        callback:(RCTResponseSenderBlock) callback)
+{
+    FIRStorageReference *fileRef = [self getReference:path];
+    FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
+    [fileRef updateMetadata:firmetadata completion:^(FIRStorageMetadata * _Nullable metadata, NSError * _Nullable error) {
+        if (error != nil) {
+            NSDictionary *evt = @{
+                                  @"status": @"error",
+                                  @"path": path,
+                                  @"message": [error debugDescription]
+                                  };
+            callback(@[evt]);
+        } else {
+            NSDictionary *resp = [metadata dictionaryRepresentation];
+            callback(@[[NSNull null], resp]);
+        }
+    }];
+}
+
+RCT_EXPORT_METHOD(downloadFile: (NSString *) path
+                  localPath:(NSString *) localPath
+                  callback:(RCTResponseSenderBlock) callback)
+{
+    FIRStorageReference *fileRef = [self getReference:path];
+    NSURL *localFile = [NSURL fileURLWithPath:localPath];
+    
+    FIRStorageDownloadTask *downloadTask = [fileRef writeToFile:localFile];
+    // Listen for state changes, errors, and completion of the download.
+    [downloadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
+        // Download resumed, also fires when the upload starts
+        NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+    }];
+    
+    [downloadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
+        // Download paused
+        NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+    }];
+    [downloadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
+        // Download reported progress
+        NSDictionary *event = [self getDownloadTaskAsDictionary:snapshot];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
+    }];
+    
+    [downloadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
+        // Download completed successfully
+        NSDictionary *resp = [self getDownloadTaskAsDictionary:snapshot];
+        
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_DOWNLOAD_SUCCESS props:resp];
+        callback(@[[NSNull null], resp]);
+    }];
+    
+    [downloadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
+        if (snapshot.error != nil) {
+            NSDictionary *errProps = [[NSMutableDictionary alloc] init];
+            NSLog(@"Error in download: %@", snapshot.error);
+            
+            switch (snapshot.error.code) {
+                case FIRStorageErrorCodeObjectNotFound:
+                    // File doesn't exist
+                    [errProps setValue:@"File does not exist" forKey:@"message"];
+                    break;
+                case FIRStorageErrorCodeUnauthorized:
+                    // User doesn't have permission to access file
+                    [errProps setValue:@"You do not have permissions" forKey:@"message"];
+                    break;
+                case FIRStorageErrorCodeCancelled:
+                    // User canceled the upload
+                    [errProps setValue:@"Download canceled" forKey:@"message"];
+                    break;
+                case FIRStorageErrorCodeUnknown:
+                    // Unknown error occurred, inspect the server response
+                    [errProps setValue:@"Unknown error" forKey:@"message"];
+                    break;
+            }
+            
+            //TODO: Error event
+            callback(@[errProps]);
+        }}];
+}
+
+
+RCT_EXPORT_METHOD(putFile:(NSString *) path
+                  localPath:(NSString *)localPath
                   metadata:(NSDictionary *)metadata
                   callback:(RCTResponseSenderBlock) callback)
 {
-    FIRStorageReference *uploadRef = [[FIRStorage storage] referenceWithPath:remotePath];
+    FIRStorageReference *fileRef = [self getReference:path];
     FIRStorageMetadata *firmetadata = [[FIRStorageMetadata alloc] initWithDictionary:metadata];
 
-    if ([path hasPrefix:@"assets-library://"]) {
-        NSURL *localFile = [[NSURL alloc] initWithString:path];
+    if ([localPath hasPrefix:@"assets-library://"]) {
+        NSURL *localFile = [[NSURL alloc] initWithString:localPath];
         PHFetchResult* assets = [PHAsset fetchAssetsWithALAssetURLs:@[localFile] options:nil];
         PHAsset *asset = [assets firstObject];
 
         [[PHImageManager defaultManager] requestImageDataForAsset:asset
-                                                    options:nil
+                                                          options:nil
                                                     resultHandler:^(NSData * imageData, NSString * dataUTI, UIImageOrientation orientation, NSDictionary * info) {
-                                                        FIRStorageUploadTask *uploadTask = [uploadRef putData:imageData
-                                                                                                     metadata:firmetadata];
+                                                        FIRStorageUploadTask *uploadTask = [fileRef putData:imageData
+                                                                                                   metadata:firmetadata];
                                                         [self addUploadObservers:uploadTask
+                                                                            path:path
                                                                         callback:callback];
                                                     }];
     } else {
-        NSURL *imageFile = [NSURL fileURLWithPath:path];
-        FIRStorageUploadTask *uploadTask = [uploadRef putFile:imageFile
-                                                     metadata:firmetadata];
+        NSURL *imageFile = [NSURL fileURLWithPath:localPath];
+        FIRStorageUploadTask *uploadTask = [fileRef putFile:imageFile
+                                                   metadata:firmetadata];
         
         [self addUploadObservers:uploadTask
+                            path:path
                         callback:callback];
     }
 
 }
 
 - (void) addUploadObservers:(FIRStorageUploadTask *) uploadTask
+                       path:(NSString *) path
                    callback:(RCTResponseSenderBlock) callback
 {
     // Listen for state changes, errors, and completion of the upload.
     [uploadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload resumed, also fires when the upload starts
-        [self sendJSEvent:STORAGE_UPLOAD_RESUMED props:@{
-                                                         @"eventName": STORAGE_UPLOAD_RESUMED,
-                                                         @"ref": snapshot.reference.bucket
-                                                         }];
+        NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload paused
-        [self sendJSEvent:STORAGE_UPLOAD_PAUSED props:@{
-                                                        @"eventName": STORAGE_UPLOAD_PAUSED,
-                                                        @"ref": snapshot.reference.bucket
-                                                        }];
+        NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
     [uploadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
         // Upload reported progress
-        float percentComplete;
-        if (snapshot.progress.totalUnitCount == 0) {
-            percentComplete = 0.0;
-        } else {
-            percentComplete = 100.0 * (snapshot.progress.completedUnitCount) / (snapshot.progress.totalUnitCount);
-        }
-
-        [self sendJSEvent:STORAGE_UPLOAD_PROGRESS props:@{
-                                                          @"eventName": STORAGE_UPLOAD_PROGRESS,
-                                                          @"progress": @(percentComplete)
-                                                          }];
-
+        NSDictionary *event = [self getUploadTaskAsDictionary:snapshot];
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_STATE_CHANGED props:event];
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
-        [uploadTask removeAllObservers];
-
         // Upload completed successfully
-        FIRStorageReference *ref = snapshot.reference;
-        NSDictionary *props = @{
-                                @"fullPath": ref.fullPath,
-                                @"bucket": ref.bucket,
-                                @"name": ref.name,
-                                @"metadata": [snapshot.metadata dictionaryRepresentation]
-                                };
-
-        callback(@[[NSNull null], props]);
+        NSDictionary *resp = [self getUploadTaskAsDictionary:snapshot];
+        
+        [self sendJSEvent:STORAGE_EVENT path:path title:STORAGE_UPLOAD_SUCCESS props:resp];
+        callback(@[[NSNull null], resp]);
     }];
 
     [uploadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
@@ -133,114 +237,89 @@ RCT_EXPORT_METHOD(uploadFile: (NSString *) remotePath
             switch (snapshot.error.code) {
                 case FIRStorageErrorCodeObjectNotFound:
                     // File doesn't exist
-                    [errProps setValue:@"File does not exist" forKey:@"description"];
+                    [errProps setValue:@"File does not exist" forKey:@"message"];
                     break;
                 case FIRStorageErrorCodeUnauthorized:
                     // User doesn't have permission to access file
-                    [errProps setValue:@"You do not have permissions" forKey:@"description"];
+                    [errProps setValue:@"You do not have permissions" forKey:@"message"];
                     break;
                 case FIRStorageErrorCodeCancelled:
                     // User canceled the upload
-                    [errProps setValue:@"Upload cancelled" forKey:@"description"];
+                    [errProps setValue:@"Upload cancelled" forKey:@"message"];
                     break;
                 case FIRStorageErrorCodeUnknown:
                     // Unknown error occurred, inspect the server response
-                    [errProps setValue:@"Unknown error" forKey:@"description"];
+                    [errProps setValue:@"Unknown error" forKey:@"message"];
                     break;
             }
 
+            //TODO: Error event
             callback(@[errProps]);
         }}];
 }
 
-RCT_EXPORT_METHOD(downloadFile: (NSString *) remotePath
-                  localFile:(NSString *) file
-                  callback:(RCTResponseSenderBlock) callback)
+//Firebase.Storage methods
+RCT_EXPORT_METHOD(setMaxDownloadRetryTime:(NSNumber *) milliseconds)
 {
-    FIRStorageReference *fileRef = [[FIRStorage storage] referenceWithPath:remotePath];
-    NSURL *localFile = [NSURL fileURLWithPath:file];
-
-    FIRStorageDownloadTask *downloadTask = [fileRef writeToFile:localFile];
-    // Listen for state changes, errors, and completion of the download.
-    [downloadTask observeStatus:FIRStorageTaskStatusResume handler:^(FIRStorageTaskSnapshot *snapshot) {
-        // Upload resumed, also fires when the upload starts
-        [self sendJSEvent:STORAGE_DOWNLOAD_RESUMED props:@{
-                                                         @"eventName": STORAGE_DOWNLOAD_RESUMED,
-                                                         @"ref": snapshot.reference.bucket
-                                                         }];
-    }];
-
-    [downloadTask observeStatus:FIRStorageTaskStatusPause handler:^(FIRStorageTaskSnapshot *snapshot) {
-        // Upload paused
-        [self sendJSEvent:STORAGE_DOWNLOAD_PAUSED props:@{
-                                                        @"eventName": STORAGE_DOWNLOAD_PAUSED,
-                                                        @"ref": snapshot.reference.bucket
-                                                        }];
-    }];
-    [downloadTask observeStatus:FIRStorageTaskStatusProgress handler:^(FIRStorageTaskSnapshot *snapshot) {
-        // Upload reported progress
-        float percentComplete;
-        if (snapshot.progress.totalUnitCount == 0) {
-            percentComplete = 0.0;
-        } else {
-            percentComplete = 100.0 * (snapshot.progress.completedUnitCount) / (snapshot.progress.totalUnitCount);
-        }
-
-        [self sendJSEvent:STORAGE_DOWNLOAD_PROGRESS props:@{
-                                                          @"eventName": STORAGE_DOWNLOAD_PROGRESS,
-                                                          @"progress": @(percentComplete)
-                                                          }];
-
-    }];
-
-    [downloadTask observeStatus:FIRStorageTaskStatusSuccess handler:^(FIRStorageTaskSnapshot *snapshot) {
-        [downloadTask removeAllObservers];
-
-        // Upload completed successfully
-        FIRStorageReference *ref = snapshot.reference;
-        NSDictionary *props = @{
-                                @"fullPath": ref.fullPath,
-                                @"bucket": ref.bucket,
-                                @"name": ref.name
-                                };
-
-        callback(@[[NSNull null], props]);
-    }];
-
-    [downloadTask observeStatus:FIRStorageTaskStatusFailure handler:^(FIRStorageTaskSnapshot *snapshot) {
-        if (snapshot.error != nil) {
-            NSDictionary *errProps = [[NSMutableDictionary alloc] init];
-            NSLog(@"Error in download: %@", snapshot.error);
-
-            switch (snapshot.error.code) {
-                case FIRStorageErrorCodeObjectNotFound:
-                    // File doesn't exist
-                    [errProps setValue:@"File does not exist" forKey:@"description"];
-                    break;
-                case FIRStorageErrorCodeUnauthorized:
-                    // User doesn't have permission to access file
-                    [errProps setValue:@"You do not have permissions" forKey:@"description"];
-                    break;
-                case FIRStorageErrorCodeCancelled:
-                    // User canceled the upload
-                    [errProps setValue:@"Download canceled" forKey:@"description"];
-                    break;
-                case FIRStorageErrorCodeUnknown:
-                    // Unknown error occurred, inspect the server response
-                    [errProps setValue:@"Unknown error" forKey:@"description"];
-                    break;
-            }
-
-            callback(@[errProps]);
-        }}];
+    [[FIRStorage storage] setMaxDownloadRetryTime:[milliseconds doubleValue]];
 }
 
-// Compatibility with the android library
-// For now, just passes the url path back
-RCT_EXPORT_METHOD(getRealPathFromURI: (NSString *) urlStr
-                  callback:(RCTResponseSenderBlock) callback)
+RCT_EXPORT_METHOD(setMaxOperationRetryTime:(NSNumber *) milliseconds)
 {
-    callback(@[[NSNull null], urlStr]);
+    [[FIRStorage storage] setMaxOperationRetryTime:[milliseconds doubleValue]];
+}
+
+RCT_EXPORT_METHOD(setMaxUploadRetryTime:(NSNumber *) milliseconds)
+{
+    [[FIRStorage storage] setMaxUploadRetryTime:[milliseconds doubleValue]];
+}
+
+- (FIRStorageReference *)getReference:(NSString *)path
+{
+    if ([path hasPrefix:@"url::"]) {
+        NSString *url = [path substringFromIndex:5];
+        return [[FIRStorage storage] referenceForURL:url];
+    } else {
+        return [[FIRStorage storage] referenceWithPath:path];
+    }
+}
+
+- (NSDictionary *)getDownloadTaskAsDictionary:(FIRStorageTaskSnapshot *)task {
+    return @{
+             @"bytesTransferred": @(task.progress.completedUnitCount),
+             @"ref": task.reference.fullPath,
+             @"status": [self getTaskStatus:task.status],
+             @"totalBytes": @(task.progress.totalUnitCount)
+             };
+}
+
+- (NSDictionary *)getUploadTaskAsDictionary:(FIRStorageTaskSnapshot *)task
+{
+    NSString *downloadUrl = [task.metadata.downloadURL absoluteString];
+    FIRStorageMetadata *metadata = [task.metadata dictionaryRepresentation];
+    return @{
+             @"bytesTransferred": @(task.progress.completedUnitCount),
+             @"downloadUrl": downloadUrl != nil ? downloadUrl : [NSNull null],
+             @"metadata": metadata != nil ? metadata : [NSNull null],
+             @"ref": task.reference.fullPath,
+             @"state": [self getTaskStatus:task.status],
+             @"totalBytes": @(task.progress.totalUnitCount)
+             };
+}
+
+- (NSString *)getTaskStatus:(FIRStorageTaskStatus)status
+{
+    if (status == FIRStorageTaskStatusResume || status == FIRStorageTaskStatusProgress) {
+        return @"RUNNING";
+    } else if (status == FIRStorageTaskStatusPause) {
+        return @"PAUSED";
+    } else if (status == FIRStorageTaskStatusSuccess) {
+        return @"SUCCESS";
+    } else if (status == FIRStorageTaskStatusFailure) {
+        return @"ERROR";
+    } else {
+        return @"UNKNOWN";
+    }
 }
 
 // This is just too good not to use, but I don't want to take credit for
@@ -269,25 +348,36 @@ RCT_EXPORT_METHOD(getRealPathFromURI: (NSString *) urlStr
 
 // Not sure how to get away from this... yet
 - (NSArray<NSString *> *)supportedEvents {
-    return @[
-             STORAGE_UPLOAD_PAUSED,
-             STORAGE_UPLOAD_RESUMED,
-             STORAGE_UPLOAD_PROGRESS,
-             STORAGE_DOWNLOAD_PAUSED,
-             STORAGE_DOWNLOAD_RESUMED,
-             STORAGE_DOWNLOAD_PROGRESS
-             ];
+    return @[STORAGE_EVENT, STORAGE_ERROR];
 }
 
-- (void) sendJSEvent:(NSString *)title
+- (void) sendJSError:(NSError *) error
+                      withPath:(NSString *) path
+{
+    NSDictionary *evt = @{
+                          @"path": path,
+                          @"message": [error debugDescription]
+                          };
+    [self sendJSEvent:STORAGE_ERROR path:path title:STORAGE_ERROR props: evt];
+}
+
+- (void) sendJSEvent:(NSString *)type
+                path:(NSString *)path
+               title:(NSString *)title
                props:(NSDictionary *)props
 {
     @try {
-        [self sendEventWithName:title
-                           body:props];
+        [self sendEventWithName:type
+                            body:@{
+                                   @"eventName": title,
+                                   @"path": path,
+                                   @"body": props
+                                   }];
+        
     }
     @catch (NSException *err) {
         NSLog(@"An error occurred in sendJSEvent: %@", [err debugDescription]);
+        NSLog(@"Tried to send: %@ with %@", title, props);
     }
 }
 

@@ -13,6 +13,7 @@ import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.WritableArray;
+import com.facebook.react.bridge.WritableNativeArray;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
 import com.facebook.react.bridge.ReadableType;
@@ -82,8 +83,12 @@ public class Utils {
           data.putString("value", null);
       }
     } else {
-      WritableMap valueMap = Utils.castSnapshotValue(dataSnapshot);
-      data.putMap("value", valueMap);
+      Object value = Utils.castSnapshotValue(dataSnapshot);
+      if (value instanceof WritableNativeArray) {
+        data.putArray("value", (WritableArray) value);
+      } else {
+        data.putMap("value", (WritableMap) value);
+      }
     }
 
     // Child keys

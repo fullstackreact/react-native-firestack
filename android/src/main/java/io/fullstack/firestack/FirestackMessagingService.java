@@ -18,15 +18,15 @@ public class FirestackMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Remote message received");
         // debug
         Log.d(TAG, "From: " + remoteMessage.getFrom());
+
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
         }
+
         if (remoteMessage.getNotification() != null) {
             Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
-        if (remoteMessage.getNotification() != null) {
 
-        }
         Intent i = new Intent(FirestackMessaging.INTENT_NAME_NOTIFICATION);
         i.putExtra("data", remoteMessage);
         sendOrderedBroadcast(i, null);
