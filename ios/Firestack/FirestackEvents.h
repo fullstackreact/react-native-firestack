@@ -29,6 +29,7 @@ static NSString *const DEBUG_EVENT = @"debug";
 // Database
 static NSString *const DATABASE_DATA_EVENT = @"database_event";
 static NSString *const DATABASE_ERROR_EVENT = @"database_error";
+static NSString *const DATABASE_TRANSACTION_EVENT = @"database_transaction_update";
 
 static NSString *const DATABASE_VALUE_EVENT = @"value";
 static NSString *const DATABASE_CHILD_ADDED_EVENT = @"child_added";

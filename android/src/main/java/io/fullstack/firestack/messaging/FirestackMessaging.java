@@ -165,21 +165,31 @@ public class FirestackMessaging extends ReactContextBaseJavaModule {
     }
   }
 
+  // String senderId, String messageId, String messageType,
   @ReactMethod
-  public void send(String senderId, String messageId, String messageType, ReadableMap params, final Callback callback) {
+  public void send(ReadableMap params, final Callback callback) {
+    ReadableMap data = params.getMap("data");
     FirebaseMessaging fm = FirebaseMessaging.getInstance();
-    RemoteMessage.Builder remoteMessage = new RemoteMessage.Builder(senderId);
-    remoteMessage.setMessageId(messageId);
-    remoteMessage.setMessageType(messageType);
-    ReadableMapKeySetIterator iterator = params.keySetIterator();
+    RemoteMessage.Builder remoteMessage = new RemoteMessage.Builder(params.getString("sender"));
+
+    remoteMessage.setMessageId(params.getString("id"));
+    remoteMessage.setMessageType(params.getString("type"));
+
+    if (params.hasKey("ttl")) {
+      remoteMessage.setTtl(params.getInt("ttl"));
+    }
+
+    if (params.hasKey("collapseKey")) {
+      remoteMessage.setCollapseKey(params.getString("collapseKey"));
+    }
+
+    ReadableMapKeySetIterator iterator = data.keySetIterator();
 
     while (iterator.hasNextKey()) {
       String key = iterator.nextKey();
-      ReadableType type = params.getType(key);
+      ReadableType type = data.getType(key);
       if (type == ReadableType.String) {
-        remoteMessage.addData(key, params.getString(key));
-        Log.d(TAG, "Firebase send: " + key);
-        Log.d(TAG, "Firebase send: " + params.getString(key));
+        remoteMessage.addData(key, data.getString(key));
       }
     }
 
@@ -187,9 +197,10 @@ public class FirestackMessaging extends ReactContextBaseJavaModule {
       fm.send(remoteMessage.build());
       WritableMap res = Arguments.createMap();
       res.putString("status", "success");
+      Log.d(TAG, "send: Message sent");
       callback.invoke(null, res);
     } catch (Exception e) {
-      Log.e(TAG, "Error sending message", e);
+      Log.e(TAG, "send: error sending message", e);
       WritableMap error = Arguments.createMap();
       error.putString("code", e.toString());
       error.putString("message", e.toString());
