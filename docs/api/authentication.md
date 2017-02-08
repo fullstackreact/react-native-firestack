@@ -100,9 +100,9 @@ Sign in the user with a 3rd party credential provider. `credential` requires the
 
 ```javascript
 const credential = {
-  provider: 'facebook', 
-  token: '12345', 
-  secret: '6789', 
+  provider: 'facebook.com', 
+  accessToken: '12345', 
+  //secret: '6789', //'secret' does not apply to facebook authentication
 };
 
 firestack.auth().signInWithCredential(credential)
