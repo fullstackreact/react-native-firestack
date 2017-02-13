@@ -105,7 +105,7 @@ public class Utils {
     WritableMap eventMap = Arguments.createMap();
     eventMap.putString("eventName", name);
     eventMap.putMap("snapshot", data);
-    eventMap.putString("path", path);
+    eventMap.putString("handlePath", path);
     eventMap.putString("modifiersString", modifiersString);
     return eventMap;
   }
