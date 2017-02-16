@@ -159,9 +159,9 @@ public class FirestackAuth extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void signInWithProvider(final String provider, final String authToken, final String authSecret, final Callback callback) {
-    if (provider.equals("facebook")) {
+    if (provider.equals("facebook.com")) {
       this.facebookLogin(authToken, callback);
-    } else if (provider.equals("google")) {
+    } else if (provider.equals("google.com")) {
       this.googleLogin(authToken, callback);
     } else
       // TODO
