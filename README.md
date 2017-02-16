@@ -916,3 +916,15 @@ The following is left to be done:
   - [ ] Add JS api
 - [ ] Move to use swift (cleaner syntax)
 - [ ] TODO: Finish Facebook integration
+
+# Fullstack React Book
+
+<a href="https://fullstackreact.com">
+<img align="right" src="https://cdn.rawgit.com/fullstackreact/react-yelp-clone/master/resources/readme/fullstack-react-hero-book.png" alt="Fullstack React Book" width="155" height="250" />
+</a>
+
+This repo was written and is maintained by the [Fullstack React](https://fullstackreact.com) team.
+
+If you're looking to learn React, there's no faster way than by spending a few hours with the [Fullstack React book](https://fullstackreact.com).
+
+<div style="clear:both"></div>
