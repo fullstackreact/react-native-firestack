@@ -164,8 +164,12 @@ public class FirestackUtils {
   }
 
   public static Map<String, Object> recursivelyDeconstructReadableMap(ReadableMap readableMap) {
-      ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
       Map<String, Object> deconstructedMap = new HashMap<>();
+      if (readableMap == null) {
+        return deconstructedMap;
+      }
+
+      ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
       while (iterator.hasNextKey()) {
           String key = iterator.nextKey();
           ReadableType type = readableMap.getType(key);
