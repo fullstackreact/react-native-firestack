@@ -196,11 +196,11 @@ RCT_EXPORT_METHOD(createUserWithEmail:(NSString *)email
          if (user != nil) {
              [self userCallback:callback user:user];
          } else {
-             NSDictionary *err =@{
-                                  @"error": @"createUserWithEmailError",
-                                  @"code":  [NSString stringWithFormat:@"%d", @([error code])],
-                                  @"message": [error localizedDescription]
-                                  };
+             NSDictionary *err = @{
+                                   @"error": @"createUserWithEmailError",
+                                   @"code":  [NSString stringWithFormat:@"%d", [error code]],
+                                   @"message": [error localizedDescription]
+                                   };
              callback(@[err]);
          }
      }];
