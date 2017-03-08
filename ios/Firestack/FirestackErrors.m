@@ -31,8 +31,8 @@ RCT_EXPORT_MODULE(FirestackErrors);
 {
     NSMutableDictionary *err = [NSMutableDictionary dictionaryWithObjectsAndKeys:
                                 name, @"name",
-                                @([error code]), @"code",
-                                [error localizedDescription], @"rawDescription",
+                                [NSString stringWithFormat:@"%d", [error code]], @"code",
+                                [error localizedDescription], @"message",
                                 [[error userInfo] description], @"userInfo",
                                 nil];
     
