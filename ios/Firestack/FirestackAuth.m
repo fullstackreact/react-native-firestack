@@ -198,8 +198,8 @@ RCT_EXPORT_METHOD(createUserWithEmail:(NSString *)email
          } else {
              NSDictionary *err = @{
                                    @"error": @"createUserWithEmailError",
-                                   @"name": @([error code]),
-                                   @"description": [error localizedDescription]
+                                   @"code":  [NSString stringWithFormat:@"%d", [error code]],
+                                   @"message": [error localizedDescription]
                                    };
              callback(@[err]);
          }
