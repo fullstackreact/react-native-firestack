@@ -598,7 +598,16 @@ class FirestackAuthModule extends ReactContextBaseJavaModule {
         Log.e(TAG, ex.getMessage());
       }
 
-      onFail.invoke(error);
+      try {
+          onFail.invoke(error);
+      } catch (RuntimeException ex) {
+          // Firebase tries to login 3 times, so the callback might
+          // be called as much as that. This will prevent a crash in case
+          // the callback throws the following error:
+          // java.lang.RuntimeException: Illegal callback invocation from native module. This callback type only permits a single invocation from native code.
+          Log.e(TAG, ex.getMessage());
+      }
+
     }
 
     private WritableMap getUserMap() {
