@@ -2,7 +2,11 @@ package io.fullstack.firestack;
 
 import android.content.Context;
 import android.util.Log;
+
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -24,170 +28,128 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.database.ServerValue;
 
-interface KeySetterFn {
-  String setKeyOrDefault(String a, String b);
-}
 
 class FirestackModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
-  private static final String TAG = "Firestack";
-  private Context context;
-  private ReactContext mReactContext;
-  private FirebaseApp app;
+    private static final String TAG = "Firestack";
+    private Context context;
+    private ReactContext mReactContext;
+    private FirebaseApp app;
 
-  public FirestackModule(ReactApplicationContext reactContext, Context context) {
-    super(reactContext);
-    this.context = context;
-    mReactContext = reactContext;
+    enum ConfigurationValues {
+        API_KEY("apiKey", "APIKey") {
+            @Override
+            protected void doApply(FirebaseOptions.Builder builder, String value) {
+                builder.setApiKey(value);
+            }
+        },
+        APPLICATION_ID("applicationID", "applicationId") {
+            @Override
+            protected void doApply(FirebaseOptions.Builder builder, String value) {
+                builder.setApplicationId(value);
+            }
+        },
+        GCM_SENDER_ID("gcmSenderID", "GCMSenderID") {
+            @Override
+            protected void doApply(FirebaseOptions.Builder builder, String value) {
+                builder.setGcmSenderId(value);
+            }
+        },
+        STORAGE_BUCKET("storageBucket") {
+            @Override
+            protected void doApply(FirebaseOptions.Builder builder, String value) {
+                builder.setStorageBucket(value);
+            }
+        }, DATABASE_URL("databaseUrl", "databaseURL") {
+            @Override
+            protected void doApply(FirebaseOptions.Builder builder, String value) {
+                builder.setDatabaseUrl(value);
+            }
+        };
 
-    Log.d(TAG, "New instance");
-  }
-
-  @Override
-  public String getName() {
-    return TAG;
-  }
-
-  @ReactMethod
-  public void configureWithOptions(final ReadableMap params, @Nullable final Callback onComplete) {
-    Log.i(TAG, "configureWithOptions");
-
-    FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
-    FirebaseOptions defaultOptions = FirebaseOptions.fromResource(this.context);
-
-    if (defaultOptions == null) {
-      defaultOptions = new FirebaseOptions.Builder().build();
-    }
-
-    KeySetterFn fn = new KeySetterFn() {
-      public String setKeyOrDefault(
-        final String key,
-        final String defaultValue) {
-        if (params.hasKey(key)) {
-          // User-set key
-          final String val = params.getString(key);
-          Log.d(TAG, "Setting " + key + " from params to: " + val);
-          return val;
-        } else if (defaultValue != null && !defaultValue.equals("")) {
-          Log.d(TAG, "Setting " + key + " from params to: " + defaultValue);
-          return defaultValue;
-        } else {
-          return null;
+        ConfigurationValues(String... keys) {
+            this.keys = Arrays.asList(keys);
         }
-      }
-    };
 
-    String val = fn.setKeyOrDefault("applicationId", 
-                    defaultOptions.getApplicationId());
-    if (val != null) {
-      builder.setApplicationId(val);
+        public void apply(ReadableMap params, FirebaseOptions.Builder builder) {
+            String value = lookUp(params);
+            Log.d(TAG, "Setting " + this.name() + " from params to: " + value);
+            doApply(builder, value);
+        }
+
+        private String lookUp(ReadableMap params) {
+            for (String key : keys) {
+                if (params.hasKey(key)) {
+                    return params.getString(key);
+                }
+            }
+            return "";
+        }
+
+        protected abstract void doApply(FirebaseOptions.Builder builder, String value);
+
+        private final List<String> keys;
     }
 
-    val = fn.setKeyOrDefault("apiKey", 
-                    defaultOptions.getApiKey());
-    if (val != null) {
-      builder.setApiKey(val);
+    public FirestackModule(ReactApplicationContext reactContext, Context context) {
+        super(reactContext);
+        this.context = context;
+        mReactContext = reactContext;
+
+        Log.d(TAG, "New instance");
     }
 
-    val = fn.setKeyOrDefault("gcmSenderID", 
-                    defaultOptions.getGcmSenderId());
-    if (val != null) {
-      builder.setGcmSenderId(val);
+    @Override
+    public String getName() {
+        return TAG;
     }
 
-    val = fn.setKeyOrDefault("storageBucket", 
-                    defaultOptions.getStorageBucket());
-    if (val != null) {
-      builder.setStorageBucket(val);
+    @ReactMethod
+    public void configureWithOptions(final ReadableMap params, @Nullable final Callback onComplete) {
+        Log.i(TAG, "configureWithOptions");
+        try {
+            app = retrieveOrConfigure(params);
+            WritableMap resp = Arguments.createMap();
+            resp.putString("msg", "success");
+            onComplete.invoke(null, resp);
+        } catch (Exception ex) {
+            Log.e(TAG, "ERROR configureWithOptions");
+            Log.e(TAG, ex.getMessage());
+            WritableMap resp = Arguments.createMap();
+            resp.putString("msg", ex.getMessage());
+            onComplete.invoke(resp);
+        }
     }
 
-    val = fn.setKeyOrDefault("databaseURL", 
-                    defaultOptions.getDatabaseUrl());
-    if (val != null) {
-      builder.setDatabaseUrl(val);
+    private FirebaseApp retrieveOrConfigure(ReadableMap params) {
+        if (FirebaseApp.getApps(context).size() > 0) {
+            return FirebaseApp.getInstance();
+        }
+        return configure(params);
     }
 
-    val = fn.setKeyOrDefault("databaseUrl", 
-                    defaultOptions.getDatabaseUrl());
-    if (val != null) {
-      builder.setDatabaseUrl(val);
-    }
-
-    val = fn.setKeyOrDefault("clientId", 
-                    defaultOptions.getApplicationId());
-    if (val != null) {
-      builder.setApplicationId(val);
-    }
-
-
-    // if (params.hasKey("applicationId")) {
-    //   final String applicationId = params.getString("applicationId");
-    //   Log.d(TAG, "Setting applicationId from params " + applicationId);
-    //   builder.setApplicationId(applicationId);
-    // }
-    // if (params.hasKey("apiKey")) {
-    //   final String apiKey = params.getString("apiKey");
-    //   Log.d(TAG, "Setting API key from params " + apiKey);
-    //   builder.setApiKey(apiKey);
-    // }
-    // if (params.hasKey("APIKey")) {
-    //   final String apiKey = params.getString("APIKey");
-    //   Log.d(TAG, "Setting API key from params " + apiKey);
-    //   builder.setApiKey(apiKey);
-    // }
-    // if (params.hasKey("gcmSenderID")) {
-    //   final String gcmSenderID = params.getString("gcmSenderID");
-    //   Log.d(TAG, "Setting gcmSenderID from params " + gcmSenderID );
-    //   builder.setGcmSenderId(gcmSenderID);
-    // }
-    // if (params.hasKey("storageBucket")) {
-    //   final String storageBucket = params.getString("storageBucket");
-    //   Log.d(TAG, "Setting storageBucket from params " + storageBucket);
-    //   builder.setStorageBucket(storageBucket);
-    // }
-    // if (params.hasKey("databaseURL")) {
-    //   final String databaseURL = params.getString("databaseURL");
-    //   Log.d(TAG, "Setting databaseURL from params " + databaseURL);
-    //   builder.setDatabaseUrl(databaseURL);
-    // }
-    // if (params.hasKey("clientID")) {
-    //   final String clientID = params.getString("clientID");
-    //   Log.d(TAG, "Setting clientID from params " + clientID);
-    //   builder.setApplicationId(clientID);
-    // }
-
-    try {
+    @NonNull
+    private FirebaseApp configure(ReadableMap params) {
         Log.i(TAG, "Configuring app");
-        if (app == null) {
-          app = FirebaseApp.initializeApp(this.context, builder.build());
+        FirebaseOptions.Builder builder = new FirebaseOptions.Builder();
+        for (ConfigurationValues configurationValue : ConfigurationValues.values()) {
+            configurationValue.apply(params, builder);
         }
+        FirebaseApp firebaseApp = FirebaseApp.initializeApp(this.context, builder.build());
         Log.i(TAG, "Configured");
-
-        WritableMap resp = Arguments.createMap();
-        resp.putString("msg", "success");
-        onComplete.invoke(null, resp);
-    }
-    catch (Exception ex){
-        Log.e(TAG, "ERROR configureWithOptions");
-        Log.e(TAG, ex.getMessage());
-
-        WritableMap resp = Arguments.createMap();
-        resp.putString("msg", ex.getMessage());
-
-        onComplete.invoke(resp);
-    }
-  }
-
-  @ReactMethod
-  public void serverValue(@Nullable final Callback onComplete) {
-    WritableMap timestampMap = Arguments.createMap();
-    for (Map.Entry<String, String> entry : ServerValue.TIMESTAMP.entrySet()) {
-      timestampMap.putString(entry.getKey(), entry.getValue());
+        return firebaseApp;
     }
 
-    WritableMap map = Arguments.createMap();
-    map.putMap("TIMESTAMP", timestampMap);
-    onComplete.invoke(null, map);
-  }
+    @ReactMethod
+    public void serverValue(@Nullable final Callback onComplete) {
+        WritableMap timestampMap = Arguments.createMap();
+        for (Map.Entry<String, String> entry : ServerValue.TIMESTAMP.entrySet()) {
+            timestampMap.putString(entry.getKey(), entry.getValue());
+        }
+
+        WritableMap map = Arguments.createMap();
+        map.putMap("TIMESTAMP", timestampMap);
+        onComplete.invoke(null, map);
+    }
 
     // Internal helpers
     @Override
