@@ -1,3 +1,7 @@
+----
+### This library is no longer maintained, use at your own risk or please [seek alternatives on npm](https://www.npmjs.com/search?q=react+native+firebase).
+----
+
 ## Firestack
 
 Firestack makes using the latest [Firebase](https://firebase.google.com/) straight-forward.
