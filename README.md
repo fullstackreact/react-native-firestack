@@ -196,6 +196,12 @@ Add to `AndroidManifest.xml` file
 +   </service>
 ```
 
+Add to `settings.gradle` file
+```
+include ':react-native-firestack'
+project(':react-native-firestack').projectDir = new File(rootProject.projectDir, '../node_modules/react-native-firestack/android')
+```
+
 ## Firebase setup
 
 The Firestack library is intended on making it easy to work with [Firebase](https://firebase.google.com/) and provides a small native shim to the Firebase native code.
